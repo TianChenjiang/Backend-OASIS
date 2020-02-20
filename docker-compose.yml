@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  server:
+    build:
+      context: .
+    image: registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=prod
+#      - PGUSER=postgres
+#      - PGHOST=db
+#      - PGDATABASE=postgres
+#      - PGPORT=5432
+#      - PGPASSWORD=postgres_password
+    ports:
+      - "8081:8081"
+
+#  db:
+#    image: postgres:latest
