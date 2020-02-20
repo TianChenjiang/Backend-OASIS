@@ -16,6 +16,7 @@ class BackendOasisApplicationTests {
 	@Test
 	void contextLoads() {
 		val todo0 = todoRepository.findById(1L);
+
 		assertThat(todo0).isNotEmpty();
 	}
 
