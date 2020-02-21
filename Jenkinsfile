@@ -66,9 +66,7 @@ pipeline {
 
     stage('Email') {
       steps {
-        script {
-           emailext(subject: '[jenkins] ${packageFullName}: part ${part}/${files.size()}', body: '"Jenkins Build: \\\'${env.BUILD_URL}\\\'\\n"', from: 'Jenkins', to: '1027572886a@gmail.com')
-        }
+        mail bcc: '', body: 'Jenkins build: ${env.BUILD_URL}', cc: '', from: '', replyTo: '', subject: 'Jenkins build', to: '1027572886a@gmail.com'
       }
     }
 
