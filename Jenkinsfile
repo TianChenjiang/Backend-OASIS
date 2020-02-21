@@ -66,7 +66,7 @@ pipeline {
 
     stage('Email') {
       steps {
-        mail bcc: '', body: 'Jenkins build: ${env.BUILD_URL}', cc: '', from: '', replyTo: '', subject: 'Jenkins build', to: '1027572886a@gmail.com'
+        mail bcc: '', body: 'Jenkins build: ${env.BUILD_URL}', cc: '', from: 'm15123052642@163.com', replyTo: '', subject: 'Jenkins build', to: '1027572886a@gmail.com'
       }
     }
 
