@@ -14,15 +14,22 @@ pipeline {
     }
 
     stage('Test') {
-      post {
-        always {
-          junit 'target/surefire-reports/*.xml'
-        }
-
-      }
       steps {
         sh 'mvn test'
       }
+
+      post {
+        always {
+          junit 'target/surefire-reports/*.xml'
+          jacoco(
+                execPattern: 'target/*.exec',
+                classPattern: 'target/classes',
+                sourcePattern: 'src/main/java',
+                exclusionPattern: 'src/test*'
+          )
+        }
+      }
+
     }
 
     stage('Build Image') {
