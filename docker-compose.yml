@@ -3,17 +3,35 @@ version: '3'
 services:
   server:
     build:
+      dockerfile: Dockerfile
       context: .
     image: registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=prod
-#      - PGUSER=postgres
-#      - PGHOST=db
-#      - PGDATABASE=postgres
-#      - PGPORT=5432
-#      - PGPASSWORD=postgres_password
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
     ports:
       - "8081:8081"
 
-#  db:
-#    image: postgres:latest
+  es:
+    image: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  init_es:
+    build:
+      dockerfile: Dockerfile
+      context: ./init_es
+    image: registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/init_es
+    restart: on-failure
+    depends_on:
+      - es
+    links:
+      - es
