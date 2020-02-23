@@ -1,5 +1,7 @@
 package com.rubiks.backendoasis;
 
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,11 @@ public class ESConfig extends AbstractElasticsearchConfiguration {
 
     @Override
     public RestHighLevelClient elasticsearchClient() {
-        return RestClients.create(ClientConfiguration.create(host + ":9200")).rest();
+        return new RestHighLevelClient(
+                RestClient.builder(
+                        new HttpHost("116.62.23.105", 9200, "http"
+                        )
+                )
+        );
     }
 }
