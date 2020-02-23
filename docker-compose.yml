@@ -16,7 +16,7 @@ services:
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#      - network.bind_host=0.0.0.0
+      - network.host=0.0.0.0
     ports:
       - "9200:9200"
       - "9300:9300"
