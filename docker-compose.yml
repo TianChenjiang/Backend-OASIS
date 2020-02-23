@@ -7,7 +7,7 @@ services:
       context: .
     image: registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - ESHOST=es
     ports:
       - "8081:8081"
 
