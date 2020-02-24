@@ -1,5 +1,6 @@
 import json
 from elasticsearch import Elasticsearch
+from elasticsearch import helpers
 
 with open('papers.json', 'r') as f:
     papers = json.load(f)
@@ -9,6 +10,14 @@ es = Elasticsearch(
     port=9200
 )
 
-for p in papers:
-    es.index(index='se3', body=p)
+all_actions = [
+    {
+        '_index': 'se3',
+        '_id': i,
+        '_source': p
+    }
+    for i, p in enumerate(papers)
+]
+
+helpers.bulk(es, all_actions)
 
