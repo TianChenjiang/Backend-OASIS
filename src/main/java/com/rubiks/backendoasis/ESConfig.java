@@ -19,7 +19,7 @@ public class ESConfig extends AbstractElasticsearchConfiguration {
     public RestHighLevelClient elasticsearchClient() {
         return new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("116.62.23.105", 9200, "http"
+                        new HttpHost(host, 9200, "http"
                         )
                 )
         );

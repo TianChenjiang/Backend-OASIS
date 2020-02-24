@@ -10,5 +10,5 @@ es = Elasticsearch(
 )
 
 for p in papers:
-    es.index(index='se3', doc_type='papers', body=p)
+    es.index(index='se3', body=p)
 
