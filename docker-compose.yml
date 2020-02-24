@@ -19,7 +19,7 @@ services:
     image: elasticsearch:7.6.0
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms750m -Xmx750m"
+#      - "ES_JAVA_OPTS=-Xms750m -Xmx750m"
       - network.host=0.0.0.0
       - network.bind_host=0.0.0.0
       - http.cors.enabled=true
