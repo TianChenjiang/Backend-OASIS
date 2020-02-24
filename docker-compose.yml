@@ -30,6 +30,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./init_es
+    image: registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/init_es
     restart: on-failure
     depends_on:
       - es
