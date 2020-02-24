@@ -22,10 +22,6 @@ public class BackendOasisApplication {
 
 			todoRepository.save(todo1);
 			todoRepository.save(todo2);
-
-			val getRequest = new GetRequest("se3", "0");
-			val response = client.get(getRequest, RequestOptions.DEFAULT);
-			System.out.println(response);
 		};
 	}
 	public static void main(String[] args) {
