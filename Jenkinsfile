@@ -15,7 +15,7 @@ pipeline {
 
     stage('Test') {
       environment {
-        ESHOST=credentials('greenwood-server-host')
+        ESHOST='116.62.23.105'
       }
 
       steps {
