@@ -27,12 +27,13 @@ class BackendOasisApplicationTests {
 		assertThat(todo0).isNotEmpty();
 	}
 
-//	@Autowired
-//	private RestHighLevelClient client;
+	@Autowired
+	private RestHighLevelClient client;
 
-//	@Test
-//	void testClient() throws IOException {
-//		val getRequest = new GetRequest("se3", "JTaTcXABB1_gxo8pq0F9");
-//		val response = client.get(getRequest, RequestOptions.DEFAULT);
-//	}
+	@Test
+	void testClient() throws IOException {
+		val getRequest = new GetRequest("se3", "0");
+		val response = client.get(getRequest, RequestOptions.DEFAULT);
+		assertThat(response.getSource().get("conferenceName")).isEqualTo("ASE");
+	}
 }
