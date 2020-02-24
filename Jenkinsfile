@@ -39,11 +39,8 @@ pipeline {
     stage('Build Image') {
       steps {
         script {
-          serverImage = docker.build 'rubiks-oasis/backend' + ":$BUILD_NUMBER"
-        }
-        sh 'cd init_es'
-        script {
-          initImage = docker.build 'rubiks-oasis/init_es' + ":$BUILD_NUMBER"
+          serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
+          initImage = docker.build('rubiks-oasis/init_es' + ":$BUILD_NUMBER", "./init_es")
         }
       }
     }
