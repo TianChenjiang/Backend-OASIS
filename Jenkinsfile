@@ -15,7 +15,7 @@ pipeline {
 
     stage('Test') {
       environment {
-        ESHOST=116.62.23.105
+        ESHOST='172.16.32.83'
       }
 
       steps {
