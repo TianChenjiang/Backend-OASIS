@@ -17,6 +17,9 @@ public class ESConfig extends AbstractElasticsearchConfiguration {
 
     @Override
     public RestHighLevelClient elasticsearchClient() {
+
+        System.out.println(host);
+
         return new RestHighLevelClient(
                 RestClient.builder(
                         new HttpHost(host, 9200, "http"
