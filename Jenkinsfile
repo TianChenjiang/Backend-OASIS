@@ -40,7 +40,6 @@ pipeline {
       steps {
         script {
           serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
-          initImage = docker.build('rubiks-oasis/init_es' + ":$BUILD_NUMBER", "./init_es")
         }
       }
     }
@@ -52,9 +51,6 @@ pipeline {
             serverImage.push()
             // push一次latest标签
             serverImage.push('latest')
-
-            initImage.push()
-            initImage.push('latest')
           }
         }
 
@@ -64,7 +60,6 @@ pipeline {
     stage('Remove Image') {
       steps {
         sh "docker rmi rubiks-oasis/backend:$BUILD_NUMBER"
-        sh "docker rmi rubiks-oasis/init_es:$BUILD_NUMBER"
       }
     }
 

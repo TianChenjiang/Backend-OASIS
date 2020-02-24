@@ -7,13 +7,9 @@ services:
       context: .
     image: registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
     environment:
-      - ESHOST=localhost
+      - ESHOST=116.62.23.105
     ports:
       - "8081:8081"
-    depends_on:
-      - es
-    links:
-      - es:es
 
 #  es:
 #    image: elasticsearch:7.6.0
