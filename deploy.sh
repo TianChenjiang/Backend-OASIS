@@ -1,7 +1,7 @@
 cd /usr/app/backend-oasis || exit
 
 # 主要是拉取docker-compose.yml
-git pull origin master
+git pull origin greenwood
 
 docker-compose down
 docker-compose pull

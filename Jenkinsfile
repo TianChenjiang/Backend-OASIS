@@ -39,9 +39,12 @@ pipeline {
     stage('Build Image') {
       steps {
         script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+          serverImage = docker.build 'rubiks-oasis/backend' + ":$BUILD_NUMBER"
         }
-
+        sh 'cd init_es'
+        script {
+          initImage = docker.build 'rubiks-oasis/init_es' + ":$BUILD_NUMBER"
+        }
       }
     }
 
@@ -49,9 +52,12 @@ pipeline {
       steps {
         script {
           docker.withRegistry( registrySite, registryCredential ) {
-            dockerImage.push()
+            serverImage.push()
             // push一次latest标签
-            dockerImage.push('latest')
+            serverImage.push('latest')
+
+            initImage.push()
+            initImage.push('latest')
           }
         }
 
@@ -60,7 +66,8 @@ pipeline {
 
     stage('Remove Image') {
       steps {
-        sh "docker rmi $registry:$BUILD_NUMBER"
+        sh "docker rmi rubiks-oasis/backend:$BUILD_NUMBER"
+        sh "docker rmi rubiks-oasis/init_es:$BUILD_NUMBER"
       }
     }
 
@@ -86,7 +93,6 @@ pipeline {
   }
   environment {
     registrySite = 'https://registry-vpc.cn-hangzhou.aliyuncs.com'
-    registry = 'rubiks-oasis/backend'
     registryCredential = 'aliyun'
     serverHost = credentials('greenwood-server-host')
     serverPassword = credentials('greenwood-server-password')
