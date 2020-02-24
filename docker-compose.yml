@@ -10,6 +10,10 @@ services:
       - ESHOST=es
     ports:
       - "8081:8081"
+    depends_on:
+      - es
+    links:
+      - es:es
 
   es:
     image: elasticsearch:7.6.0
@@ -17,6 +21,9 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - network.host=0.0.0.0
+      - network.bind_host=0.0.0.0
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
     ports:
       - "9200:9200"
       - "9300:9300"

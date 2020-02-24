@@ -6,3 +6,6 @@ server:
 spring:
   jpa:
     show-sql: true
+  elasticsearch:
+    rest:
+      uris: ["http://${ESHOST:localhost}:9200"]
