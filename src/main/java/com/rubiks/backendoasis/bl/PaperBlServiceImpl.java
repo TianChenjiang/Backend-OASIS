@@ -48,7 +48,7 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(index);
-        searchRequest.types(type);
+//        searchRequest.types(type);
 
         return searchRequest;
     }
