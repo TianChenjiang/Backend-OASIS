@@ -7,6 +7,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -62,11 +63,11 @@ public class PaperBlServiceImpl implements PaperBlService {
     public List<PaperDocument> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page) throws Exception {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        QueryBuilder queryBuilder = QueryBuilders.boolQuery()
-                .must(QueryBuilders.multiMatchQuery("author.name", author))
-                .must(QueryBuilders.multiMatchQuery("author.affiliation", affiliation))
-                .must(QueryBuilders.multiMatchQuery("conferenceName", conferenceName))
-                .must(QueryBuilders.multiMatchQuery("keywords", keyword));
+        QueryBuilder queryBuilder = QueryBuilders.disMaxQuery()
+                .add(QueryBuilders.matchQuery("author.name", author).operator(Operator.AND))
+                .add(QueryBuilders.matchQuery("author.affiliation", affiliation).operator(Operator.AND))
+                .add(QueryBuilders.matchQuery("conferenceName",conferenceName).operator(Operator.AND))
+                .add(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
