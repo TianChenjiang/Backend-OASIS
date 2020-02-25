@@ -15,4 +15,6 @@ public class PaperDocument {
     private Metrics metrics;
     private List<String> keywords;
     private List<Reference> references;
+    private String conferenceName;
+    private String link;
 }
