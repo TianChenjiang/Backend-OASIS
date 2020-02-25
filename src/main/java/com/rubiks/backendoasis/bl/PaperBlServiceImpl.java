@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.rubiks.backendoasis.util.Constant.INDEX;
-import static com.rubiks.backendoasis.util.Constant.TYPE;
 
 @Service
 public class PaperBlServiceImpl implements PaperBlService {
@@ -33,23 +32,20 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     public List<PaperDocument> findAll() throws Exception {
-        SearchRequest searchRequest = buildSearchRequest(INDEX,TYPE);
+        SearchRequest searchRequest = buildSearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         searchRequest.source(searchSourceBuilder);
 
-        SearchResponse searchResponse =
-                client.search(searchRequest, RequestOptions.DEFAULT);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         return getSearchResult(searchResponse);
     }
 
-    private SearchRequest buildSearchRequest(String index, String type) {
+    private SearchRequest buildSearchRequest(String index) {
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices(index);
-//        searchRequest.types(type);
-
         return searchRequest;
     }
 
