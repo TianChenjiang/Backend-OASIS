@@ -6,15 +6,18 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-//import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@RunWith(SpringRunner.class)
 class BackendOasisApplicationTests {
 
 //	@Autowired
@@ -35,4 +38,9 @@ class BackendOasisApplicationTests {
 //		val getRequest = new GetRequest("se3", "papers", "JTaTcXABB1_gxo8pq0F9");
 //		val response = client.get(getRequest, RequestOptions.DEFAULT);
 //	}
+    @Test
+    void todoTest() {
+        int res = 1 + 1;
+        assertThat(res).isEqualTo(2);
+    }
 }
