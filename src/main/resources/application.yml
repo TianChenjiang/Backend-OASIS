@@ -6,6 +6,8 @@ server:
 spring:
   jpa:
     show-sql: true
-  elasticsearch:
-    rest:
-      uris: ["http://${ESHOST:localhost}:9200"]
+elasticsearch:
+  host: localhost
+  port: 9200
+  username:
+  password:
