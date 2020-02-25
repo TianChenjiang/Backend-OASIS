@@ -6,3 +6,8 @@ server:
 spring:
   jpa:
     show-sql: true
+elasticsearch:
+  host: localhost
+  port: 9200
+  username:
+  password:
