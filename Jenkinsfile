@@ -10,7 +10,8 @@ pipeline {
       steps {
         // sh 'mvn --version'
         // sh 'mvn -B -DskipTests clean package'
-        sh 'docker-compose build'
+        serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
+        dbImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER", "./mongo")
       }
     }
 
@@ -18,7 +19,9 @@ pipeline {
 
       steps {
         // sh 'mvn test'
-        sh 'docker-compose run server mvn test'
+        dbImage.withRun('-p 27017:27017') {
+          sh 'mvn test'
+        }
       }
 
       post {
@@ -47,10 +50,13 @@ pipeline {
       steps {
         script {
           docker.withRegistry( registrySite, registryCredential ) {
-            // serverImage.push()
+            serverImage.push()
             // // push一次latest标签
-            // serverImage.push('latest')
-            sh 'docker-compose push'
+            serverImage.push('latest')
+            
+            dbImage.push()
+            dbImage.push('latest')
+
           }
         }
 
@@ -80,9 +86,9 @@ pipeline {
     }
 
   }
-  // tools {
-  //   maven 'maven3'
-  // }
+  tools {
+    maven 'maven3'
+  }
   environment {
     registrySite = 'https://registry-vpc.cn-hangzhou.aliyuncs.com'
     registryCredential = 'aliyun'
