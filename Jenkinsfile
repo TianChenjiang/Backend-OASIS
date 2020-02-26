@@ -8,18 +8,17 @@ pipeline {
     }
     stage('build') {
       steps {
-        sh 'mvn --version'
-        sh 'mvn -B -DskipTests clean package'
+        // sh 'mvn --version'
+        // sh 'mvn -B -DskipTests clean package'
+        sh 'docker-compose build'
       }
     }
 
     stage('Test') {
-      environment {
-        ESHOST=credentials('greenwood-server-host')
-      }
 
       steps {
-        sh 'mvn test'
+        // sh 'mvn test'
+        sh 'docker-compose run server mvn test'
       }
 
       post {
@@ -36,32 +35,33 @@ pipeline {
 
     }
 
-    stage('Build Image') {
-      steps {
-        script {
-          serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
-        }
-      }
-    }
+    // stage('Build Image') {
+    //   steps {
+    //     script {
+    //       serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
+    //     }
+    //   }
+    // }
 
     stage('Push Image') {
       steps {
         script {
           docker.withRegistry( registrySite, registryCredential ) {
-            serverImage.push()
-            // push一次latest标签
-            serverImage.push('latest')
+            // serverImage.push()
+            // // push一次latest标签
+            // serverImage.push('latest')
+            sh 'docker-compose push'
           }
         }
 
       }
     }
 
-    stage('Remove Image') {
-      steps {
-        sh "docker rmi rubiks-oasis/backend:$BUILD_NUMBER"
-      }
-    }
+    // stage('Remove Image') {
+    //   steps {
+    //     sh "docker rmi rubiks-oasis/backend:$BUILD_NUMBER"
+    //   }
+    // }
 
     stage('SSH Deploy') {
       steps {
@@ -80,9 +80,9 @@ pipeline {
     }
 
   }
-  tools {
-    maven 'maven3'
-  }
+  // tools {
+  //   maven 'maven3'
+  // }
   environment {
     registrySite = 'https://registry-vpc.cn-hangzhou.aliyuncs.com'
     registryCredential = 'aliyun'
