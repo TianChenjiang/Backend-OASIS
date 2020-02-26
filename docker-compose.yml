@@ -10,6 +10,21 @@ services:
       - ESHOST=116.62.23.105
     ports:
       - "8081:8081"
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
+
+
+  mongodb:
+    image: mongo:4.2
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 #  es:
 #    image: elasticsearch:7.6.0
