@@ -11,8 +11,8 @@ pipeline {
         // sh 'mvn --version'
         // sh 'mvn -B -DskipTests clean package'
         script {
-          serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
-          dbImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER", "./mongo")
+          serverImage = docker.build(serverName + ":$BUILD_NUMBER")
+          dbImage = docker.build(dbName + ":$BUILD_NUMBER", "./mongo")
         }
       }
     }
@@ -67,11 +67,12 @@ pipeline {
       }
     }
 
-    // stage('Remove Image') {
-    //   steps {
-    //     sh "docker rmi rubiks-oasis/backend:$BUILD_NUMBER"
-    //   }
-    // }
+    stage('Remove Image') {
+      steps {
+        sh "docker rmi " + serverName + ":$BUILD_NUMBER"
+        sh "docker rmi " + dbName + ":$BUILD_NUMBER"
+      }
+    }
 
     stage('SSH Deploy') {
       steps {
@@ -96,6 +97,8 @@ pipeline {
   environment {
     registrySite = 'https://registry-vpc.cn-hangzhou.aliyuncs.com'
     registryCredential = 'aliyun'
+    serverName = 'rubiks-oasis/backend'
+    dbName = 'rubiks-oasis/mongodb'
     serverHost = credentials('greenwood-server-host')
     serverPassword = credentials('greenwood-server-password')
   }
