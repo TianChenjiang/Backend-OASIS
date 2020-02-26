@@ -10,8 +10,10 @@ pipeline {
       steps {
         // sh 'mvn --version'
         // sh 'mvn -B -DskipTests clean package'
-        serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
-        dbImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER", "./mongo")
+        script {
+          serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
+          dbImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER", "./mongo")
+        }
       }
     }
 
@@ -19,8 +21,10 @@ pipeline {
 
       steps {
         // sh 'mvn test'
-        dbImage.withRun('-p 27017:27017') {
-          sh 'mvn test'
+        script {
+          dbImage.withRun('-p 27017:27017') {
+            sh 'mvn test'
+          }
         }
       }
 
