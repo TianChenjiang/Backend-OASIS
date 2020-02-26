@@ -1,0 +1,1 @@
+mongoimport --db se3 --collection papers --type json --file /usr/app/mongo_papers.json

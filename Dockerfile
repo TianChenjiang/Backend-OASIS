@@ -3,15 +3,26 @@
 #COPY ${JAR_FILE} app.jar
 #ENTRYPOINT ["java","-jar","/app.jar"]
 
-FROM maven:3-alpine
+FROM registry.cn-hangzhou.aliyuncs.com/acs/maven:3-jdk-8
 
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+ENV HOME=/home/usr/app
 
-COPY init.sh ./init.sh
-COPY mongo/mongo_papers.json ./mongo_papers.json
+RUN mkdir -p $HOME
 
-RUN apk update
-RUN apk add mongodb-tools
+WORKDIR $HOME
 
-ENTRYPOINT ["sh", "init.sh"]
+# 1. add pom.xml only here
+
+ADD pom.xml $HOME
+
+# 2. start downloading dependencies
+
+RUN ["/usr/local/bin/mvn-entrypoint.sh", "mvn", "verify", "clean", "--fail-never"]
+
+# 3. add all source code and start compiling
+
+ADD . $HOME
+
+RUN mvn -B -DskipTests clean package
+
+CMD ["java", "-jar", "target/app.jar"]
