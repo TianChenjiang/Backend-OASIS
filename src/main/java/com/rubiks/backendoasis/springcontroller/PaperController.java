@@ -41,7 +41,7 @@ public class PaperController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public List<PaperDocument> basicSearch(@RequestParam(value = "keyword") String keyword,
                                            @RequestParam(value = "page") int page) throws Exception {
-        return paperBlService.basicSearch(keyword, page);
+        return paperBlService.basicSearchByES(keyword, page);
     }
 
     @GetMapping("/search/advanced")
