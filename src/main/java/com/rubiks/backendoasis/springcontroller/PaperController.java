@@ -1,8 +1,7 @@
 package com.rubiks.backendoasis.springcontroller;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
-import com.rubiks.backendoasis.document.PaperDocument;
-import com.rubiks.backendoasis.response.Response;
+import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
 import io.swagger.annotations.ApiOperation;

@@ -1,7 +1,7 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
-import com.rubiks.backendoasis.document.PaperDocument;
+import com.rubiks.backendoasis.esdocument.PaperDocument;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -83,6 +83,11 @@ public class PaperBlServiceImpl implements PaperBlService {
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         return getSearchResult(searchResponse);
+    }
+
+    @Override
+    public List<PaperDocument> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page) {
+        return null;
     }
 
     // 建立基本请求的接口
