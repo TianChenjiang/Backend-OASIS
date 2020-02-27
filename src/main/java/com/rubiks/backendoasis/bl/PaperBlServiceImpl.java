@@ -1,12 +1,13 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
-import com.rubiks.backendoasis.document.PaperDocument;
+import com.rubiks.backendoasis.esdocument.PaperDocument;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -46,7 +47,7 @@ public class PaperBlServiceImpl implements PaperBlService {
         return getSearchResult(searchResponse);
     }
 
-    public List<PaperDocument> basicSearch(String keyword, int page) throws Exception{
+    public List<PaperDocument> basicSearchByES(String keyword, int page) throws Exception{
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword));
@@ -60,14 +61,20 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     @Override
-    public List<PaperDocument> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page) throws Exception {
+    public List<PaperDocument> advancedSearchByES(String author, String affiliation, String conferenceName, String keyword, int page) throws Exception {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        QueryBuilder queryBuilder = QueryBuilders.disMaxQuery()
-                .add(QueryBuilders.matchQuery("author.name", author).operator(Operator.AND))
-                .add(QueryBuilders.matchQuery("author.affiliation", affiliation).operator(Operator.AND))
-                .add(QueryBuilders.matchQuery("conferenceName",conferenceName).operator(Operator.AND))
-                .add(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
+
+        QueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("author.name", author).operator(Operator.AND));
+        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("author.affiliation", affiliation).operator(Operator.AND));
+        if (!conferenceName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("conferenceName",conferenceName).operator(Operator.AND));
+        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
+
+//                .must(QueryBuilders.matchQuery("author.name", author).operator(Operator.AND))
+//                .must(QueryBuilders.matchQuery("author.affiliation", affiliation).operator(Operator.AND))
+//                .must(QueryBuilders.matchQuery("conferenceName",conferenceName).operator(Operator.AND))
+//                .must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
@@ -76,6 +83,11 @@ public class PaperBlServiceImpl implements PaperBlService {
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         return getSearchResult(searchResponse);
+    }
+
+    @Override
+    public List<PaperDocument> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page) {
+        return null;
     }
 
     // 建立基本请求的接口

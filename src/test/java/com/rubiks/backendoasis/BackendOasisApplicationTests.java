@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis;
 
+import com.mongodb.client.MongoClient;
 import lombok.val;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;

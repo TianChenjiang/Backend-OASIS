@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.document;
+package com.rubiks.backendoasis.esdocument;
 
 import lombok.Data;
 
