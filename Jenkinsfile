@@ -42,22 +42,12 @@ pipeline {
 
     }
 
-    // stage('Build Image') {
-    //   steps {
-    //     script {
-    //       serverImage = docker.build('rubiks-oasis/backend' + ":$BUILD_NUMBER")
-    //     }
-    //   }
-    // }
-
     stage('Push Image') {
       steps {
         script {
           docker.withRegistry( registrySite, registryCredential ) {
             serverImage.push()
-            // // push一次latest标签
             serverImage.push('latest')
-            
             dbImage.push()
             dbImage.push('latest')
 
