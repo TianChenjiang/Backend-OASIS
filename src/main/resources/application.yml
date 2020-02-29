@@ -1,11 +1,20 @@
 logging:
   level:
     ROOT: INFO
+    org:
+      springframework:
+        data:
+          mongodb:
+            core: DEBUG
 server:
   port: 8081
 spring:
   jpa:
     show-sql: true
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/oasis
+
 elasticsearch:
   host: localhost
   port: 9200

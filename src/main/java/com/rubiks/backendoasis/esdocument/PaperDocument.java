@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class PaperDocument {
     private String title;
-    private Author author;
+    private List<Author> author;
     private String _abstract;
     private String publicationTitle;
     private String doi;

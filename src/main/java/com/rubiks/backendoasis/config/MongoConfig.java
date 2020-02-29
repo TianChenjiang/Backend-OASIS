@@ -14,7 +14,7 @@ public class MongoConfig {
 
     @Bean
     public MongoClient mongoClient() {
-        String connection = "mongodb://" + host + ":27017";
+        String connection = "mongodb://" + host + ":27017/oasis";
         return MongoClients.create(connection);
     }
 }
