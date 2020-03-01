@@ -6,6 +6,7 @@ import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
+import com.rubiks.backendoasis.util.BasicRank;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -92,6 +93,18 @@ public class PaperController {
         if (conferenceName == null) conferenceName = "";
         if (keyword == null) keyword = "";
         return new BasicResponse<>(200, "Success", paperBlService.advancedSearch(author, affiliation, conferenceName, keyword, page));
+    }
+
+    @GetMapping("/rank/basic")
+    @ApiOperation(value = "查看简略排名", notes = "根据topic和sortkey查看排名")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    public BasicResponse<List<BasicRank>> getAuthorRank(@RequestParam(value = "topic") String topic,
+                                                        @RequestParam(value = "sortKey") String sortKey,
+                                                        @RequestParam(value = "year") String year) {
+        return new BasicResponse<>(200, "Success", paperBlService.getBasicRanking(topic, sortKey, year));
     }
 
 
