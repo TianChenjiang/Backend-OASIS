@@ -13,6 +13,7 @@ public class AuthorEntity {
     private String firstName;
     @Field("lastName")
     private String lastName;
+    @Field("id")
     private String id;
 
     public AuthorEntity(String name, String affiliation, String firstName, String lastName) {
