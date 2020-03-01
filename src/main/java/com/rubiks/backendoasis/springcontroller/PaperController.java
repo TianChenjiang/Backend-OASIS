@@ -3,11 +3,12 @@ package com.rubiks.backendoasis.springcontroller;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
+import com.rubiks.backendoasis.model.AuthorRank;
 import com.rubiks.backendoasis.model.ResearchInterest;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
-import com.rubiks.backendoasis.model.BasicRank;
+import com.rubiks.backendoasis.model.AffiliationRank;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -79,7 +80,7 @@ public class PaperController {
     }
 
     @GetMapping("/search/advanced/mongo")
-    @ApiOperation(value = "普通搜索", notes = "根据关键词获得相关论文")
+    @ApiOperation(value = "进阶搜索", notes = "根据关键词获得相关论文")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
@@ -96,16 +97,26 @@ public class PaperController {
         return new BasicResponse<>(200, "Success", paperBlService.advancedSearch(author, affiliation, conferenceName, keyword, page));
     }
 
-    @GetMapping("/rank/basic")
-    @ApiOperation(value = "查看简略排名", notes = "根据topic和sortkey查看排名")
+    @GetMapping("/rank/basic/affiliation")
+    @ApiOperation(value = "查看组织简略排名", notes = "根据topic和sortkey查看排名")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse<List<BasicRank>> getAuthorRank(@RequestParam(value = "topic") String topic,
-                                                        @RequestParam(value = "sortKey") String sortKey,
-                                                        @RequestParam(value = "year") String year) {
-        return new BasicResponse<>(200, "Success", paperBlService.getBasicRanking(topic, sortKey, year));
+    public BasicResponse<List<AffiliationRank>> getAffiliationBasicRanking(@RequestParam(value = "sortKey") String sortKey,
+                                                                           @RequestParam(value = "year") String year) {
+        return new BasicResponse<>(200, "Success", paperBlService.getAffiliationBasicRanking(sortKey, year));
+    }
+
+    @GetMapping("/rank/basic/author")
+    @ApiOperation(value = "查看作者简略排名", notes = "根据topic和sortkey查看排名")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    public BasicResponse<List<AuthorRank>> getAuthorBasicRanking(@RequestParam(value = "sortKey") String sortKey,
+                                                                 @RequestParam(value = "year") String year) {
+        return new BasicResponse<>(200, "Success", paperBlService.getAuthorBasicRanking(sortKey, year));
     }
 
     @GetMapping("/researcher/interest")

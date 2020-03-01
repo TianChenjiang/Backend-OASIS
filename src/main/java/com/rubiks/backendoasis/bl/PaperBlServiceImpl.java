@@ -1,14 +1,10 @@
 package com.rubiks.backendoasis.bl;
 
-import com.mongodb.BasicDBObject;
 import com.rubiks.backendoasis.blservice.PaperBlService;
-import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
-import com.rubiks.backendoasis.model.AcceptanceCountRank;
-import com.rubiks.backendoasis.model.BasicRank;
-import com.rubiks.backendoasis.model.CitationCountRank;
-import com.rubiks.backendoasis.model.ResearchInterest;
+import com.rubiks.backendoasis.model.*;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -24,7 +20,6 @@ import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -34,7 +29,6 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort.*;
 
-import java.awt.print.Paper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -140,32 +134,46 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     @Override
-    public <T> List<BasicRank> getBasicRanking(String topic, String sortkey, String year) {
-        // "affiliation"|"author
+    public  List<AffiliationRank> getAffiliationBasicRanking(String sortkey, String year) {
         // "acceptanceCount"|"citationCount"
-        String key = "";
-        if (topic.equals("affiliation")) {
-            key = "authors.affiliation";
-        } else if (topic.equals("author")){
-            key = "authors.name";
-        }
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
                 match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
-                group(key).sum("metrics.citationCountPaper").as("acceptanceCount").
+                group("authors.affiliation").sum("metrics.citationCountPaper").as("acceptanceCount").
                         sum("metrics.citationCountPatent").as("citationCount"),
                 sort(Direction.DESC, sortkey)
         );
 
         if (sortkey.equals("acceptanceCount")) {
             AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation,"papers", AcceptanceCountRank.class);
-            return BasicRank.transformToBasic(res.getMappedResults());
+            return AffiliationRank.transformToBasic(res.getMappedResults());
 
         } else if (sortkey.equals("citationCount")) {
             AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,"papers", CitationCountRank.class);
-            return BasicRank.transformToBasic(res.getMappedResults());
+            return AffiliationRank.transformToBasic(res.getMappedResults());
+        }
+        return null;
+    }
+
+    public List<AuthorRank> getAuthorBasicRanking(String sortkey, String year) {
+        Aggregation aggregation = newAggregation(
+                project("authors", "publicationYear", "metrics"),
+                match(Criteria.where("publicationYear").is(year)),
+                unwind("authors"),
+                group("authors.name").sum("metrics.citationCountPaper").as("acceptanceCount").
+                        sum("metrics.citationCountPatent").as("citationCount").addToSet("authors.id").as("researcherId"),
+                sort(Direction.DESC, sortkey)
+        );
+
+        if (sortkey.equals("acceptanceCount")) {
+            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation,"papers", AcceptanceCountRank.class);
+            return AuthorRank.transformToBasic(res.getMappedResults());
+
+        } else if (sortkey.equals("citationCount")) {
+            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,"papers", CitationCountRank.class);
+            return AuthorRank.transformToBasic(res.getMappedResults());
         }
         return null;
     }
