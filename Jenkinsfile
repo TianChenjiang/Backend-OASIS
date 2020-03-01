@@ -8,8 +8,8 @@ pipeline {
     }
     stage('build') {
       steps {
-        // sh 'mvn --version'
-        // sh 'mvn -B -DskipTests clean package'
+        sh 'mvn --version'
+        sh 'mvn -B -DskipTests clean package'
         script {
           serverImage = docker.build(serverName + ":$BUILD_NUMBER")
           dbImage = docker.build(dbName + ":$BUILD_NUMBER", "./mongo")
@@ -19,13 +19,12 @@ pipeline {
 
     stage('Test') {
 
+      environment {
+        MONGOHOST=credentials('tcj-server-host')
+      }
+
       steps {
-        // sh 'mvn test'
-        script {
-          dbImage.withRun('-p 27017:27017') {
-            sh 'mvn test'
-          }
-        }
+        sh 'mvn test'
       }
 
       post {
