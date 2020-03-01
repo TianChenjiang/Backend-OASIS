@@ -3,10 +3,11 @@ package com.rubiks.backendoasis.springcontroller;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
+import com.rubiks.backendoasis.model.ResearchInterest;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
-import com.rubiks.backendoasis.util.BasicRank;
+import com.rubiks.backendoasis.model.BasicRank;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -107,6 +108,25 @@ public class PaperController {
         return new BasicResponse<>(200, "Success", paperBlService.getBasicRanking(topic, sortKey, year));
     }
 
+    @GetMapping("/researcher/interest")
+    @ApiOperation(value = "查看学者研究方向")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    public BasicResponse<List<ResearchInterest>> getResearcherInterest(@RequestParam (value = "researcherId") String id) {
+        return new BasicResponse<>(200, "Success", paperBlService.getResearcherInterest(id));
+    }
+
+    @GetMapping("/paper/abstract")
+    @ApiOperation(value = "查看活跃论文摘要")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    public BasicResponse<List<PaperEntity>> getActivePaperAbstract() {
+        return new BasicResponse<>(200, "Success", paperBlService.getActivePaperAbstract());
+    }
 
 
 }

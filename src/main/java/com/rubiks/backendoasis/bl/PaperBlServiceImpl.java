@@ -1,12 +1,14 @@
 package com.rubiks.backendoasis.bl;
 
+import com.mongodb.BasicDBObject;
 import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
-import com.rubiks.backendoasis.util.AcceptanceCountRank;
-import com.rubiks.backendoasis.util.BasicRank;
-import com.rubiks.backendoasis.util.BasicRank.*;
-import com.rubiks.backendoasis.util.CitationCountRank;
+import com.rubiks.backendoasis.model.AcceptanceCountRank;
+import com.rubiks.backendoasis.model.BasicRank;
+import com.rubiks.backendoasis.model.CitationCountRank;
+import com.rubiks.backendoasis.model.ResearchInterest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -22,6 +24,7 @@ import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -31,6 +34,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort.*;
 
+import java.awt.print.Paper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -149,6 +153,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 project("authors", "publicationYear", "metrics"),
                 match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
                 match(Criteria.where("publicationYear").is(year)),
+                unwind("authors"),
                 group(key).sum("metrics.citationCountPaper").as("acceptanceCount").
                         sum("metrics.citationCountPatent").as("citationCount"),
                 sort(Direction.DESC, sortkey)
@@ -163,6 +168,50 @@ public class PaperBlServiceImpl implements PaperBlService {
             return BasicRank.transformToBasic(res.getMappedResults());
         }
         return null;
+    }
+
+    @Override
+    public List<ResearchInterest> getResearcherInterest(String id) {
+        Aggregation aggregation = newAggregation(
+                unwind("keywords"),
+                match(Criteria.where("authors.id").is(id)),
+                project( "keywords", "id")
+        );
+        AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, "papers", PaperEntity.class);
+        List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
+        List<ResearchInterest> res = new ArrayList<>();
+        for (PaperEntity p : aggregationlist) {
+            boolean keywordExist = false;
+            String curKeyword = p.getKeywords().get(0);
+            for (int i = 0; i < res.size(); i++) {
+                ResearchInterest cur = res.get(i);
+                if (cur.getName().equals(curKeyword)) {
+                    keywordExist = true;
+                    cur.setCount(cur.getCount()+1);
+                    break;
+                }
+            }
+            if (!keywordExist) {
+                res.add(new ResearchInterest(curKeyword, 1));
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<PaperEntity> getActivePaperAbstract() {
+        Aggregation aggregation = newAggregation(
+                sort(Direction.DESC, "metrics.citationCountPaper"),
+                limit(5)
+        );
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, "papers", PaperEntity.class);
+        List<PaperEntity> Top5Papers = aggregationRes.getMappedResults();
+        return Top5Papers;
+    }
+
+    class AuthorKeywordsList {
+        private String name;
+        private List<String> keywords;
     }
 
     // 建立基本请求的接口
