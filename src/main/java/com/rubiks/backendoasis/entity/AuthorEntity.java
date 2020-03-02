@@ -1,9 +1,11 @@
 package com.rubiks.backendoasis.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
+@Builder
 public class AuthorEntity {
     @Field(name = "name")
     private String name;
@@ -16,10 +18,10 @@ public class AuthorEntity {
     @Field("id")
     private String id;
 
-    public AuthorEntity(String name, String affiliation, String firstName, String lastName) {
-        this.name = name;
-        this.affiliation = affiliation;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
+//    public AuthorEntity(String name, String affiliation, String firstName, String lastName) {
+//        this.name = name;
+//        this.affiliation = affiliation;
+//        this.firstName = firstName;
+//        this.lastName = lastName;
+//    }
 }
