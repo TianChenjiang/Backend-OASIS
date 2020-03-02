@@ -13,8 +13,8 @@ public interface PaperBlService {
     List<PaperDocument> basicSearchByES(String keyword, int page) throws Exception;
     List<PaperDocument> advancedSearchByES(String author, String affiliation, String conferenceName, String keyword, int page)
         throws Exception;
-    List<PaperEntity> basicSearch(String keyword, int page);
-    List<PaperEntity> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page);
+    List<PaperEntity> basicSearch(String keyword, int page, String startYear, String endYear);
+    List<PaperEntity> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear);
     List<AffiliationRank>  getAffiliationBasicRanking(String sortKey, String year);
     List<AuthorRank> getAuthorBasicRanking(String sortKey, String year);
     List<ResearchInterest> getResearcherInterest(String id);

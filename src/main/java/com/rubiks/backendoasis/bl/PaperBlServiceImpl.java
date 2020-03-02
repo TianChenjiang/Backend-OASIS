@@ -99,7 +99,7 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     @Override
-    public List<PaperEntity> basicSearch(String keyword, int page) {
+    public List<PaperEntity> basicSearch(String keyword, int page, String startYear, String endYear) {
         Pattern pattern = getPattern(keyword);
         Criteria criteria = new Criteria();
         Query query = new Query();
@@ -107,10 +107,13 @@ public class PaperBlServiceImpl implements PaperBlService {
                 criteria.where("title").regex(pattern),
                 criteria.where("abstract").regex(pattern),
                 criteria.where("author.name").regex(pattern),
-                criteria.where("author..affiliation").regex(pattern),
+                criteria.where("author.affiliation").regex(pattern),
                 criteria.where("publicationTitle").regex(pattern),
                 criteria.where("conferenceName").regex(pattern),
                 criteria.where("keywords").regex(pattern)
+        );
+        criteria.andOperator(
+                criteria.where("publicationYear").gte(startYear).lte(endYear)
         );
         query.addCriteria(criteria);
         query.with(PageRequest.of(page-1, pageSize));
@@ -119,13 +122,15 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     @Override
-    public List<PaperEntity> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page) {
+    public List<PaperEntity> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear) {
         Criteria criteria = new Criteria();
         criteria.andOperator(
+                criteria.where("publicationYear").gte(startYear).lte(endYear),
                 criteria.where("author.name").regex(getPattern(author)),
                 criteria.where("author.affiliation").regex(getPattern(affiliation)),
                 criteria.where("conferenceName").regex(getPattern(conferenceName)),
-                criteria.where("keywords").regex(getPattern(keyword))
+                criteria.where("keywords").regex(getPattern(keyword)),
+                criteria.where("publicationYear").gte(startYear).lte(endYear)
         );
         Query query = new Query(criteria);
         query.with(PageRequest.of(page-1, pageSize));
