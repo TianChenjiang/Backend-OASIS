@@ -69,7 +69,7 @@ public class PaperController {
     }
 
     @GetMapping("/search/basic/mongo")
-    @ApiOperation(value = "普通搜索", notes = "根据关键词获得相关论文")
+    @ApiOperation(value = "接口1 普通搜索", notes = "根据关键词获得相关论文")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
@@ -82,7 +82,7 @@ public class PaperController {
     }
 
     @GetMapping("/search/advanced/mongo")
-    @ApiOperation(value = "进阶搜索", notes = "根据关键词获得相关论文")
+    @ApiOperation(value = "接口2 进阶搜索", notes = "根据关键词获得相关论文")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
@@ -102,7 +102,7 @@ public class PaperController {
     }
 
     @GetMapping("/rank/basic/affiliation")
-    @ApiOperation(value = "查看组织简略排名", notes = "根据topic和sortkey查看排名")
+    @ApiOperation(value = "接口3 查看组织简略排名", notes = "根据topic和sortkey查看排名")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
@@ -113,7 +113,7 @@ public class PaperController {
     }
 
     @GetMapping("/rank/basic/author")
-    @ApiOperation(value = "查看作者简略排名", notes = "根据topic和sortkey查看排名")
+    @ApiOperation(value = "接口4 查看作者简略排名", notes = "根据topic和sortkey查看排名")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
@@ -124,7 +124,7 @@ public class PaperController {
     }
 
     @GetMapping("/researcher/interest")
-    @ApiOperation(value = "查看学者研究方向")
+    @ApiOperation(value = "接口5 查看学者研究方向")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
@@ -134,7 +134,7 @@ public class PaperController {
     }
 
     @GetMapping("/paper/abstract")
-    @ApiOperation(value = "查看活跃论文摘要")
+    @ApiOperation(value = "接口6 查看活跃论文摘要")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
