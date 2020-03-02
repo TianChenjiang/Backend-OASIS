@@ -5,6 +5,7 @@ import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.model.*;
+import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -100,9 +101,10 @@ public class PaperBlServiceImpl implements PaperBlService {
 
     @Override
     public List<PaperEntity> basicSearch(String keyword, int page, String startYear, String endYear) {
-        Pattern pattern = getPattern(keyword);
         Criteria criteria = new Criteria();
         Query query = new Query();
+        keyword = new StrProcesser().escapeExprSpecialWord(keyword);
+        Pattern pattern = getPattern(keyword);
         criteria.orOperator(
                 criteria.where("title").regex(pattern),
                 criteria.where("abstract").regex(pattern),
@@ -124,6 +126,13 @@ public class PaperBlServiceImpl implements PaperBlService {
     @Override
     public List<PaperEntity> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear) {
         Criteria criteria = new Criteria();
+
+        StrProcesser strProcesser = new StrProcesser();
+        author = strProcesser.escapeExprSpecialWord(author);
+        affiliation = strProcesser.escapeExprSpecialWord(affiliation);
+        conferenceName = strProcesser.escapeExprSpecialWord(conferenceName);
+        keyword = strProcesser.escapeExprSpecialWord(keyword);
+
         criteria.andOperator(
                 criteria.where("publicationYear").gte(startYear).lte(endYear),
                 criteria.where("author.name").regex(getPattern(author)),
