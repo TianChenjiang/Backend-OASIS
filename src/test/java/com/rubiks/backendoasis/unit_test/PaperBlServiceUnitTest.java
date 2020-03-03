@@ -13,7 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import java.util.List;
 
@@ -38,26 +39,23 @@ public class PaperBlServiceUnitTest {
         PapersWithSize res = paperBlService.basicSearch(keyword, page, startYear, endYear);
         List<PaperEntity> paperEntities = res.getPapers();
         for (PaperEntity pa : paperEntities) {
-            assertThat(pa.getPublicationYear()).isBetween(startYear, endYear);
-            assertThat(pa.toString().contains("software"));
+            assertThat(pa.getPublicationYear(), lessThanOrEqualTo(endYear));
+            assertThat(pa.getPublicationYear(), greaterThanOrEqualTo(startYear));
+            assertThat(pa.toString().toLowerCase(), containsString("software"));
         }
     }
 
     @Test
     public void testAdvancedSearch() {
-        PapersWithSize res = paperBlService.advancedSearch("ab", "ca", "ASE", "x", 1, "2011", "2012");
+        PapersWithSize res = paperBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, "2011", "2012");
         List<PaperEntity> paperEntities = res.getPapers();
-        assertThat(paperEntities.get(0).getConferenceName().contains("ADDIDID"));
-//        for (PaperEntity pa : paperEntities) {
-//            assertThat(pa.getPublicationYear()).isBetween("2011", "2012");
-//            assertThat(pa.getConferenceName().contains("ADDIDID"));
-//            assertThat(pa.getKeywords().contains("ASE"));
-//            List<AuthorEntity> authorEntities = pa.getAuthor();
-//            for (AuthorEntity author : authorEntities) {
-//                assertThat(author.getName().contains("ab"));
-//                assertThat(author.getAffiliation().contains("ca"));
-//            }
-//        }
+        for (PaperEntity pa : paperEntities) {
+            assertThat(pa.getPublicationYear(), lessThanOrEqualTo("2012"));
+            assertThat(pa.getPublicationYear(), greaterThanOrEqualTo("2011"));
+            assertThat(pa.getConferenceName(), containsString("ASE"));
+            assertThat(pa.getKeywords().toString().toLowerCase(), containsString("soft"));
+            assertThat(pa.getAuthor().toString().toLowerCase(), containsString("ca"));
+        }
     }
 
     @Test

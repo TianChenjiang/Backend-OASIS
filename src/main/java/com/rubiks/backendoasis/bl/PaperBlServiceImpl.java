@@ -109,7 +109,7 @@ public class PaperBlServiceImpl implements PaperBlService {
         keyword = new StrProcesser().escapeExprSpecialWord(keyword);
         Pattern pattern = getPattern(keyword);
         criteria.orOperator(
-                criteria.where("title").regex(pattern),
+                criteria.where("title").regex(pattern), // 默认不区分大小写
                 criteria.where("abstract").regex(pattern),
                 criteria.where("author.name").regex(pattern),
                 criteria.where("author.affiliation").regex(pattern),
