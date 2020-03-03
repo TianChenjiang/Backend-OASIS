@@ -5,6 +5,7 @@ import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.model.*;
+import com.rubiks.backendoasis.util.MapUtil;
 import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -203,16 +204,25 @@ public class PaperBlServiceImpl implements PaperBlService {
     @Override
     public List<ResearchInterest> getResearcherInterest(String id) {
         Aggregation aggregation = newAggregation(
-                unwind("keywords"),
+                unwind("authors"),
                 match(Criteria.where("authors.id").is(id)),
-                project( "keywords", "id")
+                project( "keywords", "authors.id")
         );
         AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
+        List<String> keywordList = new ArrayList<>();
+        for (PaperEntity paperEntity : aggregationlist) {
+            if (paperEntity.getKeywords() != null) {    // keywords需要为非空
+                List<String> curKeywordList = paperEntity.getKeywords();
+                for (String curKeyword : curKeywordList) {
+                    keywordList.add(curKeyword);
+                }
+            }
+        }
+
         List<ResearchInterest> res = new ArrayList<>();
-        for (PaperEntity p : aggregationlist) {
+        for (String curKeyword: keywordList) {
             boolean keywordExist = false;
-            String curKeyword = p.getKeywords().get(0);
             for (int i = 0; i < res.size(); i++) {
                 ResearchInterest cur = res.get(i);
                 if (cur.getName().equals(curKeyword)) {
@@ -228,38 +238,29 @@ public class PaperBlServiceImpl implements PaperBlService {
         return res;
     }
 
-    public List<ResearchInterest> getMaxResearcherInterest() {
-        Aggregation aggregation = newAggregation(
-                unwind("keywords"),
-//                group("authors.id"),
-                project( "keywords", "id")
-        );
-
-        AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
-        List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
-        List<ResearchInterest> res = new ArrayList<>();
-        HashMap<String, Integer> map= new HashMap<String, Integer>();
-        for (PaperEntity paperEntity : aggregationlist) {
-            if (map.containsKey(paperEntity.getId())) {
-                int count = map.get(paperEntity.getId());
-                map.put(paperEntity.getId(), ++count);
-            }
-            else {
-                map.put(paperEntity.getId(), 1);
-            }
-        }
-        List<Map.Entry<String,Integer>> list = new ArrayList<Map.Entry<String,Integer>>(map.entrySet());
-        //然后通过比较器来实现排序
-        Collections.sort(list,new Comparator<Map.Entry<String,Integer>>() {
-            //升序排序
-            public int compare(Map.Entry<String, Integer> o1,
-                               Map.Entry<String, Integer> o2) {
-                return o2.getValue().compareTo(o1.getValue());
-            }
-
-        });
-        return null;
-    }
+//    public List<ResearchInterest> getMaxResearcherInterest() {
+//        Aggregation aggregation = newAggregation(
+//                unwind("keywords"),
+////                group("authors.id"),
+//                project( "keywords", "id")
+//        );
+//
+//        AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+//        List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
+//        List<ResearchInterest> res = new ArrayList<>();
+//        HashMap<String, Integer> map= new HashMap<String, Integer>();
+//        for (PaperEntity paperEntity : aggregationlist) {
+//            if (map.containsKey(paperEntity.getId())) {
+//                int count = map.get(paperEntity.getId());
+//                map.put(paperEntity.getId(), ++count);
+//            }
+//            else {
+//                map.put(paperEntity.getId(), 1);
+//            }
+//        }
+//        MapUtil.sortByValue(map);
+//        return null;
+//    }
 
     @Override
     public List<PaperEntity> getActivePaperAbstract() {
