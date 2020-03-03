@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.integrated_test;
+package com.rubiks.backendoasis.integration_test;
 
 import org.junit.Before;
 import org.junit.Test;

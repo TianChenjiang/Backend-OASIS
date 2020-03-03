@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.integrated_test;
+package com.rubiks.backendoasis.integration_test;
 
 public class PaperBlServiceIntegrationTest {
 }
