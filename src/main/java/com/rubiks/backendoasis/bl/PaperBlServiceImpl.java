@@ -212,9 +212,11 @@ public class PaperBlServiceImpl implements PaperBlService {
         List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
         List<String> keywordList = new ArrayList<>();
         for (PaperEntity paperEntity : aggregationlist) {
-            List<String> curKeywordList = paperEntity.getKeywords();
-            for (String curKeyword : curKeywordList) {
-                keywordList.add(curKeyword);
+            if (paperEntity.getKeywords() != null) {    // keywords需要为非空
+                List<String> curKeywordList = paperEntity.getKeywords();
+                for (String curKeyword : curKeywordList) {
+                    keywordList.add(curKeyword);
+                }
             }
         }
 
