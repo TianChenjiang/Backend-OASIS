@@ -1,6 +1,7 @@
 package com.rubiks.backendoasis.unit_test;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.entity.PaperEntity;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -33,13 +36,14 @@ public class PaperBlServiceUnitTest {
     public void test() {
 
     }
-    @Test
-    public void testBasicSearch() {
-        String keyword = "";
-        int page = 1;
-        String startYear = "";
-        String endYear  = "";
-    }
+//    @Test
+//    public void testBasicSearch() {
+//        String keyword = "";
+//        int page = 1;
+//        String startYear = "";
+//        String endYear  = "";
+//        List<PaperEntity> res = paperBlService.basicSearch(keyword, page, startYear, endYear);
+//    }
 
 
 }

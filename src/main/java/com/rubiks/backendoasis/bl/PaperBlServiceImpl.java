@@ -102,7 +102,7 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     @Override
-    public List<PaperEntity> basicSearch(String keyword, int page, String startYear, String endYear) {
+    public PapersWithSize basicSearch(String keyword, int page, String startYear, String endYear) {
         Criteria criteria = new Criteria();
         Query query = new Query();
         keyword = new StrProcesser().escapeExprSpecialWord(keyword);
@@ -120,13 +120,16 @@ public class PaperBlServiceImpl implements PaperBlService {
                 criteria.where("publicationYear").gte(startYear).lte(endYear)
         );
         query.addCriteria(criteria);
+        List<PaperEntity> temp = mongoTemplate.find(query, PaperEntity.class);
+        int size = temp.size();
+
         query.with(PageRequest.of(page-1, pageSize));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        return res;
+        return new PapersWithSize(res, size);
     }
 
     @Override
-    public List<PaperEntity> advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear) {
+    public PapersWithSize advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear) {
         Criteria criteria = new Criteria();
 
         StrProcesser strProcesser = new StrProcesser();
@@ -144,9 +147,12 @@ public class PaperBlServiceImpl implements PaperBlService {
                 criteria.where("publicationYear").gte(startYear).lte(endYear)
         );
         Query query = new Query(criteria);
+        List<PaperEntity> temp = mongoTemplate.find(query, PaperEntity.class);
+        int size = temp.size();
+
         query.with(PageRequest.of(page-1, pageSize));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        return res;
+        return new PapersWithSize(res, size);
     }
 
     @Override
