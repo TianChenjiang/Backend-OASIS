@@ -1,7 +1,8 @@
 package com.rubiks.backendoasis.util;
 
 public interface Constant {
-    String INDEX = "se3";
-    String TYPE = "papers";
-    int pageSize = 10;
+    public String INDEX = "se3";
+    public String TYPE = "papers";
+    public int pageSize = 10;
+    public final String collectionName = "papers";
 }

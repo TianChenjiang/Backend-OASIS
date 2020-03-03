@@ -26,6 +26,8 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+
+import static com.rubiks.backendoasis.util.Constant.collectionName;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort.*;
@@ -148,7 +150,7 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     @Override
-    public  List<AffiliationRank> getAffiliationBasicRanking(String sortkey, String year) {
+    public  List<AffiliationRank> getAffiliationBasicRanking(String sortKey, String year) {
         // "acceptanceCount"|"citationCount"
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
@@ -157,36 +159,36 @@ public class PaperBlServiceImpl implements PaperBlService {
                 unwind("authors"),
                 group("authors.affiliation").sum("metrics.citationCountPaper").as("acceptanceCount").
                         sum("metrics.citationCountPatent").as("citationCount"),
-                sort(Direction.DESC, sortkey)
+                sort(Direction.DESC, sortKey)
         );
 
-        if (sortkey.equals("acceptanceCount")) {
-            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation,"papers", AcceptanceCountRank.class);
+        if (sortKey.equals("acceptanceCount")) {
+            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
             return AffiliationRank.transformToBasic(res.getMappedResults());
 
-        } else if (sortkey.equals("citationCount")) {
-            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,"papers", CitationCountRank.class);
+        } else if (sortKey.equals("citationCount")) {
+            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,collectionName, CitationCountRank.class);
             return AffiliationRank.transformToBasic(res.getMappedResults());
         }
         return null;
     }
 
-    public List<AuthorRank> getAuthorBasicRanking(String sortkey, String year) {
+    public List<AuthorRank> getAuthorBasicRanking(String sortKey, String year) {
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
                 group("authors.name").sum("metrics.citationCountPaper").as("acceptanceCount").
                         sum("metrics.citationCountPatent").as("citationCount").addToSet("authors.id").as("researcherId"),
-                sort(Direction.DESC, sortkey)
+                sort(Direction.DESC, sortKey)
         );
 
-        if (sortkey.equals("acceptanceCount")) {
-            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation,"papers", AcceptanceCountRank.class);
+        if (sortKey.equals("acceptanceCount")) {
+            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
             return AuthorRank.transformToBasic(res.getMappedResults());
 
-        } else if (sortkey.equals("citationCount")) {
-            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,"papers", CitationCountRank.class);
+        } else if (sortKey.equals("citationCount")) {
+            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, CitationCountRank.class);
             return AuthorRank.transformToBasic(res.getMappedResults());
         }
         return null;
@@ -199,7 +201,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 match(Criteria.where("authors.id").is(id)),
                 project( "keywords", "id")
         );
-        AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, "papers", PaperEntity.class);
+        AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
         List<ResearchInterest> res = new ArrayList<>();
         for (PaperEntity p : aggregationlist) {
@@ -226,7 +228,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 sort(Direction.DESC, "metrics.citationCountPaper"),
                 limit(5)
         );
-        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, "papers", PaperEntity.class);
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> Top5Papers = aggregationRes.getMappedResults();
         return Top5Papers;
     }

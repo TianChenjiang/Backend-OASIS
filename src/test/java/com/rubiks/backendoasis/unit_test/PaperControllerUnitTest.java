@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.integrated_test;
+package com.rubiks.backendoasis.unit_test;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
@@ -38,7 +38,7 @@ import java.util.List;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Transactional
-public class PaperBlControllerTest {
+public class PaperControllerUnitTest {
     @Autowired
     private PaperController paperController;
 
@@ -48,7 +48,7 @@ public class PaperBlControllerTest {
     @MockBean
     PaperBlService paperBlService;
 
-    protected MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     private List<PaperEntity> paperEntities;
     private List<AffiliationRank> affiliationRanks;
@@ -71,6 +71,12 @@ public class PaperBlControllerTest {
         paperEntities = new ArrayList<>();
         paperEntities.add(paperEntity1);
         paperEntities.add(paperEntity2);
+
+        AffiliationRank affiliationRank1 = AffiliationRank.builder().name("NJU").count(100).build();
+        AffiliationRank affiliationRank2 = AffiliationRank.builder().name("NJU gulou").count(10).build();
+        affiliationRanks = new ArrayList<>();
+        affiliationRanks.add(affiliationRank1);
+        affiliationRanks.add(affiliationRank2);
     }
 
     @Test
@@ -86,7 +92,7 @@ public class PaperBlControllerTest {
     public void testBasicSearch() throws Exception {
         when(paperBlService.basicSearch(any(String.class), any(Integer.class), any(String.class), any(String.class))).thenReturn(paperEntities);
         mockMvc.perform(get("/search/basic/mongo")
-                .param("keyword", "Software").param("page", "1").param("startYear", "2002").param("endYear", "2015")
+                .param("keyword", "Software").param("page", "1").param("startYear", "2012").param("endYear", "2012")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].title", is("Software Architecture")))
@@ -118,8 +124,21 @@ public class PaperBlControllerTest {
                 .param("year", "2011")
                 .contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0]", is("NJU")))
-                .andExpect(jsonPath("$.data[0].count", is(200))
+                .andExpect(jsonPath("$.data[0].name", is("NJU")))
+                .andExpect(jsonPath("$.data[0].count", is(100))
         );
     }
+
+    @Test
+    public void testGetActivePaperAbstract() throws Exception {
+        when(paperBlService.getActivePaperAbstract())
+                .thenReturn(paperEntities);
+        mockMvc.perform(get("/paper/abstract")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].title", is("Software Architecture"))
+        );
+    }
+
+
 }
