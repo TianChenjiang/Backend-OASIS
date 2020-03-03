@@ -101,8 +101,8 @@ public class PaperControllerUnitTest {
                 .param("keyword", "Software").param("page", "1").param("startYear", "2012").param("endYear", "2012")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].title", is("Software Architecture")))
-                .andExpect(jsonPath("$.data[1].title", is("Software Design")));
+                .andExpect(jsonPath("$.data.papers[0].title", is("Software Architecture")))
+                .andExpect(jsonPath("$.data.papers[1].title", is("Software Design")));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class PaperControllerUnitTest {
                 .param("page", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].title", is("Software Architecture"))
+                .andExpect(jsonPath("$.data.papers[0].title", is("Software Architecture"))
         );
     }
 

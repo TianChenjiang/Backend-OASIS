@@ -32,8 +32,8 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.rubiks.backendoasis.util.Constant.INDEX;
@@ -228,9 +228,38 @@ public class PaperBlServiceImpl implements PaperBlService {
         return res;
     }
 
-//    public List<ResearchInterest> getMaxResearcherInterest() {
-//
-//    }
+    public List<ResearchInterest> getMaxResearcherInterest() {
+        Aggregation aggregation = newAggregation(
+                unwind("keywords"),
+//                group("authors.id"),
+                project( "keywords", "id")
+        );
+
+        AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
+        List<ResearchInterest> res = new ArrayList<>();
+        HashMap<String, Integer> map= new HashMap<String, Integer>();
+        for (PaperEntity paperEntity : aggregationlist) {
+            if (map.containsKey(paperEntity.getId())) {
+                int count = map.get(paperEntity.getId());
+                map.put(paperEntity.getId(), ++count);
+            }
+            else {
+                map.put(paperEntity.getId(), 1);
+            }
+        }
+        List<Map.Entry<String,Integer>> list = new ArrayList<Map.Entry<String,Integer>>(map.entrySet());
+        //然后通过比较器来实现排序
+        Collections.sort(list,new Comparator<Map.Entry<String,Integer>>() {
+            //升序排序
+            public int compare(Map.Entry<String, Integer> o1,
+                               Map.Entry<String, Integer> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+
+        });
+        return null;
+    }
 
     @Override
     public List<PaperEntity> getActivePaperAbstract() {
