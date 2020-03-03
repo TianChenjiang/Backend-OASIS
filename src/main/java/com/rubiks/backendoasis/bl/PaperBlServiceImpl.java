@@ -228,6 +228,10 @@ public class PaperBlServiceImpl implements PaperBlService {
         return res;
     }
 
+//    public List<ResearchInterest> getMaxResearcherInterest() {
+//
+//    }
+
     @Override
     public List<PaperEntity> getActivePaperAbstract() {
         Aggregation aggregation = newAggregation(

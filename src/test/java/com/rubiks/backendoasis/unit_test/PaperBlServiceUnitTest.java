@@ -1,29 +1,25 @@
 package com.rubiks.backendoasis.unit_test;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.model.PapersWithSize;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
+
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@Transactional
 public class PaperBlServiceUnitTest {
-    @MockBean
-    private MongoTemplate mongoTemplate;
-
     @Autowired
     private PaperBlService paperBlService;
 
@@ -32,18 +28,57 @@ public class PaperBlServiceUnitTest {
         MockitoAnnotations.initMocks(this);
     }
 
+
     @Test
-    public void test() {
+    public void testBasicSearch() {
+        String keyword = "software、";
+        int page = 1;
+        String startYear = "2011";
+        String endYear  = "2014";
+        PapersWithSize res = paperBlService.basicSearch(keyword, page, startYear, endYear);
+        List<PaperEntity> paperEntities = res.getPapers();
+        for (PaperEntity pa : paperEntities) {
+            assertThat(pa.getPublicationYear()).isBetween(startYear, endYear);
+            assertThat(pa.toString().contains("software"));
+        }
+    }
+
+    @Test
+    public void testAdvancedSearch() {
+        PapersWithSize res = paperBlService.advancedSearch("ab", "ca", "ASE", "x", 1, "2011", "2012");
+        List<PaperEntity> paperEntities = res.getPapers();
+        for (PaperEntity pa : paperEntities) {
+            assertThat(pa.getPublicationYear()).isBetween("2011", "2012");
+            assertThat(pa.getConferenceName().contains("r"));
+            assertThat(pa.getKeywords().contains("ASE"));
+            List<AuthorEntity> authorEntities = pa.getAuthor();
+            for (AuthorEntity author : authorEntities) {
+                assertThat(author.getName().contains("ab"));
+                assertThat(author.getAffiliation().contains("ca"));
+            }
+        }
+    }
+
+    @Test
+    public void testGetAffiliationBasicRanking() {
 
     }
-//    @Test
-//    public void testBasicSearch() {
-//        String keyword = "";
-//        int page = 1;
-//        String startYear = "";
-//        String endYear  = "";
-//        List<PaperEntity> res = paperBlService.basicSearch(keyword, page, startYear, endYear);
-//    }
+
+    @Test
+    public void testGetAuthorBasicRanking() {
+
+    }
+
+    @Test
+    public void testGetResearcherInterest() {
+
+    }
+
+    @Test
+    public void testGetActivePaperAbstract() {
+
+    }
+
 
 
 }
