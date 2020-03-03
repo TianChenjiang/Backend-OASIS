@@ -32,7 +32,6 @@ public class PaperController {
 
     @GetMapping("/test")
     public String test() {
-        paperBlService.getMaxResearcherInterest();
         return "Success";
     }
 
