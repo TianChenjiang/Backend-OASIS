@@ -37,7 +37,7 @@ public class PaperControllerIntegrationTest {
                 .param("keyword", "Software、").param("page", "1").param("startYear", "2012").param("endYear", "2012")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Software"))).andDo(print())
+                .andExpect(content().string(containsString("Software")))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", is("2012")))
         ;
         mockMvc.perform(get("/search/basic/mongo")
