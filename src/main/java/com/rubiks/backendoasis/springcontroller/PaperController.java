@@ -32,6 +32,7 @@ public class PaperController {
 
     @GetMapping("/test")
     public String test() {
+        paperBlService.getMaxResearcherInterest();
         return "Success";
     }
 
@@ -144,6 +145,5 @@ public class PaperController {
     public BasicResponse<List<PaperEntity>> getActivePaperAbstract() {
         return new BasicResponse<>(200, "Success", paperBlService.getActivePaperAbstract());
     }
-
 
 }
