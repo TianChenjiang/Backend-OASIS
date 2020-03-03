@@ -19,10 +19,6 @@ pipeline {
 
     stage('Test') {
 
-      environment {
-        MONGOHOST=credentials('tcj-server-host')
-      }
-
       steps {
         sh 'mvn test'
       }
