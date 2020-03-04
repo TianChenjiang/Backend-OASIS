@@ -227,7 +227,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 ResearchInterest cur = res.get(i);
                 if (cur.getName().equals(curKeyword)) {
                     keywordExist = true;
-                    cur.setCount(cur.getCount()+1);
+                    cur.setValue(cur.getValue()+1);
                     break;
                 }
             }
