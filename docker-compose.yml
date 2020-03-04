@@ -18,6 +18,7 @@ services:
 
 
   mongodb:
+    restart: always
     build:
       dockerfile: Dockerfile
       context: ./mongo
@@ -25,10 +26,12 @@ services:
     ports:
       - "27017:27017"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      test: ["CMD", "curl", "-f", "http://localhost:27017"]
       interval: 30s
       timeout: 10s
       retries: 5
+    volumes:
+      - usr/app/mongo_data:/data/db
 
 #  es:
 #    image: elasticsearch:7.6.0
