@@ -31,7 +31,10 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - usr/app/mongo_data:/data/db
+      - data-volume:/data/db
+
+volumes:
+  data-volume:
 
 #  es:
 #    image: elasticsearch:7.6.0
