@@ -12,7 +12,7 @@ pipeline {
         sh 'mvn -B -DskipTests clean package'
         script {
           serverImage = docker.build(serverName + ":$BUILD_NUMBER")
-          dbImage = docker.build(dbName + ":$BUILD_NUMBER", "./mongo")
+//           dbImage = docker.build(dbName + ":$BUILD_NUMBER", "./mongo")
         }
       }
     }
@@ -43,8 +43,8 @@ pipeline {
           docker.withRegistry( registrySite, registryCredential ) {
             serverImage.push()
             serverImage.push('latest')
-            dbImage.push()
-            dbImage.push('latest')
+//             dbImage.push()
+//             dbImage.push('latest')
 
           }
         }
@@ -55,7 +55,7 @@ pipeline {
     stage('Remove Image') {
       steps {
         sh "docker rmi " + serverName + ":$BUILD_NUMBER"
-        sh "docker rmi " + dbName + ":$BUILD_NUMBER"
+//         sh "docker rmi " + dbName + ":$BUILD_NUMBER"
       }
     }
 

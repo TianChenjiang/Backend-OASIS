@@ -5,13 +5,13 @@ import com.rubiks.backendoasis.blservice.DataSourceBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.ImportPaperRes;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.MultiPartFileToFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.bson.*;
@@ -53,7 +53,7 @@ public class DataSourceBlServiceImpl implements DataSourceBlService {
             ex.getMessage();
         }
         if (documents.size() != 0) {
-            mongoTemplate.getCollection("test_update").insertMany(documents);
+            mongoTemplate.getCollection(Constant.collectionName).insertMany(documents);
         }
 
         return new BasicResponse(200, "Success", new ImportPaperRes(documents.size()));
