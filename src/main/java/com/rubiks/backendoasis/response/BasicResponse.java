@@ -12,8 +12,8 @@ public class BasicResponse<T> {
     private String message;
     private T data;
     public BasicResponse(int code, String message, T data) {
-        this.code = 200;
-        this.message = "Success";
+        this.code = code;
+        this.message = message;
         this.data = data;
     }
 }

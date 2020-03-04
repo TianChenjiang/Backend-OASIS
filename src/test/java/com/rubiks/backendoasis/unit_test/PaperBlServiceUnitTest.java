@@ -14,10 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -103,6 +109,12 @@ public class PaperBlServiceUnitTest {
             latter = res.get(i+1);
             assertThat(former.getMetrics().getCitationCountPaper(), greaterThanOrEqualTo(latter.getMetrics().getCitationCountPaper()));
         }
+    }
+
+    @Test
+    @Transactional
+    public void testUpload() {
+
     }
 
 }

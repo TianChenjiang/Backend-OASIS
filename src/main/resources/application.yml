@@ -14,6 +14,9 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/oasis
+  servlet:
+    multipart:
+      enabled: true
 
 elasticsearch:
   host: localhost

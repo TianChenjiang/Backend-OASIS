@@ -6,6 +6,7 @@ import com.rubiks.backendoasis.model.AffiliationRank;
 import com.rubiks.backendoasis.model.AuthorRank;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.model.ResearchInterest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

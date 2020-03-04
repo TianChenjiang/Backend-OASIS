@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -32,7 +33,11 @@ import static com.rubiks.backendoasis.util.Constant.collectionName;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -238,29 +243,6 @@ public class PaperBlServiceImpl implements PaperBlService {
         return res;
     }
 
-//    public List<ResearchInterest> getMaxResearcherInterest() {
-//        Aggregation aggregation = newAggregation(
-//                unwind("keywords"),
-////                group("authors.id"),
-//                project( "keywords", "id")
-//        );
-//
-//        AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
-//        List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
-//        List<ResearchInterest> res = new ArrayList<>();
-//        HashMap<String, Integer> map= new HashMap<String, Integer>();
-//        for (PaperEntity paperEntity : aggregationlist) {
-//            if (map.containsKey(paperEntity.getId())) {
-//                int count = map.get(paperEntity.getId());
-//                map.put(paperEntity.getId(), ++count);
-//            }
-//            else {
-//                map.put(paperEntity.getId(), 1);
-//            }
-//        }
-//        MapUtil.sortByValue(map);
-//        return null;
-//    }
 
     @Override
     public List<PaperEntity> getActivePaperAbstract() {

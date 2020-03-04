@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.springcontroller;
 
+import com.rubiks.backendoasis.blservice.DataSourceBlService;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
@@ -15,10 +16,11 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Dictionary;
 import java.util.List;
 
 @RestController()
@@ -144,5 +146,6 @@ public class PaperController {
     public BasicResponse<List<PaperEntity>> getActivePaperAbstract() {
         return new BasicResponse<>(200, "Success", paperBlService.getActivePaperAbstract());
     }
+
 
 }
