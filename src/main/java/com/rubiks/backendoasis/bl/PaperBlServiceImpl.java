@@ -164,8 +164,8 @@ public class PaperBlServiceImpl implements PaperBlService {
                 match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
-                group("authors.affiliation").sum("metrics.citationCountPaper").as("acceptanceCount").
-                        sum("metrics.citationCountPatent").as("citationCount"),
+                group("authors.affiliation").count().as("acceptanceCount").
+                        sum("metrics.citationCountPaper").as("citationCount"),
                 sort(Direction.DESC, sortKey)
         );
 
@@ -185,8 +185,8 @@ public class PaperBlServiceImpl implements PaperBlService {
                 project("authors", "publicationYear", "metrics"),
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
-                group("authors.name").sum("metrics.citationCountPaper").as("acceptanceCount").
-                        sum("metrics.citationCountPatent").as("citationCount").addToSet("authors.id").as("researcherId"),
+                group("authors.id").count().as("acceptanceCount").
+                        sum("metrics.citationCountPaper").as("citationCount").addToSet("authors.name").as("name"),
                 sort(Direction.DESC, sortKey)
         );
 

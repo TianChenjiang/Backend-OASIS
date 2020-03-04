@@ -22,12 +22,12 @@ public class AuthorRank {
         if (rank.get(0).getClass() == AcceptanceCountRank.class) {
             List<AcceptanceCountRank> ac = (List<AcceptanceCountRank>)rank;
             for (AcceptanceCountRank a : ac) {
-                res.add(new AuthorRank(a.getId(), a.getAcceptanceCount(), a.getResearcherId()));
+                res.add(new AuthorRank(a.getName(), a.getAcceptanceCount(), a.getId()));
             }
         } else {
             List<CitationCountRank> ci = (List<CitationCountRank>)rank;
             for (CitationCountRank a : ci) {
-                res.add(new AuthorRank(a.getId(), a.getCitationCount(), a.getResearcherId()));
+                res.add(new AuthorRank(a.getName(), a.getCitationCount(), a.getId()));
             }
         }
 

@@ -1,9 +1,11 @@
 package com.rubiks.backendoasis.unit_test;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
-import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.model.AffiliationRank;
+import com.rubiks.backendoasis.model.AuthorRank;
 import com.rubiks.backendoasis.model.PapersWithSize;
+import com.rubiks.backendoasis.model.ResearchInterest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +48,11 @@ public class PaperBlServiceUnitTest {
     }
 
     @Test
+    public void testSearchDateError() {
+
+    }
+
+    @Test
     public void testAdvancedSearch() {
         PapersWithSize res = paperBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, "2011", "2012");
         List<PaperEntity> paperEntities = res.getPapers();
@@ -60,24 +67,42 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAffiliationBasicRanking() {
-
+        List<AffiliationRank> res = paperBlService.getAffiliationBasicRanking("citationCount", "2011");
+        AffiliationRank former, latter;
+        for (int i = 0; i < res.size() - 1; i++) {
+            former = res.get(i);
+            latter = res.get(i+1);
+            assertThat(former.getCount(), greaterThanOrEqualTo(latter.getCount()));
+        }
     }
 
     @Test
     public void testGetAuthorBasicRanking() {
+        List<AuthorRank> res = paperBlService.getAuthorBasicRanking("acceptanceCount", "2011");
+        AuthorRank former, latter;
+        for (int i = 0; i < res.size() - 1; i++) {
+            former = res.get(i);
+            latter = res.get(i+1);
+            assertThat(former.getCount(), greaterThanOrEqualTo(latter.getCount()));
+        }
 
     }
 
     @Test
     public void testGetResearcherInterest() {
-
+        List<ResearchInterest> res = paperBlService.getResearcherInterest("37267738200");
+        assertThat(res, notNullValue());
     }
 
     @Test
     public void testGetActivePaperAbstract() {
-
+        List<PaperEntity> res = paperBlService.getActivePaperAbstract();
+        PaperEntity former, latter;
+        for (int i = 0; i < res.size() - 1; i++) {
+            former = res.get(i);
+            latter = res.get(i+1);
+            assertThat(former.getMetrics().getCitationCountPaper(), greaterThanOrEqualTo(latter.getMetrics().getCitationCountPaper()));
+        }
     }
-
-
 
 }
