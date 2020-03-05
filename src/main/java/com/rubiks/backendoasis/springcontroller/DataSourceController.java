@@ -1,8 +1,10 @@
 package com.rubiks.backendoasis.springcontroller;
 
 import com.rubiks.backendoasis.blservice.DataSourceBlService;
+import com.rubiks.backendoasis.exception.FileFormatNotSupportException;
 import com.rubiks.backendoasis.model.ImportPaperRes;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.response.Response;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +31,11 @@ public class DataSourceController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse<ImportPaperRes> importPaperData(@RequestParam("paperData") MultipartFile paperData) {
-        return dataSourceBlService.importPaperData(paperData);
+    public BasicResponse<Response> importPaperData(@RequestParam("paperData") MultipartFile paperData) {
+        try {
+            return dataSourceBlService.importPaperData(paperData);
+        } catch (FileFormatNotSupportException e) {
+            return new BasicResponse<>(e.getCode(), e.getMessage(), null);
+        }
     }
 }

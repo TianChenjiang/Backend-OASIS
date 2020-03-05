@@ -6,8 +6,8 @@ import lombok.Data;
 public class WrongResponse {
     private int code;
     private String msg;
-    public WrongResponse() {
-        this.code = 500;
-        this.msg = "Internal Server Error";
+    public WrongResponse(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
     }
 }

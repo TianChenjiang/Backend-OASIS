@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.blservice;
 
+import com.rubiks.backendoasis.exception.FileFormatNotSupportException;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.springframework.web.multipart.MultipartFile;
 

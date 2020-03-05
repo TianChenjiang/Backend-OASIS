@@ -3,6 +3,7 @@ package com.rubiks.backendoasis.bl;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.rubiks.backendoasis.blservice.DataSourceBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.exception.FileFormatNotSupportException;
 import com.rubiks.backendoasis.model.ImportPaperRes;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.Constant;
@@ -35,6 +36,12 @@ public class DataSourceBlServiceImpl implements DataSourceBlService {
         try  {
             File f = MultiPartFileToFile.convert(file);
             BufferedReader br = new BufferedReader(new FileReader(f.getPath()));
+            int startIndex = f.getName().lastIndexOf(".");
+            String format = f.getName().substring(startIndex+1);
+            if (!format.equals("json") && !format.equals("csv")) {
+                f.delete();
+                throw new FileFormatNotSupportException();
+            }
             f.delete(); // 删除转换而来的json文件
             String line;
             while ((line = br.readLine()) != null) {
