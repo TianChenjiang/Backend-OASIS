@@ -84,7 +84,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAuthorBasicRanking() {
-        List<AuthorRank> res = (List<AuthorRank>) paperBlService.getAuthorBasicRanking("acceptanceCount", "2011");
+        List<AuthorRank> res = (List<AuthorRank>) paperBlService.getAuthorBasicRanking("acceptanceCount", "2011").getData();
         AuthorRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);
