@@ -8,6 +8,7 @@ import com.rubiks.backendoasis.model.AuthorRank;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.model.ResearchInterest;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.response.Response;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
 import com.rubiks.backendoasis.model.AffiliationRank;
@@ -49,7 +50,7 @@ public class PaperController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public List<PaperDocument> basicSearchByES(@RequestParam(value = "keyword") String keyword,
-                                           @RequestParam(value = "page") int page) throws Exception {
+                                                   @RequestParam(value = "page") int page) throws Exception {
         return paperBlService.basicSearchByES(keyword, page);
     }
 
@@ -78,11 +79,11 @@ public class PaperController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public <T> BasicResponse<PapersWithSize> basicSearch(@RequestParam(value = "keyword") String keyword,
+    public BasicResponse basicSearch(@RequestParam(value = "keyword") String keyword,
                                            @RequestParam(value = "page") int page,
                                            @RequestParam(value = "startYear") String startYear,
                                            @RequestParam(value = "endYear") String endYear) {
-        return new BasicResponse<>(200, "Success", paperBlService.basicSearch(keyword, page, startYear, endYear));
+        return paperBlService.basicSearch(keyword, page, startYear, endYear);
     }
 
     @GetMapping("/search/advanced/mongo")
@@ -91,7 +92,7 @@ public class PaperController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse<PapersWithSize> advancedSearch(@RequestParam(value = "author", required = false) String author,
+    public BasicResponse advancedSearch(@RequestParam(value = "author", required = false) String author,
                                             @RequestParam(value = "affiliation", required = false) String affiliation,
                                             @RequestParam(value = "conferenceName", required = false) String conferenceName,
                                             @RequestParam(value = "keyword", required = false) String keyword,
@@ -102,7 +103,7 @@ public class PaperController {
         if (affiliation == null) affiliation = "";
         if (conferenceName == null) conferenceName = "";
         if (keyword == null) keyword = "";
-        return new BasicResponse<>(200, "Success", paperBlService.advancedSearch(author, affiliation, conferenceName, keyword, page, startYear, endYear));
+        return paperBlService.advancedSearch(author, affiliation, conferenceName, keyword, page, startYear, endYear);
     }
 
     @GetMapping("/rank/basic/affiliation")
@@ -111,9 +112,9 @@ public class PaperController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse<List<AffiliationRank>> getAffiliationBasicRanking(@RequestParam(value = "sortKey") String sortKey,
+    public BasicResponse getAffiliationBasicRanking(@RequestParam(value = "sortKey") String sortKey,
                                                                            @RequestParam(value = "year") String year) {
-        return new BasicResponse<>(200, "Success", paperBlService.getAffiliationBasicRanking(sortKey, year));
+        return  paperBlService.getAffiliationBasicRanking(sortKey, year);
     }
 
     @GetMapping("/rank/basic/author")
@@ -122,9 +123,9 @@ public class PaperController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse<List<AuthorRank>> getAuthorBasicRanking(@RequestParam(value = "sortKey") String sortKey,
+    public BasicResponse getAuthorBasicRanking(@RequestParam(value = "sortKey") String sortKey,
                                                                  @RequestParam(value = "year") String year) {
-        return new BasicResponse<>(200, "Success", paperBlService.getAuthorBasicRanking(sortKey, year));
+        return paperBlService.getAuthorBasicRanking(sortKey, year);
     }
 
     @GetMapping("/researcher/interest")
@@ -133,8 +134,8 @@ public class PaperController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse<List<ResearchInterest>> getResearcherInterest(@RequestParam (value = "researcherId") String id) {
-        return new BasicResponse<>(200, "Success", paperBlService.getResearcherInterest(id));
+    public BasicResponse getResearcherInterest(@RequestParam (value = "researcherId") String id) {
+        return paperBlService.getResearcherInterest(id);
     }
 
     @GetMapping("/paper/abstract")
@@ -143,8 +144,8 @@ public class PaperController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse<List<PaperEntity>> getActivePaperAbstract() {
-        return new BasicResponse<>(200, "Success", paperBlService.getActivePaperAbstract());
+    public BasicResponse getActivePaperAbstract() {
+        return paperBlService.getActivePaperAbstract();
     }
 
 

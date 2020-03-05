@@ -6,6 +6,7 @@ import com.rubiks.backendoasis.model.AffiliationRank;
 import com.rubiks.backendoasis.model.AuthorRank;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.model.ResearchInterest;
+import com.rubiks.backendoasis.response.BasicResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,11 +16,11 @@ public interface PaperBlService {
     List<PaperDocument> basicSearchByES(String keyword, int page) throws Exception;
     List<PaperDocument> advancedSearchByES(String author, String affiliation, String conferenceName, String keyword, int page)
         throws Exception;
-    PapersWithSize basicSearch(String keyword, int page, String startYear, String endYear);
-    PapersWithSize advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear);
-    List<AffiliationRank>  getAffiliationBasicRanking(String sortKey, String year);
-    List<AuthorRank> getAuthorBasicRanking(String sortKey, String year);
-    List<ResearchInterest> getResearcherInterest(String id);
-    List<PaperEntity> getActivePaperAbstract();
+    BasicResponse basicSearch(String keyword, int page, String startYear, String endYear);
+    BasicResponse advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear);
+    BasicResponse getAffiliationBasicRanking(String sortKey, String year);
+    BasicResponse getAuthorBasicRanking(String sortKey, String year);
+    BasicResponse getResearcherInterest(String id);
+    BasicResponse getActivePaperAbstract();
 //    List<ResearchInterest> getMaxResearcherInterest();
 }

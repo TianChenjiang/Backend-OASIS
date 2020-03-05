@@ -5,6 +5,7 @@ import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.model.*;
+import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.MapUtil;
 import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.SearchRequest;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Basic;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -108,7 +110,7 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     @Override
-    public PapersWithSize basicSearch(String keyword, int page, String startYear, String endYear) {
+    public BasicResponse basicSearch(String keyword, int page, String startYear, String endYear) {
         Criteria criteria = new Criteria();
         Query query = new Query();
         keyword = new StrProcesser().escapeExprSpecialWord(keyword);
@@ -131,11 +133,11 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query.with(PageRequest.of(page-1, pageSize));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        return new PapersWithSize(res, size);
+        return new BasicResponse(200, "Success", new PapersWithSize(res, size));
     }
 
     @Override
-    public PapersWithSize advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear) {
+    public BasicResponse advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear) {
         Criteria criteria = new Criteria();
 
         StrProcesser strProcesser = new StrProcesser();
@@ -158,11 +160,11 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query.with(PageRequest.of(page-1, pageSize));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        return new PapersWithSize(res, size);
+        return new BasicResponse(200, "Success", new PapersWithSize(res, size));
     }
 
     @Override
-    public  List<AffiliationRank> getAffiliationBasicRanking(String sortKey, String year) {
+    public  BasicResponse getAffiliationBasicRanking(String sortKey, String year) {
         // "acceptanceCount"|"citationCount"
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
@@ -177,16 +179,16 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         if (sortKey.equals("acceptanceCount")) {
             AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
-            return AffiliationRank.transformToBasic(res.getMappedResults());
+            return new BasicResponse<>(200, "Success", AffiliationRank.transformToBasic(res.getMappedResults()));
 
         } else if (sortKey.equals("citationCount")) {
             AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,collectionName, CitationCountRank.class);
-            return AffiliationRank.transformToBasic(res.getMappedResults());
+            return new BasicResponse<>(200, "Success", AffiliationRank.transformToBasic(res.getMappedResults()));
         }
         return null;
     }
 
-    public List<AuthorRank> getAuthorBasicRanking(String sortKey, String year) {
+    public BasicResponse getAuthorBasicRanking(String sortKey, String year) {
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
                 match(Criteria.where("publicationYear").is(year)),
@@ -199,17 +201,17 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         if (sortKey.equals("acceptanceCount")) {
             AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
-            return AuthorRank.transformToBasic(res.getMappedResults());
+            return new BasicResponse<>(200, "Success", AuthorRank.transformToBasic(res.getMappedResults()));
 
         } else if (sortKey.equals("citationCount")) {
             AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, CitationCountRank.class);
-            return AuthorRank.transformToBasic(res.getMappedResults());
+            return new BasicResponse<>(200, "Success", AuthorRank.transformToBasic(res.getMappedResults()));
         }
         return null;
     }
 
     @Override
-    public List<ResearchInterest> getResearcherInterest(String id) {
+    public BasicResponse getResearcherInterest(String id) {
         Aggregation aggregation = newAggregation(
                 unwind("authors"),
                 match(Criteria.where("authors.id").is(id)),
@@ -242,19 +244,19 @@ public class PaperBlServiceImpl implements PaperBlService {
                 res.add(new ResearchInterest(curKeyword, 1));
             }
         }
-        return res;
+        return new BasicResponse<>(200, "Success", res);
     }
 
 
     @Override
-    public List<PaperEntity> getActivePaperAbstract() {
+    public BasicResponse getActivePaperAbstract() {
         Aggregation aggregation = newAggregation(
                 sort(Direction.DESC, "metrics.citationCountPaper"),
                 limit(5)
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> Top5Papers = aggregationRes.getMappedResults();
-        return Top5Papers;
+        return new BasicResponse(200, "Success", Top5Papers);
     }
 
     class AuthorKeywordsList {

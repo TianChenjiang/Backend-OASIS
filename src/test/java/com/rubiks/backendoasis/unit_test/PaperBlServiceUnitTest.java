@@ -44,7 +44,7 @@ public class PaperBlServiceUnitTest {
         int page = 1;
         String startYear = "2011";
         String endYear  = "2014";
-        PapersWithSize res = paperBlService.basicSearch(keyword, page, startYear, endYear);
+        PapersWithSize res = (PapersWithSize) paperBlService.basicSearch(keyword, page, startYear, endYear).getData();
         List<PaperEntity> paperEntities = res.getPapers();
         for (PaperEntity pa : paperEntities) {
             assertThat(pa.getPublicationYear(), lessThanOrEqualTo(endYear));
@@ -60,7 +60,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testAdvancedSearch() {
-        PapersWithSize res = paperBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, "2011", "2012");
+        PapersWithSize res = (PapersWithSize) paperBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, "2011", "2012").getData();
         List<PaperEntity> paperEntities = res.getPapers();
         for (PaperEntity pa : paperEntities) {
             assertThat(pa.getPublicationYear(), lessThanOrEqualTo("2012"));
@@ -73,7 +73,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAffiliationBasicRanking() {
-        List<AffiliationRank> res = paperBlService.getAffiliationBasicRanking("citationCount", "2011");
+        List<AffiliationRank> res = (List<AffiliationRank>)paperBlService.getAffiliationBasicRanking("citationCount", "2011").getData();
         AffiliationRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);
@@ -84,7 +84,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAuthorBasicRanking() {
-        List<AuthorRank> res = paperBlService.getAuthorBasicRanking("acceptanceCount", "2011");
+        List<AuthorRank> res = (List<AuthorRank>) paperBlService.getAuthorBasicRanking("acceptanceCount", "2011");
         AuthorRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);
@@ -96,13 +96,13 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetResearcherInterest() {
-        List<ResearchInterest> res = paperBlService.getResearcherInterest("37267738200");
+        List<ResearchInterest> res = (List<ResearchInterest>) paperBlService.getResearcherInterest("37267738200").getData();
         assertThat(res, notNullValue());
     }
 
     @Test
     public void testGetActivePaperAbstract() {
-        List<PaperEntity> res = paperBlService.getActivePaperAbstract();
+        List<PaperEntity> res = (List<PaperEntity>) paperBlService.getActivePaperAbstract().getData();
         PaperEntity former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);

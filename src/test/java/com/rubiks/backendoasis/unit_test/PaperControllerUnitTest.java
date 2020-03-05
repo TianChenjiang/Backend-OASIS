@@ -6,6 +6,7 @@ import com.rubiks.backendoasis.entity.MetricsEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.AffiliationRank;
 import com.rubiks.backendoasis.model.PapersWithSize;
+import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.springcontroller.PaperController;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +97,7 @@ public class PaperControllerUnitTest {
 
     @Test
     public void testBasicSearch() throws Exception {
-        when(paperBlService.basicSearch(any(String.class), any(Integer.class), any(String.class), any(String.class))).thenReturn(res);
+        when(paperBlService.basicSearch(any(String.class), any(Integer.class), any(String.class), any(String.class))).thenReturn(new BasicResponse(200, "Suceess", res));
         mockMvc.perform(get("/search/basic/mongo")
                 .param("keyword", "Software").param("page", "1").param("startYear", "2012").param("endYear", "2012")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -108,7 +109,7 @@ public class PaperControllerUnitTest {
     @Test
     public void testAdvancedSearch() throws Exception {
         when(paperBlService.advancedSearch(any(String.class), any(String.class), any(String.class), any(String.class), any(Integer.class), any(String.class), any(String.class)))
-                .thenReturn(res);
+                .thenReturn(new BasicResponse(200, "Success", res));
         mockMvc.perform(get("/search/advanced/mongo")
                 .param("conferenceName", "ASE")
                 .param("startYear","2011")
@@ -123,7 +124,7 @@ public class PaperControllerUnitTest {
     @Test
     public void testAffiliationBasicRanking() throws Exception {
         when(paperBlService.getAffiliationBasicRanking(any(String.class), any(String.class)))
-                .thenReturn(affiliationRanks);
+                .thenReturn(new BasicResponse(200, "Suceess", affiliationRanks));
         //"acceptanceCount"|"citationCount"
         mockMvc.perform(get("/rank/basic/affiliation")
                 .param("sortKey", "acceptanceCount")
@@ -138,7 +139,7 @@ public class PaperControllerUnitTest {
     @Test
     public void testGetActivePaperAbstract() throws Exception {
         when(paperBlService.getActivePaperAbstract())
-                .thenReturn(paperEntities);
+                .thenReturn(new BasicResponse(200, "Success", paperEntities));
         mockMvc.perform(get("/paper/abstract")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
