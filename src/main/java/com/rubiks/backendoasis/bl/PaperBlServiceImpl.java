@@ -171,7 +171,8 @@ public class PaperBlServiceImpl implements PaperBlService {
                 unwind("authors"),
                 group("authors.affiliation").count().as("acceptanceCount").
                         sum("metrics.citationCountPaper").as("citationCount"),
-                sort(Direction.DESC, sortKey)
+                sort(Direction.DESC, sortKey),
+                limit(5)
         );
 
         if (sortKey.equals("acceptanceCount")) {
@@ -192,7 +193,8 @@ public class PaperBlServiceImpl implements PaperBlService {
                 unwind("authors"),
                 group("authors.id").count().as("acceptanceCount").
                         sum("metrics.citationCountPaper").as("citationCount").addToSet("authors.name").as("name"),
-                sort(Direction.DESC, sortKey)
+                sort(Direction.DESC, sortKey),
+                limit(5)
         );
 
         if (sortKey.equals("acceptanceCount")) {
