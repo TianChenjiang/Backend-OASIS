@@ -4,6 +4,7 @@ import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
+import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.MapUtil;
@@ -179,11 +180,19 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         if (sortKey.equals("acceptanceCount")) {
             AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
+            if (res.getMappedResults().size() == 0) {
+                throw new NoSuchYearException();
+            }
             return new BasicResponse<>(200, "Success", AffiliationRank.transformToBasic(res.getMappedResults()));
 
         } else if (sortKey.equals("citationCount")) {
             AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,collectionName, CitationCountRank.class);
+            if (res.getMappedResults().size() == 0) {
+                throw  new NoSuchYearException();
+            }
             return new BasicResponse<>(200, "Success", AffiliationRank.transformToBasic(res.getMappedResults()));
+        } else {
+
         }
         return null;
     }
@@ -201,10 +210,16 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         if (sortKey.equals("acceptanceCount")) {
             AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
+            if (res.getMappedResults().size() == 0) {
+                throw new NoSuchYearException();
+            }
             return new BasicResponse<>(200, "Success", AuthorRank.transformToBasic(res.getMappedResults()));
 
         } else if (sortKey.equals("citationCount")) {
             AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, CitationCountRank.class);
+            if (res.getMappedResults().size() == 0) {
+                throw  new NoSuchYearException();
+            }
             return new BasicResponse<>(200, "Success", AuthorRank.transformToBasic(res.getMappedResults()));
         }
         return null;

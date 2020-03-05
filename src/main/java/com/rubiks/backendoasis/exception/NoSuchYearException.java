@@ -6,6 +6,6 @@ import lombok.Data;
 public class NoSuchYearException extends RuntimeException {
     private int code = 10002;
     public NoSuchYearException() {
-        super("没有此年份的电影！");
+        super("没有此年份的论文! 👀");
     }
 }

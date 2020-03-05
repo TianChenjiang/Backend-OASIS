@@ -32,10 +32,6 @@ public class DataSourceController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse<Response> importPaperData(@RequestParam("paperData") MultipartFile paperData) {
-        try {
-            return dataSourceBlService.importPaperData(paperData);
-        } catch (FileFormatNotSupportException e) {
-            return new BasicResponse<>(e.getCode(), e.getMessage(), null);
-        }
+        return dataSourceBlService.importPaperData(paperData);
     }
 }

@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.handler;
 
+import com.rubiks.backendoasis.exception.FileFormatNotSupportException;
 import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.response.WrongResponse;
 import org.springframework.http.HttpStatus;
@@ -12,5 +13,10 @@ public class PaperExceptionHandler {
     @ExceptionHandler(NoSuchYearException.class)
     public ResponseEntity<?> handleNoSuchYear(RuntimeException e) {
         return new ResponseEntity<>(new WrongResponse(10000, e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FileFormatNotSupportException.class)
+    public ResponseEntity<?> handleFileFormatNotSupport(RuntimeException e) {
+        return new ResponseEntity<>(new WrongResponse(10001, e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }
