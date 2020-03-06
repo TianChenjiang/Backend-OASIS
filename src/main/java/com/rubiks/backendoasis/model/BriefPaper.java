@@ -16,11 +16,12 @@ public class BriefPaper {
     private String link;
     private String title;
     private String _abstract;
+    private String publicationYear;
 
     public static List<BriefPaper> PapersToBriefPapers(List<PaperEntity> paperEntities) {
         List<BriefPaper> res = new ArrayList<>();
         for (PaperEntity p : paperEntities) {
-            res.add(new BriefPaper(p.getAuthor(), p.getLink(), p.getTitle(), p.get_abstract()));
+            res.add(new BriefPaper(p.getAuthor(), p.getLink(), p.getTitle(), p.get_abstract(), p.getPublicationYear()));
         }
         return res;
     }
