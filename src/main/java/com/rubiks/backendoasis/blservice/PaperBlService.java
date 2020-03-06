@@ -22,5 +22,6 @@ public interface PaperBlService {
     BasicResponse getAuthorBasicRanking(String sortKey, String year);
     BasicResponse getResearcherInterest(String id);
     BasicResponse getActivePaperAbstract();
+    BasicResponse getReferenceById(String paperId);
 //    List<ResearchInterest> getMaxResearcherInterest();
 }

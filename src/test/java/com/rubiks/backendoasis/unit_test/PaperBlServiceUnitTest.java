@@ -2,10 +2,7 @@ package com.rubiks.backendoasis.unit_test;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.model.AffiliationRank;
-import com.rubiks.backendoasis.model.AuthorRank;
-import com.rubiks.backendoasis.model.PapersWithSize;
-import com.rubiks.backendoasis.model.ResearchInterest;
+import com.rubiks.backendoasis.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +42,8 @@ public class PaperBlServiceUnitTest {
         String startYear = "2011";
         String endYear  = "2014";
         PapersWithSize res = (PapersWithSize) paperBlService.basicSearch(keyword, page, startYear, endYear).getData();
-        List<PaperEntity> paperEntities = res.getPapers();
-        for (PaperEntity pa : paperEntities) {
+        List<PaperWithoutRef> paperEntities = res.getPapers();
+        for (PaperWithoutRef pa : paperEntities) {
             assertThat(pa.getPublicationYear(), lessThanOrEqualTo(endYear));
             assertThat(pa.getPublicationYear(), greaterThanOrEqualTo(startYear));
             assertThat(pa.toString().toLowerCase(), containsString("software"));
@@ -61,8 +58,8 @@ public class PaperBlServiceUnitTest {
     @Test
     public void testAdvancedSearch() {
         PapersWithSize res = (PapersWithSize) paperBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, "2011", "2012").getData();
-        List<PaperEntity> paperEntities = res.getPapers();
-        for (PaperEntity pa : paperEntities) {
+        List<PaperWithoutRef> paperEntities = res.getPapers();
+        for (PaperWithoutRef pa : paperEntities) {
             assertThat(pa.getPublicationYear(), lessThanOrEqualTo("2012"));
             assertThat(pa.getPublicationYear(), greaterThanOrEqualTo("2011"));
             assertThat(pa.getConferenceName(), containsString("ASE"));

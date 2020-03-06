@@ -148,5 +148,16 @@ public class PaperController {
         return paperBlService.getActivePaperAbstract();
     }
 
+    @GetMapping("/paper/reference")
+    @ApiOperation(value = "接口7 根据paper的id返回reference")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    public BasicResponse getReferenceById(@RequestParam (value = "paperId") String paperId) {
+        return paperBlService.getReferenceById(paperId);
+    }
+
+
 
 }

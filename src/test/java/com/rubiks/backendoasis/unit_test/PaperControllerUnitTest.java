@@ -5,6 +5,7 @@ import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.MetricsEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.AffiliationRank;
+import com.rubiks.backendoasis.model.PaperWithoutRef;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.springcontroller.PaperController;
@@ -82,7 +83,7 @@ public class PaperControllerUnitTest {
         affiliationRanks.add(affiliationRank1);
         affiliationRanks.add(affiliationRank2);
 
-        res = new PapersWithSize(paperEntities, 1);
+        res = new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(paperEntities), 1);
 
     }
 

@@ -135,7 +135,7 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.DESC, "publicationYear")));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        return new BasicResponse(200, "Success", new PapersWithSize(res, size));
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
     @Override
@@ -160,7 +160,7 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.DESC, "publicationYear")));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        return new BasicResponse(200, "Success", new PapersWithSize(res, size));
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
     @Override
@@ -270,7 +270,13 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> Top5Papers = aggregationRes.getMappedResults();
-        return new BasicResponse(200, "Success", Top5Papers);
+        return new BasicResponse(200, "Success", BriefPaper.PapersToBriefPapers(Top5Papers));
+    }
+
+    @Override
+    public BasicResponse getReferenceById(String paperId) {
+        PaperEntity res = mongoTemplate.findById(paperId, PaperEntity.class);
+        return new BasicResponse(200, "Success", res.getReferences());
     }
 
     class AuthorKeywordsList {
