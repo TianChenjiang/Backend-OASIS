@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class BriefPaper {
-    private List<AuthorEntity> author;
+    private List<AuthorEntity> authors;
     private String link;
     private String title;
     private String _abstract;
