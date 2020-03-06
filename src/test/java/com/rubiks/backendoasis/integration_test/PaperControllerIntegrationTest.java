@@ -44,7 +44,7 @@ public class PaperControllerIntegrationTest {
                 .param("keyword", "\"Architecture、.\"").param("page", "1").param("startYear", "2010").param("endYear", "2018")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Architecture")));
+                .andExpect(content().string(containsString("Architecture".toLowerCase())));
 
     }
 
@@ -61,7 +61,7 @@ public class PaperControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.papers[0].conferenceName", is("ASE")))
-                .andExpect(jsonPath("$.data.papers[0].keywords", hasItem(is("Software"))))
+                .andExpect(jsonPath("$.data.papers[0].keywords", (hasItem(containsString("Software")))))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", greaterThanOrEqualTo("2010")))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", lessThanOrEqualTo("2015")))
 //                .andExpect(jsonPath("$.data", everyItem()))

@@ -6,7 +6,7 @@ public class StrProcesser {
         String[] fbsArr = { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|", "\"", "、" };
         for (String key : fbsArr) {
             if (keyword.contains(key)) {
-                keyword = keyword.replaceAll(key, "");
+                keyword = keyword.replace(key, "");
             }
         }
         return keyword;
