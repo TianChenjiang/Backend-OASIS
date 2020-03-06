@@ -7,6 +7,7 @@ import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.MapUtil;
 import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.SearchRequest;
@@ -24,6 +25,7 @@ import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -129,10 +131,9 @@ public class PaperBlServiceImpl implements PaperBlService {
                 criteria.where("publicationYear").gte(startYear).lte(endYear)
         );
         query.addCriteria(criteria);
-        List<PaperEntity> temp = mongoTemplate.find(query, PaperEntity.class);
-        int size = temp.size();
+        long size =  mongoTemplate.count(query, PaperEntity.class);
 
-        query.with(PageRequest.of(page-1, pageSize));
+        query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.DESC, "publicationYear")));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         return new BasicResponse(200, "Success", new PapersWithSize(res, size));
     }
@@ -148,7 +149,6 @@ public class PaperBlServiceImpl implements PaperBlService {
         keyword = strProcesser.escapeExprSpecialWord(keyword);
 
         criteria.andOperator(
-                criteria.where("publicationYear").gte(startYear).lte(endYear),
                 criteria.where("author.name").regex(getPattern(author)),
                 criteria.where("author.affiliation").regex(getPattern(affiliation)),
                 criteria.where("conferenceName").regex(getPattern(conferenceName)),
@@ -156,10 +156,9 @@ public class PaperBlServiceImpl implements PaperBlService {
                 criteria.where("publicationYear").gte(startYear).lte(endYear)
         );
         Query query = new Query(criteria);
-        List<PaperEntity> temp = mongoTemplate.find(query, PaperEntity.class);
-        int size = temp.size();
+        long size = mongoTemplate.count(query, PaperEntity.class);
 
-        query.with(PageRequest.of(page-1, pageSize));
+        query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.DESC, "publicationYear")));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         return new BasicResponse(200, "Success", new PapersWithSize(res, size));
     }

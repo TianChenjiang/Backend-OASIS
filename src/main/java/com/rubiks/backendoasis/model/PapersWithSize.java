@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 public class PapersWithSize {
     private List<PaperEntity> papers;
-    private int size;
-    public PapersWithSize(List<PaperEntity> papers, int size) {
+    private long size;
+    public PapersWithSize(List<PaperEntity> papers, long size) {
         this.papers = papers;
         this.size = size;
     }
