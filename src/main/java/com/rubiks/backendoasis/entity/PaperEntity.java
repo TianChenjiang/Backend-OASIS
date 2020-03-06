@@ -22,7 +22,7 @@ public class PaperEntity {
     @Field("title")
     private String title;
     @Field("authors")
-    private List<AuthorEntity> author;
+    private List<AuthorEntity> authors;
     @Field("abstract")
     private String _abstract;
     @Field("publicationTitle")

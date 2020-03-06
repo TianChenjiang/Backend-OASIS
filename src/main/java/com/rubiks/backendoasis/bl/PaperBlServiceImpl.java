@@ -94,12 +94,12 @@ public class PaperBlServiceImpl implements PaperBlService {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("author.name", author).operator(Operator.AND));
-        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("author.affiliation", affiliation).operator(Operator.AND));
+        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.name", author).operator(Operator.AND));
+        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND));
         if (!conferenceName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("conferenceName",conferenceName).operator(Operator.AND));
         if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
-//                .must(QueryBuilders.matchQuery("author.name", author).operator(Operator.AND))
-//                .must(QueryBuilders.matchQuery("author.affiliation", affiliation).operator(Operator.AND))
+//                .must(QueryBuilders.matchQuery("authors.name", authors).operator(Operator.AND))
+//                .must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND))
 //                .must(QueryBuilders.matchQuery("conferenceName",conferenceName).operator(Operator.AND))
 //                .must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
         searchSourceBuilder.query(queryBuilder);
@@ -121,8 +121,8 @@ public class PaperBlServiceImpl implements PaperBlService {
         criteria.orOperator(
                 criteria.where("title").regex(pattern), // 默认不区分大小写
                 criteria.where("abstract").regex(pattern),
-                criteria.where("author.name").regex(pattern),
-                criteria.where("author.affiliation").regex(pattern),
+                criteria.where("authors.name").regex(pattern),
+                criteria.where("authors.affiliation").regex(pattern),
                 criteria.where("publicationTitle").regex(pattern),
                 criteria.where("conferenceName").regex(pattern),
                 criteria.where("keywords").regex(pattern)
@@ -149,8 +149,8 @@ public class PaperBlServiceImpl implements PaperBlService {
         keyword = strProcesser.escapeExprSpecialWord(keyword);
 
         criteria.andOperator(
-                criteria.where("author.name").regex(getPattern(author)),
-                criteria.where("author.affiliation").regex(getPattern(affiliation)),
+                criteria.where("authors.name").regex(getPattern(author)),
+                criteria.where("authors.affiliation").regex(getPattern(affiliation)),
                 criteria.where("conferenceName").regex(getPattern(conferenceName)),
                 criteria.where("keywords").regex(getPattern(keyword)),
                 criteria.where("publicationYear").gte(startYear).lte(endYear)

@@ -3,10 +3,8 @@ package com.rubiks.backendoasis.model;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.MetricsEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.entity.ReferenceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +14,7 @@ import java.util.List;
 public class PaperWithoutRef {
     private String id;
     private String title;
-    private List<AuthorEntity> author;
+    private List<String> authors;
     private String _abstract;
     private String publicationTitle;
     private String doi;
@@ -29,9 +27,13 @@ public class PaperWithoutRef {
     public static List<PaperWithoutRef> PaperToPaperWithoutRef(List<PaperEntity>paperEntities) {
         List<PaperWithoutRef> res = new ArrayList<>();
         for (PaperEntity p : paperEntities) {
+            List<String> author_names = new ArrayList<>();
+            for (AuthorEntity a : p.getAuthors()) {
+                author_names.add(a.getName());
+            }
             res.add(new PaperWithoutRef(p.getId(),
                     p.getTitle(),
-                    p.getAuthor(),
+                    author_names,
                     p.get_abstract(),
                     p.getPublicationTitle(),
                     p.getDoi(),

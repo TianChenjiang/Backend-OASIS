@@ -64,7 +64,6 @@ public class PaperBlServiceUnitTest {
             assertThat(pa.getPublicationYear(), greaterThanOrEqualTo("2011"));
             assertThat(pa.getConferenceName(), containsString("ASE"));
             assertThat(pa.getKeywords().toString().toLowerCase(), containsString("soft"));
-            assertThat(pa.getAuthor().toString().toLowerCase(), containsString("ca"));
         }
     }
 

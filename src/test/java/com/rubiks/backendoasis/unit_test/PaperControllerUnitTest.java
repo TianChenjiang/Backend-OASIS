@@ -71,8 +71,8 @@ public class PaperControllerUnitTest {
         MetricsEntity metricsEntity1 = MetricsEntity.builder().citationCountPatent(100).citationCountPaper(200).build();
         MetricsEntity metricsEntity2 = MetricsEntity.builder().citationCountPatent(200).citationCountPaper(50).build();
 
-        PaperEntity paperEntity1 = PaperEntity.builder().title("Software Architecture").publicationYear("2011").conferenceName("ASE").author(l1).metrics(metricsEntity1).build();
-        PaperEntity paperEntity2 = PaperEntity.builder().title("Software Design").publicationYear("2011").conferenceName("IEEE").author(l2).metrics(metricsEntity2).build();
+        PaperEntity paperEntity1 = PaperEntity.builder().title("Software Architecture").publicationYear("2011").conferenceName("ASE").authors(l1).metrics(metricsEntity1).build();
+        PaperEntity paperEntity2 = PaperEntity.builder().title("Software Design").publicationYear("2011").conferenceName("IEEE").authors(l2).metrics(metricsEntity2).build();
         paperEntities = new ArrayList<>();
         paperEntities.add(paperEntity1);
         paperEntities.add(paperEntity2);
