@@ -34,7 +34,9 @@ public class PaperControllerIntegrationTest {
     @Test
     public void testBasicSearch() throws Exception {
         mockMvc.perform(get("/search/basic/mongo")
-                .param("keyword", "Software、").param("page", "1").param("startYear", "2012").param("endYear", "2012")
+                .param("keyword", "Software、")
+                .param("page", "1")
+                .param("startYear", "2012").param("endYear", "2012")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Software")))
