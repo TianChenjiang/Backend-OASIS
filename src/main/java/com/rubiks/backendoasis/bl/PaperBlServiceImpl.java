@@ -108,7 +108,7 @@ public class PaperBlServiceImpl implements PaperBlService {
     public BasicResponse getActivePaperAbstract() {
         Aggregation aggregation = newAggregation(
                 sort(Direction.DESC, "metrics.citationCountPaper"),
-                limit(5)
+                limit(10)
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> Top5Papers = aggregationRes.getMappedResults();
