@@ -1,6 +1,8 @@
 package com.rubiks.backendoasis.unit_test;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.blservice.RankBlService;
+import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.*;
 import org.junit.Before;
@@ -28,6 +30,11 @@ import java.util.List;
 public class PaperBlServiceUnitTest {
     @Autowired
     private PaperBlService paperBlService;
+    @Autowired
+    private RankBlService rankBlService;
+    @Autowired
+    private SearchBlService searchBlService;
+
 
     @Before
     public void setUp() throws Exception {
@@ -41,7 +48,7 @@ public class PaperBlServiceUnitTest {
         int page = 1;
         String startYear = "2011";
         String endYear  = "2014";
-        PapersWithSize res = (PapersWithSize) paperBlService.basicSearch(keyword, page, startYear, endYear).getData();
+        PapersWithSize res = (PapersWithSize) searchBlService.basicSearch(keyword, page, startYear, endYear).getData();
         List<PaperWithoutRef> paperEntities = res.getPapers();
         for (PaperWithoutRef pa : paperEntities) {
             assertThat(pa.getPublicationYear(), lessThanOrEqualTo(endYear));
@@ -57,7 +64,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testAdvancedSearch() {
-        PapersWithSize res = (PapersWithSize) paperBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, "2011", "2012").getData();
+        PapersWithSize res = (PapersWithSize) searchBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, "2011", "2012").getData();
         List<PaperWithoutRef> paperEntities = res.getPapers();
         for (PaperWithoutRef pa : paperEntities) {
             assertThat(pa.getPublicationYear(), lessThanOrEqualTo("2012"));
@@ -69,7 +76,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAffiliationBasicRanking() {
-        List<AffiliationRank> res = (List<AffiliationRank>)paperBlService.getAffiliationBasicRanking("citationCount", "2011").getData();
+        List<AffiliationRank> res = (List<AffiliationRank>)rankBlService.getAffiliationBasicRanking("citationCount", "2011").getData();
         AffiliationRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);
@@ -80,7 +87,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAuthorBasicRanking() {
-        List<AuthorRank> res = (List<AuthorRank>) paperBlService.getAuthorBasicRanking("acceptanceCount", "2011").getData();
+        List<AuthorRank> res = (List<AuthorRank>) rankBlService.getAuthorBasicRanking("acceptanceCount", "2011").getData();
         AuthorRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);

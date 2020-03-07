@@ -2,6 +2,8 @@ package com.rubiks.backendoasis.springcontroller;
 
 import com.rubiks.backendoasis.blservice.DataSourceBlService;
 import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.blservice.RankBlService;
+import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.model.AuthorRank;
@@ -11,26 +13,30 @@ import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.response.Response;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
-import com.rubiks.backendoasis.model.AffiliationRank;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController()
 public class PaperController {
-    private PaperBlService paperBlService;
-
     @Autowired
-    public PaperController(PaperBlService paperBlService) {
+    private PaperBlService paperBlService;
+    @Autowired
+    private RankBlService rankBlService;
+    @Autowired
+    private SearchBlService searchBlService;
+
+
+    public PaperController(PaperBlService paperBlService, RankBlService rankBlService, SearchBlService searchBlService) {
         this.paperBlService = paperBlService;
+        this.rankBlService = rankBlService;
+        this.searchBlService = searchBlService;
     }
 
     @GetMapping("/test")
@@ -40,7 +46,7 @@ public class PaperController {
 
     @GetMapping("/all")
     public List<PaperDocument> findAll() throws Exception {
-        return paperBlService.findAll();
+        return searchBlService.findAll();
     }
 
     @GetMapping("/search/basic/es")
@@ -51,7 +57,7 @@ public class PaperController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public List<PaperDocument> basicSearchByES(@RequestParam(value = "keyword") String keyword,
                                                    @RequestParam(value = "page") int page) throws Exception {
-        return paperBlService.basicSearchByES(keyword, page);
+        return searchBlService.basicSearchByES(keyword, page);
     }
 
     @GetMapping("/search/advanced/es")
@@ -70,7 +76,7 @@ public class PaperController {
         if (conferenceName == null) conferenceName = "";
         if (keyword == null) keyword = "";
 
-        return paperBlService.advancedSearchByES(author, affiliation, conferenceName, keyword, page);
+        return searchBlService.advancedSearchByES(author, affiliation, conferenceName, keyword, page);
     }
 
     @GetMapping("/search/basic/mongo")
@@ -83,7 +89,7 @@ public class PaperController {
                                            @RequestParam(value = "page") int page,
                                            @RequestParam(value = "startYear") String startYear,
                                            @RequestParam(value = "endYear") String endYear) {
-        return paperBlService.basicSearch(keyword, page, startYear, endYear);
+        return searchBlService.basicSearch(keyword, page, startYear, endYear);
     }
 
     @GetMapping("/search/advanced/mongo")
@@ -103,7 +109,7 @@ public class PaperController {
         if (affiliation == null) affiliation = "";
         if (conferenceName == null) conferenceName = "";
         if (keyword == null) keyword = "";
-        return paperBlService.advancedSearch(author, affiliation, conferenceName, keyword, page, startYear, endYear);
+        return searchBlService.advancedSearch(author, affiliation, conferenceName, keyword, page, startYear, endYear);
     }
 
     @GetMapping("/rank/basic/affiliation")
@@ -114,7 +120,7 @@ public class PaperController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse getAffiliationBasicRanking(@RequestParam(value = "sortKey") String sortKey,
                                                                            @RequestParam(value = "year") String year) {
-        return  paperBlService.getAffiliationBasicRanking(sortKey, year);
+        return  rankBlService.getAffiliationBasicRanking(sortKey, year);
     }
 
     @GetMapping("/rank/basic/author")
@@ -125,7 +131,7 @@ public class PaperController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse getAuthorBasicRanking(@RequestParam(value = "sortKey") String sortKey,
                                                                  @RequestParam(value = "year") String year) {
-        return paperBlService.getAuthorBasicRanking(sortKey, year);
+        return rankBlService.getAuthorBasicRanking(sortKey, year);
     }
 
     @GetMapping("/researcher/interest")

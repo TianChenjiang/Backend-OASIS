@@ -10,12 +10,10 @@ import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.MultiPartFileToFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.bson.*;
 
 import java.io.BufferedReader;
 import java.io.File;

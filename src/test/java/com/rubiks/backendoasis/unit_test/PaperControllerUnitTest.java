@@ -1,6 +1,8 @@
 package com.rubiks.backendoasis.unit_test;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.blservice.RankBlService;
+import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.MetricsEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
@@ -50,6 +52,10 @@ public class PaperControllerUnitTest {
 
     @MockBean
     PaperBlService paperBlService;
+    @MockBean
+    SearchBlService searchBlService;
+    @MockBean
+    RankBlService rankBlService;
 
     private MockMvc mockMvc;
 
@@ -60,7 +66,7 @@ public class PaperControllerUnitTest {
 
     @Before
     public void setupMockMvc() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new PaperController(paperBlService)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new PaperController(paperBlService, rankBlService, searchBlService)).build();
 
         // 创造作者和
         AuthorEntity authorEntity1 = AuthorEntity.builder().name("lq").affiliation("NJU").build();
@@ -98,7 +104,7 @@ public class PaperControllerUnitTest {
 
     @Test
     public void testBasicSearch() throws Exception {
-        when(paperBlService.basicSearch(any(String.class), any(Integer.class), any(String.class), any(String.class))).thenReturn(new BasicResponse(200, "Suceess", res));
+        when(searchBlService.basicSearch(any(String.class), any(Integer.class), any(String.class), any(String.class))).thenReturn(new BasicResponse(200, "Suceess", res));
         mockMvc.perform(get("/search/basic/mongo")
                 .param("keyword", "Software").param("page", "1").param("startYear", "2012").param("endYear", "2012")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -109,7 +115,7 @@ public class PaperControllerUnitTest {
 
     @Test
     public void testAdvancedSearch() throws Exception {
-        when(paperBlService.advancedSearch(any(String.class), any(String.class), any(String.class), any(String.class), any(Integer.class), any(String.class), any(String.class)))
+        when(searchBlService.advancedSearch(any(String.class), any(String.class), any(String.class), any(String.class), any(Integer.class), any(String.class), any(String.class)))
                 .thenReturn(new BasicResponse(200, "Success", res));
         mockMvc.perform(get("/search/advanced/mongo")
                 .param("conferenceName", "ASE")
@@ -124,7 +130,7 @@ public class PaperControllerUnitTest {
 
     @Test
     public void testAffiliationBasicRanking() throws Exception {
-        when(paperBlService.getAffiliationBasicRanking(any(String.class), any(String.class)))
+        when(rankBlService.getAffiliationBasicRanking(any(String.class), any(String.class)))
                 .thenReturn(new BasicResponse(200, "Suceess", affiliationRanks));
         //"acceptanceCount"|"citationCount"
         mockMvc.perform(get("/rank/basic/affiliation")
