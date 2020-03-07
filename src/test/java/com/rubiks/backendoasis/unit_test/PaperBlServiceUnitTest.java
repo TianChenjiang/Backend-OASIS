@@ -114,10 +114,4 @@ public class PaperBlServiceUnitTest {
         }
     }
 
-    @Test
-    @Transactional
-    public void testUpload() {
-
-    }
-
 }
