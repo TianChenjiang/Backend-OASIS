@@ -46,7 +46,7 @@ public class RankBlServiceImpl implements RankBlService {
                 group("authors.affiliation").count().as("acceptanceCount").
                         sum("metrics.citationCountPaper").as("citationCount"),
                 sort(Sort.Direction.DESC, sortKey),
-                limit(5)
+                limit(10)
         );
 
         if (sortKey.equals("acceptanceCount")) {
@@ -76,7 +76,7 @@ public class RankBlServiceImpl implements RankBlService {
                 group("authors.id").count().as("acceptanceCount").
                         sum("metrics.citationCountPaper").as("citationCount").addToSet("authors.name").as("name"),
                 sort(Sort.Direction.DESC, sortKey),
-                limit(5)
+                limit(10)
         );
 
         if (sortKey.equals("acceptanceCount")) {
