@@ -6,6 +6,7 @@ pipeline {
         mail bcc: '', body: "Jenkins build: $BUILD_URL", cc: '', from: 'm15123052642@163.com', replyTo: '', subject: 'Jenkins build', to: '1027572886a@gmail.com'
       }
     }
+    
     stage('build') {
       steps {
         sh 'mvn --version'
