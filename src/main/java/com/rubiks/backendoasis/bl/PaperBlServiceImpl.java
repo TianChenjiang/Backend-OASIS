@@ -111,8 +111,8 @@ public class PaperBlServiceImpl implements PaperBlService {
                 limit(10)
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
-        List<PaperEntity> Top5Papers = aggregationRes.getMappedResults();
-        return new BasicResponse(200, "Success", BriefPaper.PapersToBriefPapers(Top5Papers));
+        List<PaperEntity> Top10Papers = aggregationRes.getMappedResults();
+        return new BasicResponse(200, "Success", BriefPaper.PapersToBriefPapers(Top10Papers));
     }
 
     @Override
