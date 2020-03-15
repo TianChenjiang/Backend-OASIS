@@ -14,6 +14,4 @@ public class BackendOasisApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BackendOasisApplication.class, args);
 	}
-
-
 }
