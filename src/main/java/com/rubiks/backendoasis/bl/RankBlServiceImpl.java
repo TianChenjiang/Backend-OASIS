@@ -72,6 +72,7 @@ public class RankBlServiceImpl implements RankBlService {
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
                 match(Criteria.where("publicationYear").is(year)),
+                match(Criteria.where("authors.id").ne(null)),
                 unwind("authors"),
                 group("authors.id").count().as("acceptanceCount").
                         sum("metrics.citationCountPaper").as("citationCount").addToSet("authors.name").as("name"),
