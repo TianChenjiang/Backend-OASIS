@@ -40,7 +40,7 @@ public class PaperControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Software")))
-                .andExpect(jsonPath("$.data.papers[0].publicationYear", is("2012")))
+                .andExpect(jsonPath("$.data.papers[0].publicationYear", is(2012)))
         ;
         mockMvc.perform(get("/search/basic/mongo")
                 .param("keyword", "\"Architecture、.\"").param("page", "1").param("startYear", "2010").param("endYear", "2018")
@@ -54,7 +54,7 @@ public class PaperControllerIntegrationTest {
     @Test
     public void testAdvancedSearch() throws Exception {
         mockMvc.perform(get("/search/advanced/mongo")
-                .param("conferenceName", "ASE")
+                .param("publicationName", "ASE")
                 .param("keyword", "Software、")
                 .param("author", "a")
                 .param("startYear","2010")
@@ -62,10 +62,10 @@ public class PaperControllerIntegrationTest {
                 .param("page", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.papers[0].conferenceName", is("ASE")))
+                .andExpect(jsonPath("$.data.papers[0].publicationName", is("ASE")))
 //                .andExpect(jsonPath("$.data.papers[0].keywords", (hasItem(equalToIgnoringCase("software")))))
-                .andExpect(jsonPath("$.data.papers[0].publicationYear", greaterThanOrEqualTo("2010")))
-                .andExpect(jsonPath("$.data.papers[0].publicationYear", lessThanOrEqualTo("2015")))
+                .andExpect(jsonPath("$.data.papers[0].publicationYear", greaterThanOrEqualTo(2010)))
+                .andExpect(jsonPath("$.data.papers[0].publicationYear", lessThanOrEqualTo(2015)))
         ;
     }
 
@@ -83,7 +83,7 @@ public class PaperControllerIntegrationTest {
     public void testAuthorBasicRanking() throws Exception {
         mockMvc.perform(get("/rank/basic/author")
                 .param("sortKey", "citationCount")
-                .param("year", "2018")
+                .param("year", "2019")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
         ;
@@ -92,7 +92,7 @@ public class PaperControllerIntegrationTest {
     @Test
     public void testGetResearcherInterest() throws Exception {
         mockMvc.perform(get("/researcher/interest")
-                .param("researcherId", "37302908800")
+                .param("authorId", "37302908800")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print()
