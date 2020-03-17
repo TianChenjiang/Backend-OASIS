@@ -18,10 +18,11 @@ public class PaperWithoutRef {
     private String _abstract;
     private String publicationTitle;
     private String doi;
-    private String publicationYear;
+    private int publicationYear;
     private MetricsEntity metrics;
     private List<String> keywords;
-    private String conferenceName;
+    private String contentType;
+    private String publicationName;
     private String link;
 
     public static List<PaperWithoutRef> PaperToPaperWithoutRef(List<PaperEntity>paperEntities) {
@@ -38,9 +39,11 @@ public class PaperWithoutRef {
                     p.getPublicationTitle(),
                     p.getDoi(),
                     p.getPublicationYear(),
+
                     p.getMetrics(),
                     p.getKeywords(),
-                    p.getConferenceName(),
+                    p.getContentType(),
+                    p.getPublicationName(),
                     p.getLink()));
         }
         return res;

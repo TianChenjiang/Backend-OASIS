@@ -15,7 +15,7 @@ public class BriefPaper {
     private String link;
     private String title;
     private String _abstract;
-    private String publicationYear;
+    private int publicationYear;
 
     public static List<BriefPaper> PapersToBriefPapers(List<PaperEntity> paperEntities) {
         List<BriefPaper> res = new ArrayList<>();

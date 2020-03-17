@@ -87,7 +87,7 @@ public class SearchBlServiceImpl implements SearchBlService {
     }
 
     @Override
-    public BasicResponse basicSearch(String keyword, int page, String startYear, String endYear) {
+    public BasicResponse basicSearch(String keyword, int page, int startYear, int endYear) {
         Criteria criteria = new Criteria();
         Query query = new Query();
         keyword = new StrProcesser().escapeExprSpecialWord(keyword);
@@ -98,7 +98,7 @@ public class SearchBlServiceImpl implements SearchBlService {
                 criteria.where("authors.name").regex(pattern),
                 criteria.where("authors.affiliation").regex(pattern),
                 criteria.where("publicationTitle").regex(pattern),
-                criteria.where("conferenceName").regex(pattern),
+                criteria.where("publicationName").regex(pattern),
                 criteria.where("keywords").regex(pattern)
         );
         criteria.andOperator(
@@ -113,19 +113,19 @@ public class SearchBlServiceImpl implements SearchBlService {
     }
 
     @Override
-    public BasicResponse advancedSearch(String author, String affiliation, String conferenceName, String keyword, int page, String startYear, String endYear) {
+    public BasicResponse advancedSearch(String author, String affiliation, String publicationName, String keyword, int page, int startYear, int endYear) {
         Criteria criteria = new Criteria();
 
         StrProcesser strProcesser = new StrProcesser();
         author = strProcesser.escapeExprSpecialWord(author);
         affiliation = strProcesser.escapeExprSpecialWord(affiliation);
-        conferenceName = strProcesser.escapeExprSpecialWord(conferenceName);
+        publicationName = strProcesser.escapeExprSpecialWord(publicationName);
         keyword = strProcesser.escapeExprSpecialWord(keyword);
 
         criteria.andOperator(
                 criteria.where("authors.name").regex(getPattern(author)),
                 criteria.where("authors.affiliation").regex(getPattern(affiliation)),
-                criteria.where("conferenceName").regex(getPattern(conferenceName)),
+                criteria.where("publicationName").regex(getPattern(publicationName)),
                 criteria.where("keywords").regex(getPattern(keyword)),
                 criteria.where("publicationYear").gte(startYear).lte(endYear)
         );

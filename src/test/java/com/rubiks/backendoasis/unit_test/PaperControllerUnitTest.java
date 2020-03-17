@@ -77,8 +77,8 @@ public class PaperControllerUnitTest {
         MetricsEntity metricsEntity1 = MetricsEntity.builder().citationCountPatent(100).citationCountPaper(200).build();
         MetricsEntity metricsEntity2 = MetricsEntity.builder().citationCountPatent(200).citationCountPaper(50).build();
 
-        PaperEntity paperEntity1 = PaperEntity.builder().title("Software Architecture").publicationYear("2011").conferenceName("ASE").authors(l1).metrics(metricsEntity1).build();
-        PaperEntity paperEntity2 = PaperEntity.builder().title("Software Design").publicationYear("2011").conferenceName("IEEE").authors(l2).metrics(metricsEntity2).build();
+        PaperEntity paperEntity1 = PaperEntity.builder().title("Software Architecture").publicationYear(2011).publicationName("ASE").authors(l1).metrics(metricsEntity1).build();
+        PaperEntity paperEntity2 = PaperEntity.builder().title("Software Design").publicationYear(2011).publicationName("IEEE").authors(l2).metrics(metricsEntity2).build();
         paperEntities = new ArrayList<>();
         paperEntities.add(paperEntity1);
         paperEntities.add(paperEntity2);
@@ -104,7 +104,7 @@ public class PaperControllerUnitTest {
 
     @Test
     public void testBasicSearch() throws Exception {
-        when(searchBlService.basicSearch(any(String.class), any(Integer.class), any(String.class), any(String.class))).thenReturn(new BasicResponse(200, "Suceess", res));
+        when(searchBlService.basicSearch(any(String.class), any(Integer.class), any(Integer.class), any(Integer.class))).thenReturn(new BasicResponse(200, "Suceess", res));
         mockMvc.perform(get("/search/basic/mongo")
                 .param("keyword", "Software").param("page", "1").param("startYear", "2012").param("endYear", "2012")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -115,7 +115,7 @@ public class PaperControllerUnitTest {
 
     @Test
     public void testAdvancedSearch() throws Exception {
-        when(searchBlService.advancedSearch(any(String.class), any(String.class), any(String.class), any(String.class), any(Integer.class), any(String.class), any(String.class)))
+        when(searchBlService.advancedSearch(any(String.class), any(String.class), any(String.class), any(String.class), any(Integer.class), any(Integer.class), any(Integer.class)))
                 .thenReturn(new BasicResponse(200, "Success", res));
         mockMvc.perform(get("/search/advanced/mongo")
                 .param("conferenceName", "ASE")
@@ -130,7 +130,7 @@ public class PaperControllerUnitTest {
 
     @Test
     public void testAffiliationBasicRanking() throws Exception {
-        when(rankBlService.getAffiliationBasicRanking(any(String.class), any(String.class)))
+        when(rankBlService.getAffiliationBasicRanking(any(String.class), any(Integer.class)))
                 .thenReturn(new BasicResponse(200, "Suceess", affiliationRanks));
         //"acceptanceCount"|"citationCount"
         mockMvc.perform(get("/rank/basic/affiliation")

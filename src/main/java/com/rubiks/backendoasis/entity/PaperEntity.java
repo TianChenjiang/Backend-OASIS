@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.entity;
 
+import com.rubiks.backendoasis.util.Constant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
-@Document(collection = "papers")
+@Document(collection = Constant.collectionName)
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -30,15 +31,17 @@ public class PaperEntity {
     @Field("doi")
     private String doi;
     @Field("publicationYear")
-    private String publicationYear;
+    private int publicationYear;
     @Field("metrics")
     private MetricsEntity metrics;
     @Field("keywords")
     private List<String> keywords;
     @Field("references")
     private List<ReferenceEntity> references;
-    @Field("conferenceName")
-    private String conferenceName;
+    @Field("contentType")
+    private String contentType;
+    @Field("publicationName")
+    private String publicationName;
     @Field("link")
     private String link;
 }

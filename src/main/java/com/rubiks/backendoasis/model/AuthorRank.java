@@ -9,12 +9,12 @@ import java.util.List;
 public class AuthorRank {
     private String name;
     private int count;
-    private String researcherId;
+    private String authorId;
 
-    public AuthorRank(String name, int count, String researcherId) {
+    public AuthorRank(String name, int count, String authorId) {
         this.name = name;
         this.count = count;
-        this.researcherId = researcherId;
+        this.authorId = authorId;
     }
 
     public static <T> List<AuthorRank> transformToBasic(List<T> rank){

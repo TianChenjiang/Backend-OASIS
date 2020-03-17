@@ -36,7 +36,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
-    public BasicResponse getAffiliationBasicRanking(String sortKey, String year) {
+    public BasicResponse getAffiliationBasicRanking(String sortKey, int year) {
         // "acceptanceCount"|"citationCount"
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
@@ -68,7 +68,7 @@ public class RankBlServiceImpl implements RankBlService {
         return null;
     }
 
-    public BasicResponse getAuthorBasicRanking(String sortKey, String year) {
+    public BasicResponse getAuthorBasicRanking(String sortKey, int year) {
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
                 match(Criteria.where("publicationYear").is(year)),

@@ -107,7 +107,7 @@ public class PaperBlServiceImpl implements PaperBlService {
     @Override
     public BasicResponse getActivePaperAbstract() {
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("publicationYear").is("2019")),
+                match(Criteria.where("publicationYear").is(2019)),
                 sort(Direction.DESC, "metrics.citationCountPaper"),
                 limit(5)
         );

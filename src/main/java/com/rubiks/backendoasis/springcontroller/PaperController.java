@@ -87,8 +87,8 @@ public class PaperController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse basicSearch(@RequestParam(value = "keyword") String keyword,
                                            @RequestParam(value = "page") int page,
-                                           @RequestParam(value = "startYear") String startYear,
-                                           @RequestParam(value = "endYear") String endYear) {
+                                           @RequestParam(value = "startYear") int startYear,
+                                           @RequestParam(value = "endYear") int endYear) {
         return searchBlService.basicSearch(keyword, page, startYear, endYear);
     }
 
@@ -100,16 +100,16 @@ public class PaperController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse advancedSearch(@RequestParam(value = "author", required = false) String author,
                                             @RequestParam(value = "affiliation", required = false) String affiliation,
-                                            @RequestParam(value = "conferenceName", required = false) String conferenceName,
+                                            @RequestParam(value = "publicationName", required = false) String publicationName,
                                             @RequestParam(value = "keyword", required = false) String keyword,
                                             @RequestParam(value = "page") int page,
-                                            @RequestParam(value = "startYear") String startYear,
-                                            @RequestParam(value = "endYear") String endYear) {
+                                            @RequestParam(value = "startYear") int startYear,
+                                            @RequestParam(value = "endYear") int endYear) {
         if (author == null) author = "";
         if (affiliation == null) affiliation = "";
-        if (conferenceName == null) conferenceName = "";
+        if (publicationName == null) publicationName = "";
         if (keyword == null) keyword = "";
-        return searchBlService.advancedSearch(author, affiliation, conferenceName, keyword, page, startYear, endYear);
+        return searchBlService.advancedSearch(author, affiliation, publicationName, keyword, page, startYear, endYear);
     }
 
     @GetMapping("/rank/basic/affiliation")
@@ -119,7 +119,7 @@ public class PaperController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse getAffiliationBasicRanking(@RequestParam(value = "sortKey") String sortKey,
-                                                                           @RequestParam(value = "year") String year) {
+                                                                           @RequestParam(value = "year") int year) {
         return  rankBlService.getAffiliationBasicRanking(sortKey, year);
     }
 
@@ -130,7 +130,7 @@ public class PaperController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse getAuthorBasicRanking(@RequestParam(value = "sortKey") String sortKey,
-                                                                 @RequestParam(value = "year") String year) {
+                                                                 @RequestParam(value = "year") int year) {
         return rankBlService.getAuthorBasicRanking(sortKey, year);
     }
 
@@ -140,7 +140,7 @@ public class PaperController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse getResearcherInterest(@RequestParam (value = "researcherId") String id) {
+    public BasicResponse getResearcherInterest(@RequestParam (value = "authorId") String id) {
         return paperBlService.getResearcherInterest(id);
     }
 

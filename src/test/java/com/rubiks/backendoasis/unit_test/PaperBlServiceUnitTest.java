@@ -46,8 +46,8 @@ public class PaperBlServiceUnitTest {
     public void testBasicSearch() {
         String keyword = "software、";
         int page = 1;
-        String startYear = "2011";
-        String endYear  = "2014";
+        int startYear = 2011;
+        int endYear  = 2014;
         PapersWithSize res = (PapersWithSize) searchBlService.basicSearch(keyword, page, startYear, endYear).getData();
         List<PaperWithoutRef> paperEntities = res.getPapers();
         for (PaperWithoutRef pa : paperEntities) {
@@ -64,19 +64,19 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testAdvancedSearch() {
-        PapersWithSize res = (PapersWithSize) searchBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, "2011", "2012").getData();
+        PapersWithSize res = (PapersWithSize) searchBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, 2011, 2012).getData();
         List<PaperWithoutRef> paperEntities = res.getPapers();
         for (PaperWithoutRef pa : paperEntities) {
-            assertThat(pa.getPublicationYear(), lessThanOrEqualTo("2012"));
-            assertThat(pa.getPublicationYear(), greaterThanOrEqualTo("2011"));
-            assertThat(pa.getConferenceName(), containsString("ASE"));
+            assertThat(pa.getPublicationYear(), lessThanOrEqualTo(2012));
+            assertThat(pa.getPublicationYear(), greaterThanOrEqualTo(2011));
+            assertThat(pa.getPublicationName(), containsString("ASE"));
             assertThat(pa.getKeywords().toString().toLowerCase(), containsString("soft"));
         }
     }
 
     @Test
     public void testGetAffiliationBasicRanking() {
-        List<AffiliationRank> res = (List<AffiliationRank>)rankBlService.getAffiliationBasicRanking("citationCount", "2011").getData();
+        List<AffiliationRank> res = (List<AffiliationRank>)rankBlService.getAffiliationBasicRanking("citationCount", 2011).getData();
         AffiliationRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);
@@ -87,7 +87,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAuthorBasicRanking() {
-        List<AuthorRank> res = (List<AuthorRank>) rankBlService.getAuthorBasicRanking("acceptanceCount", "2011").getData();
+        List<AuthorRank> res = (List<AuthorRank>) rankBlService.getAuthorBasicRanking("acceptanceCount", 2011).getData();
         AuthorRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);
