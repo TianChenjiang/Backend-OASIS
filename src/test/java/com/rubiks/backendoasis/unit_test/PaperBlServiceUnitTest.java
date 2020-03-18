@@ -6,6 +6,7 @@ import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -43,6 +44,7 @@ public class PaperBlServiceUnitTest {
 
 
     @Test
+    @Ignore
     public void testBasicSearch() {
         String keyword = "software、";
         int page = 1;

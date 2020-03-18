@@ -1,6 +1,8 @@
 package com.rubiks.backendoasis.integration_test;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,13 @@ public class PaperControllerIntegrationTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    @After
+    public void clean() {
+
+    }
+
     @Test
+    @Ignore
     public void testBasicSearch() throws Exception {
         mockMvc.perform(get("/search/basic/mongo")
                 .param("keyword", "Software、")
