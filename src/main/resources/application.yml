@@ -14,7 +14,7 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/oasis
-      auto-index-creation: false
+#      auto-index-creation: false
   servlet:
     multipart:
       enabled: true
