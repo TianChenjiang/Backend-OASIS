@@ -69,14 +69,14 @@ public class PaperBlServiceImpl implements PaperBlService {
     @Override
     public BasicResponse getResearcherInterest(String id) {
         Aggregation aggregation = newAggregation(
-                unwind("authors"),
+//                unwind("authors"),
                 match(Criteria.where("authors.id").is(id)),
                 project( "keywords", "authors.id")
         );
-        AggregationResults<PaperEntity> aggregationres = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
-        List<PaperEntity> aggregationlist = aggregationres.getMappedResults();
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
         List<String> keywordList = new ArrayList<>();
-        for (PaperEntity paperEntity : aggregationlist) {
+        for (PaperEntity paperEntity : aggregationList) {
             if (paperEntity.getKeywords() != null) {    // keywords需要为非空
                 List<String> curKeywordList = paperEntity.getKeywords();
                 for (String curKeyword : curKeywordList) {

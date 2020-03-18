@@ -88,8 +88,10 @@ public class PaperController {
     public BasicResponse basicSearch(@RequestParam(value = "keyword") String keyword,
                                            @RequestParam(value = "page") int page,
                                            @RequestParam(value = "startYear") int startYear,
-                                           @RequestParam(value = "endYear") int endYear) {
-        return searchBlService.basicSearch(keyword, page, startYear, endYear);
+                                           @RequestParam(value = "endYear") int endYear,
+                                           @RequestParam(value = "sortKey") String sortKey
+                                     ) {
+        return searchBlService.basicSearch(keyword, page, startYear, endYear, sortKey);
     }
 
     @GetMapping("/search/advanced/mongo")

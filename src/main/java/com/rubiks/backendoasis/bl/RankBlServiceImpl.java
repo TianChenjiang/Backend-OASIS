@@ -40,7 +40,7 @@ public class RankBlServiceImpl implements RankBlService {
         // "acceptanceCount"|"citationCount"
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
-                match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
+                match(Criteria.where("authors.affiliation").ne("")),  //非空属性
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
                 group("authors.affiliation").count().as("acceptanceCount").

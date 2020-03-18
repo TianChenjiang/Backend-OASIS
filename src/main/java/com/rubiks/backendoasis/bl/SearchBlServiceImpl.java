@@ -7,6 +7,7 @@ import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.model.PaperWithoutRef;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -26,6 +27,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.TextCriteria;
+import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -87,28 +90,45 @@ public class SearchBlServiceImpl implements SearchBlService {
     }
 
     @Override
-    public BasicResponse basicSearch(String keyword, int page, int startYear, int endYear) {
-        Criteria criteria = new Criteria();
-        Query query = new Query();
+    public BasicResponse basicSearch(String keyword, int page, int startYear, int endYear, String sortKey) {
+//        Criteria criteria = new Criteria();
+//        Query query = new Query();
         keyword = new StrProcesser().escapeExprSpecialWord(keyword);
-        Pattern pattern = getPattern(keyword);
-        criteria.orOperator(
-                criteria.where("title").regex(pattern), // 默认不区分大小写
-                criteria.where("abstract").regex(pattern),
-                criteria.where("authors.name").regex(pattern),
-                criteria.where("authors.affiliation").regex(pattern),
-                criteria.where("publicationTitle").regex(pattern),
-                criteria.where("publicationName").regex(pattern),
-                criteria.where("keywords").regex(pattern)
-        );
-        criteria.andOperator(
-                criteria.where("publicationYear").gte(startYear).lte(endYear)
-        );
-        query.addCriteria(criteria);
-        long size =  mongoTemplate.count(query, PaperEntity.class);
+//        Pattern pattern = getPattern(keyword);
+//        criteria.orOperator(
+//                criteria.where("title").regex(pattern), // 默认不区分大小写
+//                criteria.where("abstract").regex(pattern),
+//                criteria.where("authors.name").regex(pattern),
+//                criteria.where("authors.affiliation").regex(pattern),
+//                criteria.where("publicationTitle").regex(pattern),
+//                criteria.where("publicationName").regex(pattern),
+//                criteria.where("keywords").regex(pattern)
+//        );
+//        criteria.andOperator(
+//                criteria.where("publicationYear").gte(startYear).lte(endYear)
+//        );
+//
+//        query.addCriteria(criteria);
+//        long size =  mongoTemplate.count(query, PaperEntity.class);
 
-        query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
-        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        TextCriteria textCriteria = TextCriteria.forLanguage("en").matching(keyword);
+        Query query1 = TextQuery.queryText(textCriteria);
+        query1.addCriteria(Criteria.where("publicationYear").gte(startYear).lte(endYear));  //限制年份的区间
+        long size =  mongoTemplate.count(query1, PaperEntity.class);
+
+        if (sortKey.equals("related")) {
+            ((TextQuery) query1).sortByScore().with(PageRequest.of(page-1, pageSize));
+        } else if (sortKey.equals("recent")) {
+            query1.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
+        }
+        else if (sortKey.equals("early")) {
+            query1.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.ASC, "publicationYear")));
+        }
+        else if (sortKey.equals("citation")) {
+            query1.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "metrics.citationCountPaper")));
+        }
+
+        List<PaperEntity> res = mongoTemplate.find(query1, PaperEntity.class);
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
@@ -135,6 +155,12 @@ public class SearchBlServiceImpl implements SearchBlService {
         query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
+    }
+
+    @Override
+    public BasicResponse getBasicSearchFilterCondition(String keyword) {
+
+        return null;
     }
 
     // 建立基本请求的接口
