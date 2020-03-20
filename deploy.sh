@@ -14,4 +14,4 @@ git pull origin develop
 docker pull registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
 docker stop backend-oasis
 docker rm backend-oasis
-docker run -d --name=backend-oasis --restart=always -p 8081:8081 registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
+docker run -d --network="host" --name=backend-oasis --restart=always -p 8081:8081 registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
