@@ -69,7 +69,6 @@ public class PaperBlServiceImpl implements PaperBlService {
     @Override
     public BasicResponse getResearcherInterest(String id) {
         Aggregation aggregation = newAggregation(
-//                unwind("authors"),
                 match(Criteria.where("authors.id").is(id)),
                 project( "keywords", "authors.id")
         );
