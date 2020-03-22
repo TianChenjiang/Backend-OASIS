@@ -2,8 +2,11 @@ package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.SearchBlService;
+import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
+import com.rubiks.backendoasis.model.FilterCondition;
+import com.rubiks.backendoasis.model.NameCount;
 import com.rubiks.backendoasis.model.PaperWithoutRef;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.response.BasicResponse;
@@ -31,8 +34,7 @@ import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.rubiks.backendoasis.util.Constant.INDEX;
@@ -90,30 +92,11 @@ public class SearchBlServiceImpl implements SearchBlService {
     }
 
     @Override
-    public BasicResponse basicSearch(String keyword, int page, int startYear, int endYear, String sortKey) {
-//        Criteria criteria = new Criteria();
-//        Query query = new Query();
+    public BasicResponse basicSearch(String keyword, int page, String sortKey) {
         keyword = new StrProcesser().escapeExprSpecialWord(keyword);
-//        Pattern pattern = getPattern(keyword);
-//        criteria.orOperator(
-//                criteria.where("title").regex(pattern), // 默认不区分大小写
-//                criteria.where("abstract").regex(pattern),
-//                criteria.where("authors.name").regex(pattern),
-//                criteria.where("authors.affiliation").regex(pattern),
-//                criteria.where("publicationTitle").regex(pattern),
-//                criteria.where("publicationName").regex(pattern),
-//                criteria.where("keywords").regex(pattern)
-//        );
-//        criteria.andOperator(
-//                criteria.where("publicationYear").gte(startYear).lte(endYear)
-//        );
-//
-//        query.addCriteria(criteria);
-//        long size =  mongoTemplate.count(query, PaperEntity.class);
 
         TextCriteria textCriteria = TextCriteria.forLanguage("en").matching(keyword);
         Query query1 = TextQuery.queryText(textCriteria);
-        query1.addCriteria(Criteria.where("publicationYear").gte(startYear).lte(endYear));  //限制年份的区间
         long size =  mongoTemplate.count(query1, PaperEntity.class);
 
         if (sortKey.equals("related")) {
@@ -159,8 +142,35 @@ public class SearchBlServiceImpl implements SearchBlService {
 
     @Override
     public BasicResponse getBasicSearchFilterCondition(String keyword) {
+        TextCriteria textCriteria = TextCriteria.forLanguage("en").matching(keyword);
+        Query query = TextQuery.queryText(textCriteria);
+        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        FilterCondition fcRes = new FilterCondition();
 
-        return null;
+        List<NameCount> authors = new ArrayList<>();
+        List<NameCount> affiliations = new ArrayList<>();
+        List<NameCount> conferences = new ArrayList<>();
+        List<NameCount> journals = new ArrayList<>();
+
+
+        for (PaperEntity p : res) {
+           for (AuthorEntity authorEntity : p.getAuthors()) {
+               FilterCondition.addNameCount(authors, authorEntity.getName());
+               FilterCondition.addNameCount(affiliations, authorEntity.getAffiliation());
+           }
+           if (p.getContentType().equals("conference")) {
+               FilterCondition.addNameCount(conferences, p.getPublicationName());
+           } else if (p.getContentType().equals("periodicals")) {
+               FilterCondition.addNameCount(journals, p.getPublicationName());
+           }
+        }
+
+        Collections.sort(authors);
+        Collections.sort(affiliations);
+        Collections.sort(conferences);
+        Collections.sort(journals);
+
+        return new BasicResponse(200, "Success", new FilterCondition(authors, affiliations, conferences, journals));
     }
 
     // 建立基本请求的接口

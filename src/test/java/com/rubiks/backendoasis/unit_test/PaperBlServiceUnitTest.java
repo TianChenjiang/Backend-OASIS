@@ -48,13 +48,11 @@ public class PaperBlServiceUnitTest {
     public void testBasicSearch() {
         String keyword = "software、";
         int page = 1;
-        int startYear = 2011;
-        int endYear  = 2014;
-        PapersWithSize res = (PapersWithSize) searchBlService.basicSearch(keyword, page, startYear, endYear, "related").getData();
+        PapersWithSize res = (PapersWithSize) searchBlService.basicSearch(keyword, page, "related").getData();
         List<PaperWithoutRef> paperEntities = res.getPapers();
         for (PaperWithoutRef pa : paperEntities) {
-            assertThat(pa.getPublicationYear(), lessThanOrEqualTo(endYear));
-            assertThat(pa.getPublicationYear(), greaterThanOrEqualTo(startYear));
+//            assertThat(pa.getPublicationYear(), lessThanOrEqualTo(endYear));
+//            assertThat(pa.getPublicationYear(), greaterThanOrEqualTo(startYear));
             assertThat(pa.toString().toLowerCase(), containsString("software"));
         }
     }

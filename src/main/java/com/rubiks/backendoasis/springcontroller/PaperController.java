@@ -49,93 +49,6 @@ public class PaperController {
         return searchBlService.findAll();
     }
 
-    @GetMapping("/search/basic/es")
-    @ApiOperation(value = "es的普通搜索", notes = "根据关键词获得相关论文")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
-            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public List<PaperDocument> basicSearchByES(@RequestParam(value = "keyword") String keyword,
-                                                   @RequestParam(value = "page") int page) throws Exception {
-        return searchBlService.basicSearchByES(keyword, page);
-    }
-
-    @GetMapping("/search/advanced/es")
-    @ApiOperation(value = "es的普通搜索", notes = "根据关键词获得相关论文")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
-            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public List<PaperDocument> advancedSearchByES(@RequestParam(value = "author", required = false) String author,
-                                              @RequestParam(value = "affiliation", required = false) String affiliation,
-                                              @RequestParam(value = "conferenceName", required = false) String conferenceName,
-                                              @RequestParam(value = "keyword", required = false) String keyword,
-                                              @RequestParam(value = "page") int page)  throws Exception{
-        if (author == null) author = "";
-        if (affiliation == null) affiliation = "";
-        if (conferenceName == null) conferenceName = "";
-        if (keyword == null) keyword = "";
-
-        return searchBlService.advancedSearchByES(author, affiliation, conferenceName, keyword, page);
-    }
-
-    @GetMapping("/search/basic/mongo")
-    @ApiOperation(value = "接口1 普通搜索", notes = "根据关键词获得相关论文")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
-            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse basicSearch(@RequestParam(value = "keyword") String keyword,
-                                           @RequestParam(value = "page") int page,
-                                           @RequestParam(value = "startYear") int startYear,
-                                           @RequestParam(value = "endYear") int endYear,
-                                           @RequestParam(value = "sortKey") String sortKey
-                                     ) {
-        return searchBlService.basicSearch(keyword, page, startYear, endYear, sortKey);
-    }
-
-    @GetMapping("/search/advanced/mongo")
-    @ApiOperation(value = "接口2 进阶搜索", notes = "根据关键词获得相关论文")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
-            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse advancedSearch(@RequestParam(value = "author", required = false) String author,
-                                            @RequestParam(value = "affiliation", required = false) String affiliation,
-                                            @RequestParam(value = "publicationName", required = false) String publicationName,
-                                            @RequestParam(value = "keyword", required = false) String keyword,
-                                            @RequestParam(value = "page") int page,
-                                            @RequestParam(value = "startYear") int startYear,
-                                            @RequestParam(value = "endYear") int endYear) {
-        if (author == null) author = "";
-        if (affiliation == null) affiliation = "";
-        if (publicationName == null) publicationName = "";
-        if (keyword == null) keyword = "";
-        return searchBlService.advancedSearch(author, affiliation, publicationName, keyword, page, startYear, endYear);
-    }
-
-    @GetMapping("/rank/basic/affiliation")
-    @ApiOperation(value = "接口3 查看组织简略排名", notes = "根据topic和sortkey查看排名")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
-            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse getAffiliationBasicRanking(@RequestParam(value = "sortKey") String sortKey,
-                                                                           @RequestParam(value = "year") int year) {
-        return  rankBlService.getAffiliationBasicRanking(sortKey, year);
-    }
-
-    @GetMapping("/rank/basic/author")
-    @ApiOperation(value = "接口4 查看作者简略排名", notes = "根据topic和sortkey查看排名")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
-            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
-            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse getAuthorBasicRanking(@RequestParam(value = "sortKey") String sortKey,
-                                                                 @RequestParam(value = "year") int year) {
-        return rankBlService.getAuthorBasicRanking(sortKey, year);
-    }
-
     @GetMapping("/researcher/interest")
     @ApiOperation(value = "接口5 查看学者研究方向")
     @ApiResponses(value = {
@@ -165,7 +78,5 @@ public class PaperController {
     public BasicResponse getReferenceById(@RequestParam (value = "paperId") String paperId) {
         return paperBlService.getReferenceById(paperId);
     }
-
-
 
 }

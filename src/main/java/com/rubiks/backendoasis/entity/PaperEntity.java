@@ -43,9 +43,9 @@ public class PaperEntity {
     @Field("doi")
     private String doi;
 
-    @TextIndexed
     @Field("publicationYear")
     private int publicationYear;
+
     @Field("metrics")
     private MetricsEntity metrics;
 
