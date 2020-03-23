@@ -44,7 +44,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
-    @Cacheable()
+    @Cacheable(value = "affiliation")
     public BasicResponse getAffiliationBasicRanking(String sortKey, int year) {
         // "acceptanceCount"|"citationCount"
         Aggregation aggregation = newAggregation(
@@ -78,7 +78,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
-    @Cacheable()
+    @Cacheable(value = "author")
     public BasicResponse getAuthorBasicRanking(String sortKey, int year) {
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
