@@ -1,1 +1,0 @@
-mongoimport --db oasis --collection papers --type json --file /usr/app/mongo_papers.json
