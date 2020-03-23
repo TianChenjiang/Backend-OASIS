@@ -6,12 +6,13 @@ import com.rubiks.backendoasis.entity.PaperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class PaperWithoutRef {
+public class PaperWithoutRef implements Serializable {
     private String id;
     private String title;
     private List<String> authors;

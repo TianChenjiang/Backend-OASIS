@@ -3,12 +3,13 @@ package com.rubiks.backendoasis.model.rank;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Builder
-public class AffiliationRank {
+public class AffiliationRank implements Serializable {
     private String name;
     private int count;
 

@@ -4,11 +4,12 @@ import com.rubiks.backendoasis.entity.ReferenceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class BriefReference {
+public class BriefReference implements Serializable {
     private String title;
     private String googleScholarLink;
 

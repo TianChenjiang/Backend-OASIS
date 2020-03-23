@@ -1,13 +1,16 @@
 package com.rubiks.backendoasis.response;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Dictionary;
 import java.util.Map;
 
 
 @Data
-public class BasicResponse<T> {
+@NoArgsConstructor
+public class BasicResponse<T> implements Serializable {
     private int code;
     private String msg;
     private T data;

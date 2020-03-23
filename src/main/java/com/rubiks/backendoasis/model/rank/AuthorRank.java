@@ -2,11 +2,12 @@ package com.rubiks.backendoasis.model.rank;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class AuthorRank {
+public class AuthorRank  implements Serializable {
     private String name;
     private int count;
     private String authorId;

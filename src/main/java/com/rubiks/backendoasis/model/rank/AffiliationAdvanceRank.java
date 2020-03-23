@@ -2,10 +2,11 @@ package com.rubiks.backendoasis.model.rank;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class AffiliationAdvanceRank {
+public class AffiliationAdvanceRank implements Serializable {
     private String affiliationId;
     private String affiliationName;
     private int count;

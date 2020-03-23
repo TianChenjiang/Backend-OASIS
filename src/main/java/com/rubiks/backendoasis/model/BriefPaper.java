@@ -5,12 +5,13 @@ import com.rubiks.backendoasis.entity.PaperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class BriefPaper {
+public class BriefPaper implements Serializable {
     private List<String> authors;
     private String link;
     private String title;
