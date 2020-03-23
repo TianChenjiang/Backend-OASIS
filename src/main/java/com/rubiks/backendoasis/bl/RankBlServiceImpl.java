@@ -10,6 +10,8 @@ import com.rubiks.backendoasis.model.rank.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -27,6 +29,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
 
 @Service
+@CacheConfig(cacheNames = "rank")
 public class RankBlServiceImpl implements RankBlService {
     private RestHighLevelClient client;
     private ObjectMapper objectMapper;
@@ -41,6 +44,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    @Cacheable()
     public BasicResponse getAffiliationBasicRanking(String sortKey, int year) {
         // "acceptanceCount"|"citationCount"
         Aggregation aggregation = newAggregation(
@@ -74,6 +78,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    @Cacheable()
     public BasicResponse getAuthorBasicRanking(String sortKey, int year) {
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),

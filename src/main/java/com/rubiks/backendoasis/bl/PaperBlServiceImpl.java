@@ -24,6 +24,8 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -51,6 +53,7 @@ import static com.rubiks.backendoasis.util.Constant.INDEX;
 import static com.rubiks.backendoasis.util.Constant.pageSize;
 
 @Service
+@CacheConfig(cacheNames = "papers")
 public class PaperBlServiceImpl implements PaperBlService {
     private RestHighLevelClient client;
     private ObjectMapper objectMapper;
@@ -104,6 +107,7 @@ public class PaperBlServiceImpl implements PaperBlService {
 
 
     @Override
+    @Cacheable()
     public BasicResponse getActivePaperAbstract() {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("publicationYear").is(2019)),
