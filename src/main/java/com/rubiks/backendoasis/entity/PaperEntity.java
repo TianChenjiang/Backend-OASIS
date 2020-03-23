@@ -23,23 +23,23 @@ public class PaperEntity {
     @Id
     private String id;
 
-    @TextIndexed
+//    @TextIndexed
     @Field("title")
     private String title;
 
-    @TextIndexed
+//    @TextIndexed
     @Field("authors")
     private List<AuthorEntity> authors;
 
-    @TextIndexed
+//    @TextIndexed
     @Field("abstract")
     private String _abstract;
 
-    @TextIndexed
+//    @TextIndexed
     @Field("publicationTitle")
     private String publicationTitle;
 
-    @TextIndexed
+//    @TextIndexed
     @Field("doi")
     private String doi;
 
@@ -49,18 +49,18 @@ public class PaperEntity {
     @Field("metrics")
     private MetricsEntity metrics;
 
-    @TextIndexed
+//    @TextIndexed
     @Field("keywords")
     private List<String> keywords;
 
     @Field("references")
     private List<ReferenceEntity> references;
 
-    @TextIndexed
+//    @TextIndexed
     @Field("contentType")
     private String contentType;
 
-    @TextIndexed
+//    @TextIndexed
     @Field("publicationName")
     private String publicationName;
 
