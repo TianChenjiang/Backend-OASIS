@@ -1,38 +1,36 @@
-package com.rubiks.backendoasis.model;
+package com.rubiks.backendoasis.model.rank;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Builder
-public class AffiliationRank {
+public class AuthorRank {
     private String name;
     private int count;
+    private String authorId;
 
-    public AffiliationRank(String name, int count) {
+    public AuthorRank(String name, int count, String authorId) {
         this.name = name;
         this.count = count;
+        this.authorId = authorId;
     }
 
-    public static <T> List<AffiliationRank> transformToBasic(List<T> rank){
-        List<AffiliationRank> res = new ArrayList<>();
+    public static <T> List<AuthorRank> transformToBasic(List<T> rank){
+        List<AuthorRank> res = new ArrayList<>();
         if (rank.get(0).getClass() == AcceptanceCountRank.class) {
             List<AcceptanceCountRank> ac = (List<AcceptanceCountRank>)rank;
             for (AcceptanceCountRank a : ac) {
-                res.add(new AffiliationRank(a.getId(), a.getAcceptanceCount()));
+                res.add(new AuthorRank(a.getName(), a.getAcceptanceCount(), a.getId()));
             }
         } else {
             List<CitationCountRank> ci = (List<CitationCountRank>)rank;
             for (CitationCountRank a : ci) {
-                res.add(new AffiliationRank(a.getId(), a.getCitationCount()));
+                res.add(new AuthorRank(a.getName(), a.getCitationCount(), a.getId()));
             }
         }
 
         return res;
     }
-
 }
-

@@ -1,16 +1,10 @@
 package com.rubiks.backendoasis.springcontroller;
 
-import com.rubiks.backendoasis.blservice.DataSourceBlService;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
-import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
-import com.rubiks.backendoasis.model.AuthorRank;
-import com.rubiks.backendoasis.model.PapersWithSize;
-import com.rubiks.backendoasis.model.ResearchInterest;
 import com.rubiks.backendoasis.response.BasicResponse;
-import com.rubiks.backendoasis.response.Response;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
 import io.swagger.annotations.ApiOperation;

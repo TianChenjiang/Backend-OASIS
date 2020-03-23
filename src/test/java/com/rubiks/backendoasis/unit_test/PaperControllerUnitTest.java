@@ -6,7 +6,7 @@ import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.MetricsEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.model.AffiliationRank;
+import com.rubiks.backendoasis.model.rank.AffiliationRank;
 import com.rubiks.backendoasis.model.PaperWithoutRef;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.response.BasicResponse;

@@ -1,6 +1,9 @@
 package com.rubiks.backendoasis.springcontroller;
 
+import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
+import com.rubiks.backendoasis.model.ResearchInterest;
+import com.rubiks.backendoasis.model.rank.AuthorRankDetail;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.response.SuccessResponse;
 import com.rubiks.backendoasis.response.WrongResponse;
@@ -12,13 +15,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class RankController {
     @Autowired
     private RankBlService rankBlService;
+    private PaperBlService paperBlService;
 
-    public RankController(RankBlService rankBlService) {
+    public RankController(RankBlService rankBlService, PaperBlService paperBlService) {
         this.rankBlService = rankBlService;
+        this.paperBlService = paperBlService;
     }
 
     @GetMapping("/rank/basic/affiliation")
@@ -48,5 +55,26 @@ public class RankController {
                                                   @RequestParam(value = "startYear") int startYear,
                                                   @RequestParam(value = "endYear") int endYear) {
         return rankBlService.getAuthorAdvancedRanking(sortKey, startYear, endYear);
+    }
+
+    @GetMapping("rank/detail/author")
+    public BasicResponse getAuthorDetailRankingById(@RequestParam(value = "authorId") String authorId) {
+        List<ResearchInterest> keywords = (List<ResearchInterest>) paperBlService.getResearcherInterest(authorId).getData(); //调用paperbl中的接口
+        AuthorRankDetail authorRankDetail =  rankBlService.getAuthorDetailRankingById(authorId);
+        authorRankDetail.setKeywords(keywords);
+        return new BasicResponse(200, "Success", authorRankDetail);
+    }
+
+    @GetMapping("/rank/advanced/affiliation")
+    public BasicResponse getAffiliationAdvancedRanking(@RequestParam(value = "sortKey") String sortKey,
+                                                       @RequestParam(value = "startYear") int startYear,
+                                                       @RequestParam(value = "endYear") int endYear) {
+        return rankBlService.getAffiliationAdvancedRanking(sortKey, startYear, endYear);
+    }
+
+
+    @GetMapping("/rank/detail/affiliation")
+    public BasicResponse getAffiliationDetailRankingById(@RequestParam(value = "affiliationId") String affiliationId) {
+        return rankBlService.getAffiliationDetailRankingById(affiliationId);
     }
 }

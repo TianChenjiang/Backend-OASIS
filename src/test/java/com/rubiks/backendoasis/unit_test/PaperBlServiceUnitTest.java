@@ -3,8 +3,9 @@ package com.rubiks.backendoasis.unit_test;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
-import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.*;
+import com.rubiks.backendoasis.model.rank.AffiliationRank;
+import com.rubiks.backendoasis.model.rank.AuthorRank;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,16 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest

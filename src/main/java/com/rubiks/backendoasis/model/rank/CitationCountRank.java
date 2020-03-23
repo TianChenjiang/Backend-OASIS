@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.model;
+package com.rubiks.backendoasis.model.rank;
 
 import lombok.Data;
 

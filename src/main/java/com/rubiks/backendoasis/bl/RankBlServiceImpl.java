@@ -1,11 +1,12 @@
 package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.DBObject;
+import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.*;
+import com.rubiks.backendoasis.model.rank.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static com.rubiks.backendoasis.util.Constant.collectionName;
@@ -103,6 +103,7 @@ public class RankBlServiceImpl implements RankBlService {
         return null;
     }
 
+
     @Override
     public BasicResponse getAuthorAdvancedRanking(String sortKey, int startYear, int endYear) {
         if (sortKey.equals("citationCount")) {
@@ -111,6 +112,7 @@ public class RankBlServiceImpl implements RankBlService {
             sortKey = "count";
         }
 
+        //选出符合条件的author
         MatchOperation yearOperation = match(Criteria.where("publicationYear").gte(startYear).lte(endYear));
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
@@ -121,11 +123,11 @@ public class RankBlServiceImpl implements RankBlService {
                         sum("metrics.citationCountPaper").as("citation").addToSet("authors.name").as("authorName")
                         .addToSet("authors.id").as("authorId"),
                 sort(Sort.Direction.DESC, sortKey),
-                limit(10)
+                limit(20)
         );
         AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class);
 
-
+        //计算author对应的十年 publicaitonTrend
         int curYear = Calendar.getInstance().get(Calendar.YEAR);
         for (AuthorAdvanceRank advance : firstRes) {
             String auId = advance.getAuthorId();
@@ -148,9 +150,57 @@ public class RankBlServiceImpl implements RankBlService {
         return new BasicResponse(200, "Success", firstRes.getMappedResults());
     }
 
+
     @Override
-    public BasicResponse getAffiliationAdvancedRanking(String sortKey) {
-        return null;
+    public AuthorRankDetail getAuthorDetailRankingById(String id) {
+        MatchOperation idMatch =  match(Criteria.where("authors.id").is(id));
+        Aggregation mostInfluentialAgg = newAggregation(
+                idMatch,
+                unwind("authors"),
+                group("authors.id").
+                        sum("metrics.citationCountPaper").as("citation").addToSet("publicationYear").as("publicationYear")
+                        .addToSet("title").as("title").addToSet("publicationName")
+                        .as("publicationName").addToSet("link").as("link"),
+                sort(Sort.Direction.DESC, "citation"),
+                limit(5)
+        );
+        AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, collectionName, MostInfluentialPapers.class);
+
+        Aggregation mostRecentAgg = newAggregation(
+                idMatch,
+                unwind("authors"),
+                group("authors.id")
+                        .addToSet("publicationYear").as("publicationYear")
+                        .addToSet("title").as("title").addToSet("publicationName")
+                        .as("publicationName").addToSet("link").as("link"),
+                sort(Sort.Direction.DESC, "publicationYear"),
+                limit(5)
+        );
+        AggregationResults<MostRecentPapers> mostRecentPapers = mongoTemplate.aggregate(mostRecentAgg, collectionName, MostRecentPapers.class);
+
+        return new AuthorRankDetail(null, mostInfluentialPapers.getMappedResults(), mostRecentPapers.getMappedResults());
+    }
+
+    @Override
+    public BasicResponse getAffiliationAdvancedRanking(String sortKey, int startYear, int endYear) {
+        if (sortKey.equals("citationCount")) {
+            sortKey = "citation";
+        } else if(sortKey.equals("acceptanceCount")) {
+            sortKey = "count";
+        }
+
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("authors.affiliation").ne("")),  //非空属性
+                match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
+                unwind("authors"),
+                group("authors.affiliation").count().as("count")
+                        .sum("metrics.citationCountPaper").as("citation")
+                        .addToSet("authors.affiliation").as("affiliationName"),
+                sort(Sort.Direction.DESC, sortKey),
+                limit(20)
+        );
+        AggregationResults<AffiliationAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, AffiliationAdvanceRank.class);
+        return new BasicResponse(200, "Success", res.getMappedResults());
     }
 
 
@@ -159,10 +209,6 @@ public class RankBlServiceImpl implements RankBlService {
         return null;
     }
 
-    @Override
-    public BasicResponse getAuthorDetailRankingById(String id) {
-        return null;
-    }
 
 
 }
