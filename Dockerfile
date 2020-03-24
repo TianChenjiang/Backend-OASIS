@@ -1,5 +1,5 @@
 FROM openjdk:8-jdk-alpine
-ENV MONGO="mongodb://47.101.33.219:27017,101.37.175.237:27017,116.62.23.105:27017/?replicaSet=rs0/oasis"
+ENV MONGO="mongodb://47.101.33.219:27017,116.62.23.105:27017/?replicaSet=rs0/oasis"
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]

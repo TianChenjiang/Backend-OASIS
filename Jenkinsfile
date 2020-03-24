@@ -19,9 +19,6 @@ pipeline {
     }
 
     stage('Test') {
-      environment {
-        MONGO = 'mongodb://47.101.33.219:27017,101.37.175.237:27017,116.62.23.105:27017/?replicaSet=rs0/oasis'
-      }
       steps {
         sh 'mvn test'
       }
