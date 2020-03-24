@@ -19,7 +19,7 @@ public class MongoConfig {
 //        ctx.setAutoIndexCreation(true);
         String connection = System.getenv("MONGO");
         if (connection == null) {
-            connection = "mongodb://localhost:27017/oasis";
+            connection = "mongodb://localhost:27017";
         }
         return MongoClients.create(connection);
     }
