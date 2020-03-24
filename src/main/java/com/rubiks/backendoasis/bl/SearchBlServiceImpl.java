@@ -22,6 +22,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,28 +55,40 @@ public class SearchBlServiceImpl implements SearchBlService {
         this.objectMapper = objectMapper;
     }
 
-    public List<PaperDocument> basicSearchByES(String keyword, int page) throws Exception{
+    public BasicResponse basicSearchByES(String keyword, int page, String sortKey) throws Exception{
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword));
+        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName"));
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
-        searchSourceBuilder.sort(new ScoreSortBuilder().order(SortOrder.DESC)); // 按算分排序
+
+        if (sortKey.equals("related")) {
+            searchSourceBuilder.sort(new ScoreSortBuilder().order(SortOrder.DESC)); // 按算分排序
+        } else if (sortKey.equals("recent")) {
+            searchSourceBuilder.sort(new FieldSortBuilder("publicationYear").order(SortOrder.DESC));
+        }
+        else if (sortKey.equals("early")) {
+            searchSourceBuilder.sort(new FieldSortBuilder("publicationYear").order(SortOrder.ASC));
+        }
+        else if (sortKey.equals("citation")) {
+            searchSourceBuilder.sort(new FieldSortBuilder("metrics.citationCountPaper").order(SortOrder.DESC));
+        }
+
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return getSearchResult(searchResponse);
+        return new BasicResponse(200, "Success", PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)));
     }
 
     @Override
-    public List<PaperDocument> advancedSearchByES(String author, String affiliation, String conferenceName, String keyword, int page) throws Exception {
+    public BasicResponse advancedSearchByES(String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.name", author).operator(Operator.AND));
         if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND));
-        if (!conferenceName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("conferenceName",conferenceName).operator(Operator.AND));
+        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("conferenceName",publicationName).operator(Operator.AND));
         if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
 //                .must(QueryBuilders.matchQuery("authors.name", authors).operator(Operator.AND))
 //                .must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND))
@@ -88,7 +101,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return getSearchResult(searchResponse);
+        return new BasicResponse(200, "Success", null);
     }
 
     @Override
@@ -184,10 +197,11 @@ public class SearchBlServiceImpl implements SearchBlService {
         SearchHit[] searchHit = response.getHits().getHits();
         List<PaperDocument> paperDocuments = new ArrayList<>();
         for (SearchHit hit : searchHit){
-            paperDocuments
-                    .add(objectMapper
-                            .convertValue(hit
-                                    .getSourceAsMap(), PaperDocument.class));
+            PaperDocument paperDocument = objectMapper.convertValue(hit.getSourceAsMap(), PaperDocument.class);
+            paperDocument.setId(hit.getId());
+            paperDocument.set_abstract((String)(hit.getSourceAsMap().get("abstract"))); //很奇怪，这里的abstract会为null，必须这样设置一下
+            paperDocuments.add(paperDocument);
+
         }
         return paperDocuments;
     }
@@ -204,6 +218,6 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return getSearchResult(searchResponse);
+        return null;
     }
 }

@@ -13,6 +13,7 @@ public class AffiliationAdvanceRank implements Serializable {
     private int citation;
     private int authorNum;
 
+
     public AffiliationAdvanceRank(String affiliationName, int count, int citation, int authorNum) {
         this.affiliationName = affiliationName;
         this.affiliationId = affiliationName; //现在还没有id，暂时用name代替

@@ -57,7 +57,7 @@ public class RankController {
         return rankBlService.getAuthorAdvancedRanking(sortKey, startYear, endYear);
     }
 
-    @GetMapping("rank/detail/author")
+    @GetMapping("/rank/detail/author")
     public BasicResponse getAuthorDetailRankingById(@RequestParam(value = "authorId") String authorId) {
         List<ResearchInterest> keywords = (List<ResearchInterest>) paperBlService.getResearcherInterest(authorId).getData(); //调用paperbl中的接口
         AuthorRankDetail authorRankDetail =  rankBlService.getAuthorDetailRankingById(authorId);

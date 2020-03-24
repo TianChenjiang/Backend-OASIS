@@ -32,9 +32,10 @@ public class SearchController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public List<PaperDocument> basicSearchByES(@RequestParam(value = "keyword") String keyword,
-                                               @RequestParam(value = "page") int page) throws Exception {
-        return searchBlService.basicSearchByES(keyword, page);
+    public BasicResponse basicSearchByES(@RequestParam(value = "keyword") String keyword,
+                                               @RequestParam(value = "page") int page,
+                                               @RequestParam(value = "sortKey") String sortKey) throws Exception {
+        return searchBlService.basicSearchByES(keyword, page, sortKey);
     }
 
     @GetMapping("/search/advanced/es")
@@ -43,17 +44,20 @@ public class SearchController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public List<PaperDocument> advancedSearchByES(@RequestParam(value = "author", required = false) String author,
-                                                  @RequestParam(value = "affiliation", required = false) String affiliation,
-                                                  @RequestParam(value = "conferenceName", required = false) String conferenceName,
-                                                  @RequestParam(value = "keyword", required = false) String keyword,
-                                                  @RequestParam(value = "page") int page)  throws Exception{
+    public BasicResponse advancedSearchByES(@RequestParam(value = "author", required = false) String author,
+                                            @RequestParam(value = "affiliation", required = false) String affiliation,
+                                            @RequestParam(value = "publicationName", required = false) String publicationName,
+                                            @RequestParam(value = "keyword", required = false) String keyword,
+                                            @RequestParam(value = "page") int page,
+                                            @RequestParam(value = "startYear") int startYear,
+                                            @RequestParam(value = "endYear") int endYear,
+                                            @RequestParam(value = "sortKey") String sortKey)  throws Exception{
         if (author == null) author = "";
         if (affiliation == null) affiliation = "";
-        if (conferenceName == null) conferenceName = "";
+        if (publicationName == null) publicationName = "";
         if (keyword == null) keyword = "";
 
-        return searchBlService.advancedSearchByES(author, affiliation, conferenceName, keyword, page);
+        return searchBlService.advancedSearchByES(author, affiliation, publicationName, keyword, startYear, endYear, page, sortKey);
     }
 
     @GetMapping("/search/basic/mongo")
