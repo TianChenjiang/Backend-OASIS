@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface SearchBlService {
     List<PaperDocument> findAll() throws Exception;
-    List<PaperDocument> basicSearchByES(String keyword, int page) throws Exception;
-    List<PaperDocument> advancedSearchByES(String author, String affiliation, String conferenceName, String keyword, int page) throws Exception;
+    BasicResponse basicSearchByES(String keyword, int page, String sortKey) throws Exception;
+    BasicResponse advancedSearchByES(String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception;
     BasicResponse basicSearch(String keyword, int page, String sortKey);
     BasicResponse advancedSearch(String author, String affiliation, String publicationName, String keyword, int page, int startYear, int endYear);
     BasicResponse getBasicSearchFilterCondition(String keyword);

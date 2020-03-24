@@ -114,7 +114,7 @@ public class RankBlServiceImpl implements RankBlService {
 
 
     @Override
-    public BasicResponse getAuthorAdvancedRanking(String sortKey, int startYear, int endYear) {
+    public BasicResponse getAuthorAdvancedRanking(String sortKey, int startYear, int endYear) { //TODO 当数据过大，会超过group的表示范围
         if (sortKey.equals("citationCount")) {
             sortKey = "citation";
         } else if(sortKey.equals("acceptanceCount")) {
@@ -225,6 +225,9 @@ public class RankBlServiceImpl implements RankBlService {
 
     @Override
     public BasicResponse getAffiliationDetailRankingById(String id) {
+        MatchOperation idMatch =  match(Criteria.where("authors.affiliation").is(id));
+
+
         return null;
     }
 

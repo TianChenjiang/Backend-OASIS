@@ -40,7 +40,7 @@ public class ElasticSearchConfig {
 //                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
 //        RestHighLevelClient client = new RestHighLevelClient(builder);
         RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(new HttpHost(host, port)));
+                RestClient.builder(new HttpHost("47.101.33.219", 9200)));
         return client;
     }
 }

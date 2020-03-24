@@ -3,8 +3,11 @@ package com.rubiks.backendoasis.model;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.MetricsEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.esdocument.Author;
+import com.rubiks.backendoasis.esdocument.PaperDocument;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class PaperWithoutRef implements Serializable {
     private String id;
     private String title;
@@ -41,6 +45,32 @@ public class PaperWithoutRef implements Serializable {
                     p.getDoi(),
                     p.getPublicationYear(),
 
+                    p.getMetrics(),
+                    p.getKeywords(),
+                    p.getContentType(),
+                    p.getPublicationName(),
+                    p.getLink()));
+        }
+        return res;
+    }
+
+    public static List<PaperWithoutRef> PaperDocToPaperWithoutRef(List<PaperDocument> paperdocs) {
+        if (paperdocs.size() == 0) return null;
+        List<PaperWithoutRef> res = new ArrayList<>();
+        for (PaperDocument p : paperdocs) {
+            List<String> author_names = new ArrayList<>();
+            if (p.getAuthors()!=null) {
+                for (Author a : p.getAuthors()) {
+                    author_names.add(a.getName());
+                }
+            }
+            res.add(new PaperWithoutRef(p.getId(),
+                    p.getTitle(),
+                    author_names,
+                    p.get_abstract(),
+                    p.getPublicationTitle(),
+                    p.getDoi(),
+                    p.getPublicationYear(),
                     p.getMetrics(),
                     p.getKeywords(),
                     p.getContentType(),
