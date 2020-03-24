@@ -75,7 +75,7 @@ public class PaperControllerIntegrationTest {
                 .param("page", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.papers[0].publicationName", is("ASE")))
+                .andExpect(jsonPath("$.data.papers[0].publicationName", containsString("ASE")))
 //                .andExpect(jsonPath("$.data.papers[0].keywords", (hasItem(equalToIgnoringCase("software")))))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", greaterThanOrEqualTo(2010)))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", lessThanOrEqualTo(2015)))
