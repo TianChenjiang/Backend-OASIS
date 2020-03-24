@@ -1,6 +1,8 @@
 package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.esdocument.Author;
@@ -8,21 +10,23 @@ import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.model.rank.*;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.util.Counter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.rubiks.backendoasis.util.Constant.collectionName;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
@@ -200,12 +204,22 @@ public class RankBlServiceImpl implements RankBlService {
                 unwind("authors"),
                 group("authors.affiliation").count().as("count")
                         .sum("metrics.citationCountPaper").as("citation")
-                        .addToSet("authors.affiliation").as("affiliationName"),
+                        .addToSet("authors.affiliation").as("affiliationName")
+                        .addToSet("authors.id").as("authorId"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
-        AggregationResults<AffiliationAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, AffiliationAdvanceRank.class);
-        return new BasicResponse(200, "Success", res.getMappedResults());
+        AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, collectionName, BasicDBObject.class);
+        List<AffiliationAdvanceRank> affiliationAdvanceRanks = new ArrayList<>();
+        for (Iterator<BasicDBObject> iterator = res.iterator(); iterator.hasNext();) {
+            BasicDBObject obj = iterator.next();
+            String affiliationName = obj.getString("affiliationName");
+            int  count = obj.getInt("count");
+            int citation = obj.getInt("citation");
+            List<String> authorIds = (List<String>)(obj.get("authorId"));
+            affiliationAdvanceRanks.add(new AffiliationAdvanceRank(affiliationName, count, citation, Counter.getCount(authorIds)));
+        }
+        return new BasicResponse(200, "Success", affiliationAdvanceRanks);
     }
 
 
