@@ -99,8 +99,7 @@ public class SearchController {
             @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
-    public BasicResponse getBasicSearchFilterCondition(@RequestParam(value = "keyword") String keyword) {
+    public BasicResponse getBasicSearchFilterCondition(@RequestParam(value = "keyword") String keyword) throws Exception {
         return searchBlService.getBasicSearchFilterCondition(keyword);
     }
-
 }

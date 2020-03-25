@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.model.FilterCondition;
 import com.rubiks.backendoasis.model.NameCount;
@@ -16,6 +17,7 @@ import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
@@ -74,8 +76,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-
-        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), count ));
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), count));
     }
 
     @Override
@@ -153,10 +154,18 @@ public class SearchBlServiceImpl implements SearchBlService {
     }
 
     @Override
-    public BasicResponse getBasicSearchFilterCondition(String keyword) {
-        TextCriteria textCriteria = TextCriteria.forLanguage("en").matching(keyword);
-        Query query = TextQuery.queryText(textCriteria);
-        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+    public BasicResponse getBasicSearchFilterCondition(String keyword) throws Exception{
+//        TextCriteria textCriteria = TextCriteria.forLanguage("en").matching(keyword);
+////        Query query = TextQuery.queryText(textCriteria);
+////        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        SearchRequest searchRequest = new SearchRequest(INDEX);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
+        searchSourceBuilder.query(queryBuilder);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        List<PaperDocument> res = getSearchResult(searchResponse);
         FilterCondition fcRes = new FilterCondition();
 
         List<NameCount> authors = new ArrayList<>();
@@ -165,8 +174,8 @@ public class SearchBlServiceImpl implements SearchBlService {
         List<NameCount> journals = new ArrayList<>();
 
 
-        for (PaperEntity p : res) {
-           for (AuthorEntity authorEntity : p.getAuthors()) {
+        for (PaperDocument p : res) {
+           for (Author authorEntity : p.getAuthors()) {
                FilterCondition.addNameCount(authors, authorEntity.getName());
                FilterCondition.addNameCount(affiliations, authorEntity.getAffiliation());
            }
