@@ -166,7 +166,6 @@ public class SearchBlServiceImpl implements SearchBlService {
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         List<PaperDocument> res = getSearchResult(searchResponse);
-        FilterCondition fcRes = new FilterCondition();
 
         List<NameCount> authors = new ArrayList<>();
         List<NameCount> affiliations = new ArrayList<>();

@@ -55,7 +55,6 @@ public class PaperWithoutRef implements Serializable {
     }
 
     public static List<PaperWithoutRef> PaperDocToPaperWithoutRef(List<PaperDocument> paperdocs) {
-        if (paperdocs.size() == 0) return null;
         List<PaperWithoutRef> res = new ArrayList<>();
         for (PaperDocument p : paperdocs) {
             List<String> author_names = new ArrayList<>();
