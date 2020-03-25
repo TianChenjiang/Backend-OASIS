@@ -15,8 +15,11 @@ import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -56,7 +59,14 @@ public class SearchBlServiceImpl implements SearchBlService {
     public BasicResponse basicSearchByES(String keyword, int page, String sortKey) throws Exception{
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName"));
+        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
+        searchSourceBuilder.query(queryBuilder);
+
+        CountRequest countRequest = new CountRequest();  //获得结果集总数
+        countRequest.query(queryBuilder);
+        CountResponse countResponse = client.count(countRequest, RequestOptions.DEFAULT);
+        long count = countResponse.getCount();
+
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
         searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
@@ -64,7 +74,8 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return new BasicResponse(200, "Success", PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)));
+
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), count ));
     }
 
     @Override
