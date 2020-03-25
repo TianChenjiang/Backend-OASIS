@@ -226,7 +226,7 @@ public class RankBlServiceImpl implements RankBlService {
     @Override
     public BasicResponse getAffiliationDetailRankingById(String id) {
         MatchOperation idMatch =  match(Criteria.where("authors.affiliation").is(id));
-
+        
 
         return null;
     }

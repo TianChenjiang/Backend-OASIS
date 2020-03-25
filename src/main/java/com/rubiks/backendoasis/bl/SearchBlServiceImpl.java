@@ -10,16 +10,14 @@ import com.rubiks.backendoasis.model.NameCount;
 import com.rubiks.backendoasis.model.PaperWithoutRef;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.springcontroller.SearchController;
 import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
@@ -61,18 +59,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchSourceBuilder.query(QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName"));
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
-
-        if (sortKey.equals("related")) {
-            searchSourceBuilder.sort(new ScoreSortBuilder().order(SortOrder.DESC)); // 按算分排序
-        } else if (sortKey.equals("recent")) {
-            searchSourceBuilder.sort(new FieldSortBuilder("publicationYear").order(SortOrder.DESC));
-        }
-        else if (sortKey.equals("early")) {
-            searchSourceBuilder.sort(new FieldSortBuilder("publicationYear").order(SortOrder.ASC));
-        }
-        else if (sortKey.equals("citation")) {
-            searchSourceBuilder.sort(new FieldSortBuilder("metrics.citationCountPaper").order(SortOrder.DESC));
-        }
+        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
 
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -84,6 +71,7 @@ public class SearchBlServiceImpl implements SearchBlService {
     public BasicResponse advancedSearchByES(String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
 
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.name", author).operator(Operator.AND));
@@ -97,7 +85,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
-        searchSourceBuilder.sort(new ScoreSortBuilder().order(SortOrder.DESC));
+        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
@@ -219,5 +207,21 @@ public class SearchBlServiceImpl implements SearchBlService {
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         return null;
+    }
+
+    private SearchSourceBuilder sortByKey(SearchSourceBuilder searchSourceBuilder, String sortKey) {
+
+        if (sortKey.equals("related")) {
+            searchSourceBuilder.sort(new ScoreSortBuilder().order(SortOrder.DESC)); // 按算分排序
+        } else if (sortKey.equals("recent")) {
+            searchSourceBuilder.sort(new FieldSortBuilder("publicationYear").order(SortOrder.DESC));
+        }
+        else if (sortKey.equals("early")) {
+            searchSourceBuilder.sort(new FieldSortBuilder("publicationYear").order(SortOrder.ASC));
+        }
+        else if (sortKey.equals("citation")) {
+            searchSourceBuilder.sort(new FieldSortBuilder("metrics.citationCountPaper").order(SortOrder.DESC));
+        }
+        return searchSourceBuilder;
     }
 }
