@@ -29,6 +29,7 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -38,6 +39,7 @@ import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -64,11 +66,6 @@ public class SearchBlServiceImpl implements SearchBlService {
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
         searchSourceBuilder.query(queryBuilder);
 
-        CountRequest countRequest = new CountRequest();  //获得结果集总数
-        countRequest.query(queryBuilder);
-        CountResponse countResponse = client.count(countRequest, RequestOptions.DEFAULT);
-        long count = countResponse.getCount();
-
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
         searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
@@ -76,7 +73,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), count));
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), getSearchResSize(keyword)));
     }
 
     @Override
@@ -242,5 +239,15 @@ public class SearchBlServiceImpl implements SearchBlService {
             searchSourceBuilder.sort(new FieldSortBuilder("metrics.citationCountPaper").order(SortOrder.DESC));
         }
         return searchSourceBuilder;
+    }
+
+    @Cacheable("count")
+    public long getSearchResSize(String keyword) throws IOException {
+        CountRequest countRequest = new CountRequest();  //获得结果集总数
+        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
+        countRequest.query(queryBuilder);
+        CountResponse countResponse = client.count(countRequest, RequestOptions.DEFAULT);
+        long count = countResponse.getCount();
+        return count;
     }
 }
