@@ -2,25 +2,12 @@ package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.esdocument.Author;
-import com.rubiks.backendoasis.esdocument.PaperDocument;
-import com.rubiks.backendoasis.exception.NoSuchYearException;
+
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.response.BasicResponse;
-import com.rubiks.backendoasis.util.Constant;
-import com.rubiks.backendoasis.util.MapUtil;
-import com.rubiks.backendoasis.util.StrProcesser;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,27 +17,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 
 import static com.rubiks.backendoasis.util.Constant.collectionName;
+import static com.rubiks.backendoasis.util.Constant.pageSize;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Sort.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.Basic;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.regex.Pattern;
 
-import static com.rubiks.backendoasis.util.Constant.INDEX;
-import static com.rubiks.backendoasis.util.Constant.pageSize;
 
 @Service
 @CacheConfig(cacheNames = "papers")
@@ -127,8 +104,44 @@ public class PaperBlServiceImpl implements PaperBlService {
 
     @Override
     public BasicResponse getAuthorPapersById(String authorId, int page, String sortKey) {
-        // 这个等到确定使用的图表库后确定
-        return null;
+        Criteria criteria = new Criteria();
+        criteria.andOperator(criteria.where("authors.id").is(authorId));
+        Query query = new Query(criteria);
+        long size = mongoTemplate.count(query, PaperEntity.class);
+
+       if (sortKey.equals("recent")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
+        }
+        else if (sortKey.equals("early")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.ASC, "publicationYear")));
+        }
+        else if (sortKey.equals("citation")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "metrics.citationCountPaper")));
+        }
+
+        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
+    }
+
+    @Override
+    public BasicResponse getAffiliationPapers(String affiliation, int page, String sortKey) {
+        Criteria criteria = new Criteria();
+        criteria.andOperator(criteria.where("authors.affiliation").is(affiliation));
+        Query query = new Query(criteria);
+        long size = mongoTemplate.count(query, PaperEntity.class);
+
+        if (sortKey.equals("recent")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
+        }
+        else if (sortKey.equals("early")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.ASC, "publicationYear")));
+        }
+        else if (sortKey.equals("citation")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "metrics.citationCountPaper")));
+        }
+
+        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
     class AuthorKeywordsList {

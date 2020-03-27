@@ -7,5 +7,6 @@ public interface PaperBlService {
     BasicResponse getActivePaperAbstract();
     BasicResponse getReferenceById(String paperId);
     BasicResponse getAuthorPapersById(String authorId, int page, String sortKey);
+    BasicResponse getAffiliationPapers(String affiliation, int page, String sortKey);
 //    List<ResearchInterest> getMaxResearcherInterest();
 }

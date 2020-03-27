@@ -73,4 +73,19 @@ public class PaperController {
         return paperBlService.getReferenceById(paperId);
     }
 
+    @GetMapping("/paper/author")
+    public BasicResponse getAuthorPapersById(@RequestParam(value = "authorId") String authorId,
+                                            @RequestParam(value = "page") int page,
+                                            @RequestParam(value = "sortKey") String sortKey) {
+        return paperBlService.getAuthorPapersById(authorId, page, sortKey);
+    }
+
+    @GetMapping("/paper/affiliation")
+    public BasicResponse getAffiliationPapers(@RequestParam(value = "affiliation") String affiliation,
+                                              @RequestParam(value = "page") int page,
+                                              @RequestParam(value = "sortKey") String sortKey) {
+        return paperBlService.getAffiliationPapers(affiliation, page, sortKey);
+    }
+
+
 }
