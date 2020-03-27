@@ -23,10 +23,7 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.rubiks.backendoasis.util.Constant.collectionName;
@@ -138,23 +135,56 @@ public class RankBlServiceImpl implements RankBlService {
         AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class);
 
         //计算author对应的十年 publicaitonTrend
-        int curYear = Calendar.getInstance().get(Calendar.YEAR);
-        for (AuthorAdvanceRank advance : firstRes) {
-            String auId = advance.getAuthorId();
-            Aggregation aggregation1 = newAggregation(
-                    match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
-                    match(Criteria.where("authors.id").is(auId)),
-                    sort(Sort.Direction.ASC, "publicationYear"),
-                    group("publicationYear").count().as("num").addToSet("publicationYear").as("publicationYear")
-            );
-            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
-            List<Integer> publicationTrends = new ArrayList<>();
+//        int curYear = Calendar.getInstance().get(Calendar.YEAR);
+//        for (AuthorAdvanceRank advance : firstRes) {
+//            String auId = advance.getAuthorId();
+//            Aggregation aggregation1 = newAggregation(
+//                    match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
+//                    match(Criteria.where("authors.id").is(auId)),
+//                    sort(Sort.Direction.ASC, "publicationYear"),
+//                    group("publicationYear").count().as("num").addToSet("publicationYear").as("publicationYear")
+//            );
+//            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+//            List<Integer> publicationTrends = new ArrayList<>();
+//
+//            List<PublicationTrend> yearNumMap = curRes.getMappedResults();
+//            for (int i = curYear-9; i <= curYear; i++) {
+//                publicationTrends.add(PublicationTrend.getNumOfYear(yearNumMap, i)); //得到年份对应的num
+//            }
+//            advance.setPublicationTrend(publicationTrends);
+//        }
 
-            List<PublicationTrend> yearNumMap = curRes.getMappedResults();
-            for (int i = curYear-9; i <= curYear; i++) {
-                publicationTrends.add(PublicationTrend.getNumOfYear(yearNumMap, i)); //得到年份对应的num
+
+        // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
+        int curYear = Calendar.getInstance().get(Calendar.YEAR);
+        Aggregation aggregation1 = newAggregation(
+                match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
+                unwind("authors"),
+//                group("authors.id", "publicationYear").count().as("num")
+//                        .addToSet("publicationYear").as("publicationYear")
+//                        .addToSet("authors.id").as("authorId")
+//                sort(Sort.Direction.ASC, "authors.id"),
+                project().and("authors.id").as("authorId").and("publicationYear").as("year")
+        );
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+
+        for (AuthorAdvanceRank authorAdvanceRank : firstRes.getMappedResults()) {
+            String curId = authorAdvanceRank.getAuthorId();
+            List<Integer> publicationTrends = new ArrayList<>(Collections.nCopies(10, 0));
+
+            int low  = curYear-9;
+            for (IdYearMap idYearMap : curRes) {
+                if (idYearMap.getAuthorId() == null) {
+                    continue;  //有authorId为空的情况
+                }
+                else if (idYearMap.getAuthorId().equals(curId)) {
+                    int index = idYearMap.getYear()-low;
+                    int origin = publicationTrends.get(index);
+                    publicationTrends.set(index, ++origin);
+                }
             }
-            advance.setPublicationTrend(publicationTrends);
+
+            authorAdvanceRank.setPublicationTrend(publicationTrends);
         }
 
         return new BasicResponse(200, "Success", firstRes.getMappedResults());
@@ -249,35 +279,60 @@ public class RankBlServiceImpl implements RankBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
-        List<String> keywordList = new ArrayList<>();
-        for (PaperEntity paperEntity : aggregationList) {
-            if (paperEntity.getKeywords() != null) {    // keywords需要为非空
-                List<String> curKeywordList = paperEntity.getKeywords();
-                for (String curKeyword : curKeywordList) {
-                    keywordList.add(curKeyword);
-                }
-            }
-        }
 
-        List<ResearchInterest> res = new ArrayList<>();
-        for (String curKeyword: keywordList) {
-            boolean keywordExist = false;
-            for (int i = 0; i < res.size(); i++) {
-                ResearchInterest cur = res.get(i);
-                if (cur.getName().equals(curKeyword)) {
-                    keywordExist = true;
-                    cur.setValue(cur.getValue()+1);
-                    break;
-                }
-            }
-            if (!keywordExist) {
-                res.add(new ResearchInterest(curKeyword, 1));
-            }
-        }
-
-        return new BasicResponse(200, "Success", new AffiliationRankDetail(publicationTrends, res));
+        return new BasicResponse(200, "Success", new AffiliationRankDetail(publicationTrends, ResearchInterest.constructNameValueMap(aggregationList)));
     }
 
+    @Override
+    public BasicResponse getAuthorDetailRanking(String affiliation) {
+        MatchOperation affMatch = match(Criteria.where("authors.affiliation").is(affiliation));
+        Aggregation aggregation = newAggregation(
+                project("authors", "publicationYear", "metrics"),
+                affMatch,
+//                match(Criteria.where("authors.id").ne(null)),
+                unwind("authors"),
+                group("authors.id").count().as("count").
+                        sum("metrics.citationCountPaper").as("citation").addToSet("authors.name").as("authorName")
+                        .addToSet("authors.id").as("authorId")
+        );
+        AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class);
+        List<AuthorAdvanceRank> res = firstRes.getMappedResults();
 
+        //计算author对应的十年 publicationTrend
+        //换了一种实现，直接group
+        int curYear = Calendar.getInstance().get(Calendar.YEAR);
+        Aggregation aggregation1 = newAggregation(
+                affMatch,
+                match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
+                unwind("authors"),
+//                group("authors.id", "publicationYear").count().as("num")
+//                        .addToSet("publicationYear").as("publicationYear")
+//                        .addToSet("authors.id").as("authorId")
+//                sort(Sort.Direction.ASC, "authors.id"),
+                project().and("authors.id").as("authorId").and("publicationYear").as("year")
+        );
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+
+        for (AuthorAdvanceRank authorAdvanceRank : res) {
+            String curId = authorAdvanceRank.getAuthorId();
+            List<Integer> publicationTrends = new ArrayList<>(Collections.nCopies(10, 0));
+
+            int low  = curYear-9;
+            for (IdYearMap idYearMap : curRes) {
+                if (idYearMap.getAuthorId() == null) {
+                    continue;  //有authorId为空的情况
+                }
+                else if (idYearMap.getAuthorId().equals(curId)) {
+                    int index = idYearMap.getYear()-low;
+                    int origin = publicationTrends.get(index);
+                    publicationTrends.set(index, ++origin);
+                }
+            }
+
+            authorAdvanceRank.setPublicationTrend(publicationTrends);
+        }
+
+        return new BasicResponse(200, "Success", res);
+    }
 
 }

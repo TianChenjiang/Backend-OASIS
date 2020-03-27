@@ -63,7 +63,7 @@ public class SearchBlServiceImpl implements SearchBlService {
     public BasicResponse basicSearchByES(String keyword, int page, String sortKey) throws Exception{
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
+        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors.name", "authors.affiliation", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
         searchSourceBuilder.query(queryBuilder);
 
         searchSourceBuilder.from(page-1);

@@ -9,5 +9,6 @@ public interface RankBlService {
     BasicResponse getAuthorAdvancedRanking(String sortKey, int startYear, int endYear);
     BasicResponse getAffiliationAdvancedRanking(String sortKey, int startYear, int endYear);
     BasicResponse getAffiliationDetailRankingById(String id);
+    BasicResponse getAuthorDetailRanking(String affiliation);
     AuthorRankDetail getAuthorDetailRankingById(String id);
 }

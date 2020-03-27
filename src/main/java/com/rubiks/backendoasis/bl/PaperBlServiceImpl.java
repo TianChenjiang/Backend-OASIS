@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -54,32 +55,19 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
-        List<String> keywordList = new ArrayList<>();
-        for (PaperEntity paperEntity : aggregationList) {
-            if (paperEntity.getKeywords() != null) {    // keywords需要为非空
-                List<String> curKeywordList = paperEntity.getKeywords();
-                for (String curKeyword : curKeywordList) {
-                    keywordList.add(curKeyword);
-                }
-            }
-        }
+        return new BasicResponse<>(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
+    }
 
-        List<ResearchInterest> res = new ArrayList<>();
-        for (String curKeyword: keywordList) {
-            boolean keywordExist = false;
-            for (int i = 0; i < res.size(); i++) {
-                ResearchInterest cur = res.get(i);
-                if (cur.getName().equals(curKeyword)) {
-                    keywordExist = true;
-                    cur.setValue(cur.getValue()+1);
-                    break;
-                }
-            }
-            if (!keywordExist) {
-                res.add(new ResearchInterest(curKeyword, 1));
-            }
-        }
-        return new BasicResponse<>(200, "Success", res);
+    @Override
+    public BasicResponse getAffiliationInterest(String affiliation) {
+        MatchOperation idMatch =  match(Criteria.where("authors.affiliation").is(affiliation));
+        Aggregation aggregation = newAggregation(
+                idMatch,
+                project( "keywords", "authors.affiliation")
+        );
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
+        return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
 
@@ -148,4 +136,5 @@ public class PaperBlServiceImpl implements PaperBlService {
         private String name;
         private List<String> keywords;
     }
+
 }

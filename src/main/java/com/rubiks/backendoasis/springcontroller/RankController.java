@@ -77,4 +77,9 @@ public class RankController {
     public BasicResponse getAffiliationDetailRankingById(@RequestParam(value = "affiliationId") String affiliationId) {
         return rankBlService.getAffiliationDetailRankingById(affiliationId);
     }
+
+    @GetMapping("/rank/affiliation/author")
+    public BasicResponse getAuthorDetailRanking(@RequestParam(value = "affiliation") String affiliation) {
+        return rankBlService.getAuthorDetailRanking(affiliation);
+    }
 }
