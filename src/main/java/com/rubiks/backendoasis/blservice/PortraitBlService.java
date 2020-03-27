@@ -7,4 +7,5 @@ public interface PortraitBlService {
     BasicResponse getAffiliationPortrait(String affiliation);
     BasicResponse getKeywordPortrait(String keyword);
     BasicResponse getConferencePortrait(String conference);
+    BasicResponse getJournalPortrait(String journal);
 }

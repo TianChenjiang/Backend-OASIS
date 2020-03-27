@@ -70,6 +70,31 @@ public class PaperBlServiceImpl implements PaperBlService {
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
+    @Override
+    public BasicResponse getConferenceInterest(String conference) {
+        MatchOperation idMatch =  match(Criteria.where("publicationTitle").is(conference));
+        Aggregation aggregation = newAggregation(
+                idMatch,
+                match(Criteria.where("contentType").is("conferences")),
+                project( "keywords", "authors.affiliation")
+        );
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
+        return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
+    }
+
+    @Override
+    public BasicResponse getJournalInterest(String journal) {
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("publicationTitle").is(journal)),
+                match(Criteria.where("contentType").is("periodicals")),
+                project( "keywords", "authors.affiliation")
+        );
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
+        return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
+    }
+
 
     @Override
     @Cacheable()

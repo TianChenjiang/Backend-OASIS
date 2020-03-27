@@ -58,6 +58,16 @@ public class PaperController {
         return paperBlService.getAffiliationInterest(affiliation);
     }
 
+    @GetMapping("/conference/interest")
+    public BasicResponse getConferenceInterest(@RequestParam(value = "conference") String conference) {
+        return paperBlService.getConferenceInterest(conference);
+    }
+
+    @GetMapping("/journal/interest")
+    public BasicResponse getJournalInterest(@RequestParam(value = "journal") String journal) {
+        return paperBlService.getJournalInterest(journal);
+    }
+
     @GetMapping("/paper/abstract")
     @ApiOperation(value = "接口6 查看活跃论文摘要")
     @ApiResponses(value = {

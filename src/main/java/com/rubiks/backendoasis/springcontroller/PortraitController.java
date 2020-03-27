@@ -38,4 +38,9 @@ public class PortraitController {
         return portraitBlService.getConferencePortrait(conference);
     }
 
+    @GetMapping("/portrait/journal")
+    public BasicResponse getJournalPortrait(@RequestParam(value = "journal") String journal) {
+        return portraitBlService.getJournalPortrait(journal);
+    }
+
 }
