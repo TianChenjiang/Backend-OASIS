@@ -125,6 +125,12 @@ public class PaperBlServiceImpl implements PaperBlService {
         return new BasicResponse(200, "Success", res.getReferences());
     }
 
+    @Override
+    public BasicResponse getAuthorPapersById(String authorId, int page, String sortKey) {
+        // 这个等到确定使用的图表库后确定
+        return null;
+    }
+
     class AuthorKeywordsList {
         private String name;
         private List<String> keywords;
