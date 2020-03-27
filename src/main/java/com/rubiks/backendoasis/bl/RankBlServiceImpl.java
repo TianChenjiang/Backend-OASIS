@@ -5,6 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
+import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.*;
@@ -226,9 +227,55 @@ public class RankBlServiceImpl implements RankBlService {
     @Override
     public BasicResponse getAffiliationDetailRankingById(String id) {
         MatchOperation idMatch =  match(Criteria.where("authors.affiliation").is(id));
-        
+        int curYear = Calendar.getInstance().get(Calendar.YEAR);
+        Aggregation aggregation1 = newAggregation(
+                match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
+                idMatch,
+                sort(Sort.Direction.ASC, "publicationYear"),
+                group("publicationYear").count().as("num").addToSet("publicationYear").as("publicationYear")
+        );
+        AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+        List<Integer> publicationTrends = new ArrayList<>();
 
-        return null;
+        List<PublicationTrend> yearNumMap = curRes.getMappedResults();
+        for (int i = curYear-9; i <= curYear; i++) {
+            publicationTrends.add(PublicationTrend.getNumOfYear(yearNumMap, i)); //得到年份对应的num
+        }
+
+        // 计算keywords
+        Aggregation aggregation = newAggregation(
+                idMatch,
+                project( "keywords", "authors.affiliation")
+        );
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
+        List<String> keywordList = new ArrayList<>();
+        for (PaperEntity paperEntity : aggregationList) {
+            if (paperEntity.getKeywords() != null) {    // keywords需要为非空
+                List<String> curKeywordList = paperEntity.getKeywords();
+                for (String curKeyword : curKeywordList) {
+                    keywordList.add(curKeyword);
+                }
+            }
+        }
+
+        List<ResearchInterest> res = new ArrayList<>();
+        for (String curKeyword: keywordList) {
+            boolean keywordExist = false;
+            for (int i = 0; i < res.size(); i++) {
+                ResearchInterest cur = res.get(i);
+                if (cur.getName().equals(curKeyword)) {
+                    keywordExist = true;
+                    cur.setValue(cur.getValue()+1);
+                    break;
+                }
+            }
+            if (!keywordExist) {
+                res.add(new ResearchInterest(curKeyword, 1));
+            }
+        }
+
+        return new BasicResponse(200, "Success", new AffiliationRankDetail(publicationTrends, res));
     }
 
 
