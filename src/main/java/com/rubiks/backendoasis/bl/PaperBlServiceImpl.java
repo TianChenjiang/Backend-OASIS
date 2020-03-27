@@ -132,6 +132,26 @@ public class PaperBlServiceImpl implements PaperBlService {
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
+    @Override
+    public BasicResponse getKeywordPapers(String keyword, int page, String sortKey) {
+        Criteria criteria = new Criteria();
+        criteria.andOperator(criteria.where("keywords").is(keyword));
+        Query query = new Query(criteria);
+        long size = mongoTemplate.count(query, PaperEntity.class);
+
+        if (sortKey.equals("recent")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
+        }
+        else if (sortKey.equals("early")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.ASC, "publicationYear")));
+        }
+        else if (sortKey.equals("citation")) {
+            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "metrics.citationCountPaper")));
+        }
+        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
+    }
+
     class AuthorKeywordsList {
         private String name;
         private List<String> keywords;

@@ -122,5 +122,92 @@ public class PortraitBlServiceImpl implements PortraitBlService {
         }
     }
 
+    @Override
+    public BasicResponse getKeywordPortrait(String keyword) {
+        List<PaperEntity> res = mongoTemplate.find(new Query(Criteria.where("keywords").is(keyword)), PaperEntity.class);
+        int count = 0, citation = 0, authorNum = 0;
+        if (res.size() > 0) {
+            count = res.size();
+            Set<String> nonRepeatedAuthors = new HashSet<>();
+            for (PaperEntity p : res) {
+                citation += p.getMetrics().getCitationCountPaper();
+                for (AuthorEntity author : p.getAuthors()) {
+                    nonRepeatedAuthors.add(author.getName());
+                }
+            }
+            authorNum = nonRepeatedAuthors.size();
+
+            int curYear = Calendar.getInstance().get(Calendar.YEAR);
+            Aggregation aggregation1 = newAggregation(
+                    match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
+                    match(Criteria.where("keywords").is(keyword)),
+                    sort(Sort.Direction.ASC, "publicationYear"),
+                    group("publicationYear").count().as("num")
+                            .sum("metrics.citationCountPaper").as("citation")
+                            .addToSet("publicationYear").as("publicationYear")
+            );
+            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+            List<Integer> citationTrend = new ArrayList<>();
+            List<Integer> publicationTrends = new ArrayList<>();
+
+            List<PublicationTrend> yearNumMap = curRes.getMappedResults();
+            for (int i = curYear-9; i <= curYear; i++) {
+                publicationTrends.add(PublicationTrend.getNumOfYear(yearNumMap, i)); //得到年份对应的num
+                citationTrend.add(PublicationTrend.getCitationOfYear(yearNumMap, i));
+            }
+            return new BasicResponse(200, "Success", new AffiliationPortrait(count, citation, authorNum, citationTrend, publicationTrends));
+        } else {
+            // 查无此人异常
+            return new BasicResponse(200, "no author", null);
+        }
+    }
+
+    @Override
+    public BasicResponse getConferencePortrait(String conference) {
+        Criteria criteria = new Criteria();
+        criteria.andOperator(
+                Criteria.where("publicationTitle").is(conference),
+                Criteria.where("contentType").is("conferences")
+        );
+        Query query = new Query(criteria);
+        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+
+        int count = 0, citation = 0, authorNum = 0;
+        if (res.size() > 0) {
+            count = res.size();
+            Set<String> nonRepeatedAuthors = new HashSet<>();
+            for (PaperEntity p : res) {
+                citation += p.getMetrics().getCitationCountPaper();
+                for (AuthorEntity author : p.getAuthors()) {
+                    nonRepeatedAuthors.add(author.getName());
+                }
+            }
+            authorNum = nonRepeatedAuthors.size();
+
+            int curYear = Calendar.getInstance().get(Calendar.YEAR);
+            Aggregation aggregation1 = newAggregation(
+                    match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
+                    match(Criteria.where("publicationTitle").is(conference)),
+                    match(Criteria.where("contentType").is("conferences")),
+                    sort(Sort.Direction.ASC, "publicationYear"),
+                    group("publicationYear").count().as("num")
+                            .sum("metrics.citationCountPaper").as("citation")
+                            .addToSet("publicationYear").as("publicationYear")
+            );
+            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+            List<Integer> citationTrend = new ArrayList<>();
+            List<Integer> publicationTrends = new ArrayList<>();
+
+            List<PublicationTrend> yearNumMap = curRes.getMappedResults();
+            for (int i = curYear-9; i <= curYear; i++) {
+                publicationTrends.add(PublicationTrend.getNumOfYear(yearNumMap, i)); //得到年份对应的num
+                citationTrend.add(PublicationTrend.getCitationOfYear(yearNumMap, i));
+            }
+            return new BasicResponse(200, "Success", new AffiliationPortrait(count, citation, authorNum, citationTrend, publicationTrends));
+        } else {
+            // 查无此人异常
+            return new BasicResponse(200, "no author", null);
+        }
+    }
 
 }

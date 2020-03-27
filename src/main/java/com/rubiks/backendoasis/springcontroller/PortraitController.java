@@ -24,8 +24,18 @@ public class PortraitController {
     }
 
     @GetMapping("/portrait/affiliation")
-    public BasicResponse getAffiliationPortrait(@RequestParam(value = "affiliation") String affilation) {
-        return portraitBlService.getAffiliationPortrait(affilation);
+    public BasicResponse getAffiliationPortrait(@RequestParam(value = "affiliation") String affiliation) {
+        return portraitBlService.getAffiliationPortrait(affiliation);
+    }
+
+    @GetMapping("/portrait/keyword")
+    public BasicResponse getKeywordPortrait(@RequestParam(value = "keyword") String keyword) {
+        return portraitBlService.getKeywordPortrait(keyword);
+    }
+
+    @GetMapping("/portrait/conference")
+    public BasicResponse getConferencePortrait(@RequestParam(value = "conference") String conference) {
+        return portraitBlService.getConferencePortrait(conference);
     }
 
 }

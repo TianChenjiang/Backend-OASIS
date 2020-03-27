@@ -92,5 +92,11 @@ public class PaperController {
         return paperBlService.getAffiliationPapers(affiliation, page, sortKey);
     }
 
+    @GetMapping("/paper/keyword")
+    public BasicResponse getKeywordPapers(@RequestParam(value = "keyword") String keyword,
+                                          @RequestParam(value = "page") int page,
+                                          @RequestParam(value = "sortKey") String sortKey) {
+        return paperBlService.getKeywordPapers(keyword, page, sortKey);
+    }
 
 }
