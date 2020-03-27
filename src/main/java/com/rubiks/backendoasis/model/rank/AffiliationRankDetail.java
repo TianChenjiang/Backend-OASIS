@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.model.rank;
 
+import com.rubiks.backendoasis.model.ResearchInterest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,11 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class AffiliationRankDetail implements Serializable {
     private List<Integer>  publicationTrend;
-    private List<ValueCount> keywords;
-
-    class ValueCount {
-        int value;
-        String name;
-    }
+    private List<ResearchInterest> keywords;
 }
 
