@@ -11,10 +11,10 @@ pipeline {
       steps {
         sh 'mvn --version'
         sh 'mvn -B -DskipTests clean package'
-        script {
-          serverImage = docker.build(serverName + ":$BUILD_NUMBER")
+//         script {
+//           serverImage = docker.build(serverName + ":$BUILD_NUMBER")
 //           dbImage = docker.build(dbName + ":$BUILD_NUMBER", "./mongo")
-        }
+//         }
       }
     }
 
@@ -44,6 +44,7 @@ pipeline {
       steps {
         script {
           docker.withRegistry( registrySite, registryCredential ) {
+            serverImage = docker.build(serverName + ":$BUILD_NUMBER")
             serverImage.push()
             serverImage.push('latest')
 //             dbImage.push()
