@@ -2,17 +2,13 @@ package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.model.rank.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.Counter;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -24,7 +20,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.rubiks.backendoasis.util.Constant.collectionName;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
@@ -160,10 +155,6 @@ public class RankBlServiceImpl implements RankBlService {
         Aggregation aggregation1 = newAggregation(
                 match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
                 unwind("authors"),
-//                group("authors.id", "publicationYear").count().as("num")
-//                        .addToSet("publicationYear").as("publicationYear")
-//                        .addToSet("authors.id").as("authorId")
-//                sort(Sort.Direction.ASC, "authors.id"),
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")
         );
         List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
