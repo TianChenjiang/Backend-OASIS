@@ -65,6 +65,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors.name", "authors.affiliation", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
         searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder.trackTotalHits(true);
 
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
@@ -73,7 +74,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), getSearchResSize(keyword)));
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), searchResponse.getHits().getTotalHits().value));
     }
 
     @Override

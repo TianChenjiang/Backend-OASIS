@@ -30,7 +30,7 @@ public class AdminBlServiceImpl implements AdminBlService {
     public BasicResponse getConferenceInfo(int page, String name) {
         String fieldName = "publicationTitle";
         MatchOperation typeMatch = match(Criteria.where("contentType").is("conferences"));
-        MatchOperation nameMatch = match(Criteria.where(fieldName).regex(getPattern(name)));
+        MatchOperation nameMatch = match(Criteria.where(fieldName).is(getPattern(name)));
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
@@ -56,7 +56,7 @@ public class AdminBlServiceImpl implements AdminBlService {
     @Override
     public BasicResponse getAffiliationInfo(int page, String name) {
         String fieldName = "authors.affiliation";
-        MatchOperation nameMatch = match(Criteria.where(fieldName).regex(getPattern(name)));
+        MatchOperation nameMatch = match(Criteria.where(fieldName).is(getPattern(name)));
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
@@ -83,7 +83,7 @@ public class AdminBlServiceImpl implements AdminBlService {
     public BasicResponse getJournalInfo(int page, String name) {
         String fieldName = "publicationTitle";
         MatchOperation typeMatch = match(Criteria.where("contentType").is("periodicals"));
-        MatchOperation nameMatch = match(Criteria.where(fieldName).regex(getPattern(name)));
+        MatchOperation nameMatch = match(Criteria.where(fieldName).is(getPattern(name)));
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
@@ -109,7 +109,7 @@ public class AdminBlServiceImpl implements AdminBlService {
     @Override
     public BasicResponse getAuthorInfo(int page, String name) {
         String fieldName = "authors.name";
-        MatchOperation nameMatch = match(Criteria.where(fieldName).regex(getPattern(name)));
+        MatchOperation nameMatch = match(Criteria.where(fieldName).is(getPattern(name)));
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
