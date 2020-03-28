@@ -296,10 +296,6 @@ public class RankBlServiceImpl implements RankBlService {
                 affMatch,
                 match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
                 unwind("authors"),
-//                group("authors.id", "publicationYear").count().as("num")
-//                        .addToSet("publicationYear").as("publicationYear")
-//                        .addToSet("authors.id").as("authorId")
-//                sort(Sort.Direction.ASC, "authors.id"),
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")
         );
         List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();

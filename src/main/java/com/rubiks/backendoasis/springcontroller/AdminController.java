@@ -5,6 +5,7 @@ import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,5 +41,6 @@ public class AdminController {
                                            @RequestParam(value = "name", required = false) String name) {
         return adminBlService.getAuthorInfo(page, name);
     }
+
 
 }

@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.bl;
 
+import com.mongodb.DBObject;
 import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
@@ -7,12 +8,14 @@ import com.rubiks.backendoasis.model.admin.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,109 +28,165 @@ public class AdminBlServiceImpl implements AdminBlService {
 
     @Override
     public BasicResponse getConferenceInfo(int page, String name) {
-        Criteria criteria = new Criteria();
-        criteria.where("contentType").is("conferences");
-        if (!name.isEmpty()) {
-            criteria.andOperator(
-                    criteria.where("publicationTitle").regex(getPattern(name))
-            );
-        }
-        Query query = new Query(criteria);
-        long size = mongoTemplate.count(query, PaperEntity.class);
+        String fieldName = "publicationTitle";
+        MatchOperation typeMatch = match(Criteria.where("contentType").is("conferences"));
+        MatchOperation nameMatch = match(Criteria.where(fieldName).regex(getPattern(name)));
 
-        query.with(PageRequest.of(page-1, Constant.pageSize));
-        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        long previousNum = (page-1) * Constant.pageSize;
+        Aggregation aggregation = newAggregation(
+                typeMatch,
+                nameMatch,
+                group(fieldName).addToSet(fieldName).as("name"),
+                skip(previousNum),
+                limit(Constant.pageSize)
+        );
 
-        List<String> conferences = new ArrayList<>();
-        for (PaperEntity paperEntity : res) {
-            conferences.add(paperEntity.getPublicationTitle());
-        }
-        return new BasicResponse(200, "Success", new ConferenceInfo(conferences, size));
+        Aggregation countAgg = newAggregation(
+                typeMatch,
+                nameMatch,
+                group(fieldName),
+                count().as("size")
+        );
+
+        List<AdminConference> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminConference.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        return new BasicResponse(200, "Success", new ConferenceInfo(res, countList.get(0).getSize()));
     }
 
     @Override
     public BasicResponse getAffiliationInfo(int page, String name) {
-        Criteria criteria = new Criteria();
-        if (!name.isEmpty()) {
-            criteria.andOperator(
-                    criteria.where("authors.affiliation").regex(getPattern(name))
-            );
-        }
-        Query query = new Query(criteria);
-        long size = mongoTemplate.count(query, PaperEntity.class);
+        String fieldName = "authors.affiliation";
+        MatchOperation nameMatch = match(Criteria.where(fieldName).regex(getPattern(name)));
 
-        query.with(PageRequest.of(page-1, Constant.pageSize));
-        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        long previousNum = (page-1) * Constant.pageSize;
+        Aggregation aggregation = newAggregation(
+                unwind("authors"),
+                nameMatch,
+                group(fieldName).addToSet(fieldName).as("name"),
+                skip(previousNum),
+                limit(Constant.pageSize)
+        );
 
-        List<String> affiliations = new ArrayList<>();
-        for (PaperEntity paperEntity : res) {
-            for (AuthorEntity author : paperEntity.getAuthors()) {
-                if (author.getAffiliation().contains(name)) {
-                    affiliations.add(author.getAffiliation());
-                }
-            }
-        }
-        return new BasicResponse(200, "Success", new AffiliationInfo(affiliations, size));
+        Aggregation countAgg = newAggregation(
+                unwind("authors"),
+                nameMatch,
+                group(fieldName),
+                count().as("size")
+        );
+
+        List<AdminAffiliation> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminAffiliation.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        return new BasicResponse(200, "Success", new AffiliationInfo(res, countList.get(0).getSize()));
     }
 
     @Override
     public BasicResponse getJournalInfo(int page, String name) {
-        Criteria criteria = new Criteria();
-        criteria.where("contentType").is("periodicals");
-        if (!name.isEmpty()) {
-            criteria.andOperator(
-                    criteria.where("publicationTitle").regex(getPattern(name))
-            );
-        }
-        Query query = new Query(criteria);
-        long size = mongoTemplate.count(query, PaperEntity.class);
+        String fieldName = "publicationTitle";
+        MatchOperation typeMatch = match(Criteria.where("contentType").is("periodicals"));
+        MatchOperation nameMatch = match(Criteria.where(fieldName).regex(getPattern(name)));
 
-        query.with(PageRequest.of(page-1, Constant.pageSize));
-        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        long previousNum = (page-1) * Constant.pageSize;
+        Aggregation aggregation = newAggregation(
+                typeMatch,
+                nameMatch,
+                group(fieldName).addToSet(fieldName).as("name"),
+                skip(previousNum),
+                limit(Constant.pageSize)
+        );
 
-        List<String> journals = new ArrayList<>();
-        for (PaperEntity paperEntity : res) {
-            journals.add(paperEntity.getPublicationTitle());
-        }
-        return new BasicResponse(200, "Success", new JournalInfo(journals, size));
+        Aggregation countAgg = newAggregation(
+                typeMatch,
+                nameMatch,
+                group(fieldName),
+                count().as("size")
+        );
+
+        List<AdminJournal> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminJournal.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        return new BasicResponse(200, "Success", new JournalInfo(res, countList.get(0).getSize()));
     }
 
     @Override
     public BasicResponse getAuthorInfo(int page, String name) {
-        Criteria criteria = new Criteria();
-        if (!name.isEmpty()) {
-            criteria.andOperator(
-                    criteria.where("authors.name").regex(getPattern(name))
-            );
-        }
-        Query query = new Query(criteria);
-        long size = mongoTemplate.count(query, PaperEntity.class);
+        String fieldName = "authors.name";
+        MatchOperation nameMatch = match(Criteria.where(fieldName).regex(getPattern(name)));
 
-        query.with(PageRequest.of(page-1, Constant.pageSize));
-        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        long previousNum = (page-1) * Constant.pageSize;
+        Aggregation aggregation = newAggregation(
+                unwind("authors"),
+                nameMatch,
+                group("authors.id").addToSet(fieldName).as("name")    // 应该是同名不同人
+                .addToSet("authors.id").as("authorId")
+                .addToSet("authors.name").as("authorName")
+                .count().as("count")
+                .sum("metrics.citationCountPaper").as("citation"),
+                skip(previousNum),
+                limit(Constant.pageSize)
+        );
 
-        List<BriefAuthor> authors = new ArrayList<>();
-        for (PaperEntity p : res) {
-            for (AuthorEntity authorEntity : p.getAuthors()) {
-                if (authorEntity.getId() != null && authorEntity.getName().contains(name)) {
-                    String auId = authorEntity.getId();
-                    // 获得该学者的count和citation
-                    List<PaperEntity> authorPapers = mongoTemplate.find(new Query(Criteria.where("authors.id").is(auId)), PaperEntity.class);
-                    int citation = 0;
-                    for (PaperEntity pa : res) { citation += p.getMetrics().getCitationCountPaper(); }
-                    authors.add(new BriefAuthor(auId, authorEntity.getName(), authorPapers.size(), citation));
-                }
-            }
-        }
+        Aggregation countAgg = newAggregation(
+                unwind("authors"),
+                nameMatch,
+                group(fieldName),
+                count().as("size")
+        );
 
-        query.with(PageRequest.of(page-1, Constant.pageSize));
-        return new BasicResponse(200, "Success", new AuthorInfo(authors, size));
+        List<AdminAuthor> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminAuthor.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+
+//        List<AdminAuthor> authors = new ArrayList<>();
+//        for (PaperEntity p : res) {
+//            int citation = 0;
+//            if (p.getAuthors() != null) {
+//                for (AuthorEntity authorEntity : p.getAuthors()) {
+//                    if (authorEntity.getId() != null) {
+//                        String auId = authorEntity.getId();
+//                        // 获得该学者的count和citation
+//                        List<PaperEntity> authorPapers = mongoTemplate.find(new Query(Criteria.where("authors.id").is(auId)), PaperEntity.class);
+//                        citation += p.getMetrics().getCitationCountPaper();
+//                        authors.add(new AdminAuthor(auId, authorEntity.getName(), authorPapers.size(), citation));
+//                    }
+//                }
+//            }
+//        }
+
+        return new BasicResponse(200, "Success", new AuthorInfo(res, countList.get(0).getSize()));
+    }
+
+    @Override
+    public BasicResponse mergeAffiliationInfo(String src, String desc) {
+        return null;
+    }
+
+    @Override
+    public BasicResponse updateConferenceInfo(String src, String desc) {
+        return null;
+    }
+
+    @Override
+    public BasicResponse updateJournalInfo(String src, String desc) {
+        return null;
+    }
+
+    @Override
+    public BasicResponse updatePaperInfo(UpdateAuthorParameter parameter) {
+        return null;
+    }
+
+    @Override
+    public BasicResponse mergeAuthorInfo(List<String> src, String desc) {
+        return null;
     }
 
 
     private Pattern getPattern(String keyword) {
+        if (keyword.isEmpty()) {
+            return Pattern.compile("^.*$", Pattern.CASE_INSENSITIVE);
+        }
         Pattern pattern = Pattern.compile("^.*" + keyword + ".*$", Pattern.CASE_INSENSITIVE);
         return pattern;
     }
+
+
 
 }

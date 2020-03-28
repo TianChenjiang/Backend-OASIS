@@ -8,6 +8,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class AffiliationInfo {
-    private List<String> affiliations;
+    private List<AdminAffiliation> affiliations;
     private long size;
+
 }

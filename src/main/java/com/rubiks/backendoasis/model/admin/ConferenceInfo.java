@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ConferenceInfo {
-    private List<String> conferences;
+    private List<AdminConference> conferences;
     private long size;
 }
