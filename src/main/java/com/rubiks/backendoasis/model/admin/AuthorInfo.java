@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class AuthorInfo {
-    private List<BriefAuthor> authors;
+    private List<AdminAuthor> authors;
     private long size;
 }
