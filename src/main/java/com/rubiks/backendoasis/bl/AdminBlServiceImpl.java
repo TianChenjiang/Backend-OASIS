@@ -28,7 +28,7 @@ public class AdminBlServiceImpl implements AdminBlService {
 
     @Override
     public BasicResponse getConferenceInfo(int page, String name) {
-        String fieldName = "publicationTitle";
+        String fieldName = "publicationName";
         MatchOperation typeMatch = match(Criteria.where("contentType").is("conferences"));
         MatchOperation nameMatch = match(Criteria.where(fieldName).is(getPattern(name)));
 
@@ -81,7 +81,7 @@ public class AdminBlServiceImpl implements AdminBlService {
 
     @Override
     public BasicResponse getJournalInfo(int page, String name) {
-        String fieldName = "publicationTitle";
+        String fieldName = "publicationName";
         MatchOperation typeMatch = match(Criteria.where("contentType").is("periodicals"));
         MatchOperation nameMatch = match(Criteria.where(fieldName).is(getPattern(name)));
 

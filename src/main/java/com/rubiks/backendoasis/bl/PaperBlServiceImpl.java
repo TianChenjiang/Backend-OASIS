@@ -72,7 +72,7 @@ public class PaperBlServiceImpl implements PaperBlService {
 
     @Override
     public BasicResponse getConferenceInterest(String conference) {
-        MatchOperation idMatch =  match(Criteria.where("publicationTitle").is(conference));
+        MatchOperation idMatch =  match(Criteria.where("publicationName").is(conference));
         Aggregation aggregation = newAggregation(
                 idMatch,
                 match(Criteria.where("contentType").is("conferences")),
@@ -86,7 +86,7 @@ public class PaperBlServiceImpl implements PaperBlService {
     @Override
     public BasicResponse getJournalInterest(String journal) {
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("publicationTitle").is(journal)),
+                match(Criteria.where("publicationName").is(journal)),
                 match(Criteria.where("contentType").is("periodicals")),
                 project( "keywords", "authors.affiliation")
         );

@@ -21,8 +21,6 @@ public class PaperWithoutRef implements Serializable {
     private String title;
     private List<String> authors;
     private String _abstract;
-    private String publicationTitle;
-    private String doi;
     private int publicationYear;
     private MetricsEntity metrics;
     private List<String> keywords;
@@ -41,8 +39,6 @@ public class PaperWithoutRef implements Serializable {
                     p.getTitle(),
                     author_names,
                     p.get_abstract(),
-                    p.getPublicationTitle(),
-                    p.getDoi(),
                     p.getPublicationYear(),
 
                     p.getMetrics(),
@@ -67,8 +63,6 @@ public class PaperWithoutRef implements Serializable {
                     p.getTitle(),
                     author_names,
                     p.get_abstract(),
-                    p.getPublicationTitle(),
-                    p.getDoi(),
                     p.getPublicationYear(),
                     p.getMetrics(),
                     p.getKeywords(),
