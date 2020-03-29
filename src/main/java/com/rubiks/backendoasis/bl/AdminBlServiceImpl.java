@@ -1,9 +1,6 @@
 package com.rubiks.backendoasis.bl;
 
-import com.mongodb.DBObject;
 import com.rubiks.backendoasis.blservice.AdminBlService;
-import com.rubiks.backendoasis.entity.AuthorEntity;
-import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.admin.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.Constant;
@@ -12,7 +9,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -50,7 +46,11 @@ public class AdminBlServiceImpl implements AdminBlService {
 
         List<AdminConference> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminConference.class).getMappedResults();
         List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
-        return new BasicResponse(200, "Success", new ConferenceInfo(res, countList.get(0).getSize()));
+        long size = 0;
+        if (countList.size() != 0) {
+            size = countList.get(0).getSize();
+        }
+        return new BasicResponse(200, "Success", new ConferenceInfo(res, size));
     }
 
     @Override
@@ -76,7 +76,11 @@ public class AdminBlServiceImpl implements AdminBlService {
 
         List<AdminAffiliation> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminAffiliation.class).getMappedResults();
         List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
-        return new BasicResponse(200, "Success", new AffiliationInfo(res, countList.get(0).getSize()));
+        long size = 0;
+        if (countList.size() != 0) {
+            size = countList.get(0).getSize();
+        }
+        return new BasicResponse(200, "Success", new AffiliationInfo(res, size));
     }
 
     @Override
@@ -103,7 +107,11 @@ public class AdminBlServiceImpl implements AdminBlService {
 
         List<AdminJournal> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminJournal.class).getMappedResults();
         List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
-        return new BasicResponse(200, "Success", new JournalInfo(res, countList.get(0).getSize()));
+        long size = 0;
+        if (countList.size() != 0) {
+            size = countList.get(0).getSize();
+        }
+        return new BasicResponse(200, "Success", new JournalInfo(res, size));
     }
 
     @Override
@@ -149,8 +157,11 @@ public class AdminBlServiceImpl implements AdminBlService {
 //                }
 //            }
 //        }
-
-        return new BasicResponse(200, "Success", new AuthorInfo(res, countList.get(0).getSize()));
+        long size = 0;
+        if (countList.size() != 0) {
+            size = countList.get(0).getSize();
+        }
+        return new BasicResponse(200, "Success", new AuthorInfo(res, size));
     }
 
     @Override

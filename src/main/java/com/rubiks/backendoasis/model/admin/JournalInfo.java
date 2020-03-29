@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class JournalInfo {
-    private List<AdminJournal> journal;
+    private List<AdminJournal> journals;
     private long size;
 }
