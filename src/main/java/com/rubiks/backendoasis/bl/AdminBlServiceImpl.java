@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -194,10 +193,7 @@ public class AdminBlServiceImpl implements AdminBlService {
         if (keyword.isEmpty()) {
             return Pattern.compile("^.*$", Pattern.CASE_INSENSITIVE);
         }
-        Pattern pattern = Pattern.compile("^.*" + keyword + ".*$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^" + keyword + ".*$", Pattern.CASE_INSENSITIVE);
         return pattern;
     }
-
-
-
 }
