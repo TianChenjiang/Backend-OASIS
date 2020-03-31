@@ -2,12 +2,10 @@ package com.rubiks.backendoasis.springcontroller;
 
 import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
+import com.rubiks.backendoasis.model.admin.ModifyParm;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AdminController {
@@ -40,6 +38,16 @@ public class AdminController {
     public BasicResponse getAuthorInfo(@RequestParam(value = "page") int page,
                                            @RequestParam(value = "name", required = false) String name) {
         return adminBlService.getAuthorInfo(page, name);
+    }
+
+    @PutMapping("/info/conference")
+    public BasicResponse updateConferenceInfo(@RequestBody ModifyParm modifyParm) {
+        return adminBlService.updateConferenceInfo(modifyParm.getSrc(), modifyParm.getDesc());
+    }
+
+    @PutMapping("/info/journal")
+    public BasicResponse updateJournalInfo(@RequestBody ModifyParm modifyParm) {
+        return adminBlService.updateJournalInfo(modifyParm.getSrc(), modifyParm.getDesc());
     }
 
 

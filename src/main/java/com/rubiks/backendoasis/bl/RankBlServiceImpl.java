@@ -236,7 +236,7 @@ public class RankBlServiceImpl implements RankBlService {
         for (Iterator<BasicDBObject> iterator = res.iterator(); iterator.hasNext();) {
             BasicDBObject obj = iterator.next();
             String affiliationName = obj.getString("affiliationName");
-            affiliationName = affiliationName.substring(1, affiliationName.length()-2);
+            affiliationName = affiliationName.substring(1, affiliationName.length()-1);
             int  count = obj.getInt("count");
             int citation = obj.getInt("citation");
             List<String> authorIds = (List<String>)(obj.get("authorId"));

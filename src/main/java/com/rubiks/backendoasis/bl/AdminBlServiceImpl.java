@@ -1,6 +1,7 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.AdminBlService;
+import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.admin.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.Constant;
@@ -9,6 +10,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -141,21 +144,6 @@ public class AdminBlServiceImpl implements AdminBlService {
         List<AdminAuthor> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminAuthor.class).getMappedResults();
         List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
 
-//        List<AdminAuthor> authors = new ArrayList<>();
-//        for (PaperEntity p : res) {
-//            int citation = 0;
-//            if (p.getAuthors() != null) {
-//                for (AuthorEntity authorEntity : p.getAuthors()) {
-//                    if (authorEntity.getId() != null) {
-//                        String auId = authorEntity.getId();
-//                        // 获得该学者的count和citation
-//                        List<PaperEntity> authorPapers = mongoTemplate.find(new Query(Criteria.where("authors.id").is(auId)), PaperEntity.class);
-//                        citation += p.getMetrics().getCitationCountPaper();
-//                        authors.add(new AdminAuthor(auId, authorEntity.getName(), authorPapers.size(), citation));
-//                    }
-//                }
-//            }
-//        }
         long size = 0;
         if (countList.size() != 0) {
             size = countList.get(0).getSize();
@@ -170,12 +158,34 @@ public class AdminBlServiceImpl implements AdminBlService {
 
     @Override
     public BasicResponse updateConferenceInfo(String src, String desc) {
-        return null;
+        String fieldName = "publicationName";
+        Criteria criteria = new Criteria();
+        criteria.andOperator(
+                criteria.where(fieldName).is(src),
+                criteria.where("contentType").is("conferences"));
+        Query query = new Query(criteria);
+
+        Update update = new Update();
+        update.set(fieldName, desc);
+        mongoTemplate.updateMulti(query, update, PaperEntity.class);
+
+        return new BasicResponse(200, "Success", "修改成功");
     }
 
     @Override
     public BasicResponse updateJournalInfo(String src, String desc) {
-        return null;
+        String fieldName = "publicationName";
+        Criteria criteria = new Criteria();
+        criteria.andOperator(criteria.where(fieldName).is(src),
+                criteria.where("contentType").is("periodicals")
+        );
+        Query query = new Query(criteria);
+
+        Update update = new Update();
+        update.set(fieldName, desc);
+        mongoTemplate.updateMulti(query, update, PaperEntity.class);
+
+        return new BasicResponse(200, "Success", "修改成功");
     }
 
     @Override
