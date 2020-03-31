@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.rubiks.backendoasis.util.Constant.collectionName;
+import static org.hibernate.criterion.Projections.sum;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
 
@@ -218,23 +219,13 @@ public class RankBlServiceImpl implements RankBlService {
         MatchOperation idMatch =  match(Criteria.where("authors.id").is(id));
         Aggregation mostInfluentialAgg = newAggregation(
                 idMatch,
-                unwind("authors"),
-                group("authors.id").
-                        sum("metrics.citationCountPaper").as("citation").addToSet("publicationYear").as("publicationYear")
-                        .addToSet("title").as("title").addToSet("publicationName")
-                        .as("publicationName").addToSet("link").as("link"),
-                sort(Sort.Direction.DESC, "citation"),
+                sort(Sort.Direction.DESC, "metrics.citationCountPaper"),
                 limit(5)
         );
         AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, collectionName, MostInfluentialPapers.class);
 
         Aggregation mostRecentAgg = newAggregation(
                 idMatch,
-                unwind("authors"),
-                group("authors.id")
-                        .addToSet("publicationYear").as("publicationYear")
-                        .addToSet("title").as("title").addToSet("publicationName")
-                        .as("publicationName").addToSet("link").as("link"),
                 sort(Sort.Direction.DESC, "publicationYear"),
                 limit(5)
         );

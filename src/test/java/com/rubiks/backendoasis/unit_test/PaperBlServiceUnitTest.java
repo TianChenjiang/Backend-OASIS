@@ -40,6 +40,7 @@ public class PaperBlServiceUnitTest {
 
 
     @Test
+    @Ignore
     public void testBasicSearch() throws Exception {
         String keyword = "software、";
         int page = 1;

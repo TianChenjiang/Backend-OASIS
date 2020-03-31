@@ -39,6 +39,7 @@ public class PaperControllerIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testBasicSearch() throws Exception {
         mockMvc.perform(get("/search/basic/es")
                 .param("keyword", "Software、")
