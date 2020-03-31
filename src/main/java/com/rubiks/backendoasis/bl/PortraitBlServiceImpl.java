@@ -166,7 +166,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
     public BasicResponse getConferencePortrait(String conference) {
         Criteria criteria = new Criteria();
         criteria.andOperator(
-                Criteria.where("publicationTitle").is(conference),
+                Criteria.where("publicationName").is(conference),
                 Criteria.where("contentType").is("conferences")
         );
         Query query = new Query(criteria);
@@ -187,7 +187,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             int curYear = Calendar.getInstance().get(Calendar.YEAR);
             Aggregation aggregation1 = newAggregation(
                     match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
-                    match(Criteria.where("publicationTitle").is(conference)),
+                    match(Criteria.where("publicationName").is(conference)),
                     match(Criteria.where("contentType").is("conferences")),
                     sort(Sort.Direction.ASC, "publicationYear"),
                     group("publicationYear").count().as("num")
@@ -214,7 +214,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
     public BasicResponse getJournalPortrait(String journal) {
         Criteria criteria = new Criteria();
         criteria.andOperator(
-                Criteria.where("publicationTitle").is(journal),
+                Criteria.where("publicationName").is(journal),
                 Criteria.where("contentType").is("periodicals")
         );
         Query query = new Query(criteria);
@@ -237,7 +237,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             int curYear = Calendar.getInstance().get(Calendar.YEAR);
             Aggregation aggregation1 = newAggregation(
                     match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
-                    match(Criteria.where("publicationTitle").is(journal)),
+                    match(Criteria.where("publicationName").is(journal)),
                     match(Criteria.where("contentType").is("periodicals")),
                     sort(Sort.Direction.ASC, "publicationYear"),
                     group("publicationYear").count().as("num")
