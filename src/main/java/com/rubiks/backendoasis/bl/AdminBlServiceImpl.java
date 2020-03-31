@@ -1,6 +1,7 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.AdminBlService;
+import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.model.admin.*;
 import com.rubiks.backendoasis.response.BasicResponse;
@@ -151,10 +152,6 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", new AuthorInfo(res, size));
     }
 
-    @Override
-    public BasicResponse mergeAffiliationInfo(String src, String desc) {
-        return null;
-    }
 
     @Override
     public BasicResponse updateConferenceInfo(String src, String desc) {
@@ -189,13 +186,63 @@ public class AdminBlServiceImpl implements AdminBlService {
     }
 
     @Override
-    public BasicResponse updatePaperInfo(UpdateAuthorParameter parameter) {
-        return null;
+    public BasicResponse updatePaperInfo(UpdatePaperParameter parm) {
+        Criteria criteria = new Criteria();
+        criteria.andOperator(criteria.where("id").is(parm.getId()));
+        Query query = new Query(criteria);
+
+        PaperEntity paperEntity = mongoTemplate.findOne(query, PaperEntity.class);
+        if (paperEntity != null) {
+            paperEntity.setTitle(parm.getTitle());
+            paperEntity.set_abstract(parm.get_abstract());
+            paperEntity.setPublicationYear(parm.getPublicationYear());
+            paperEntity.setMetrics(parm.getMetrics());
+            paperEntity.setContentType(parm.getContentType());
+            paperEntity.setPublicationName(parm.getPublicationName());
+            paperEntity.setLink(parm.getLink());
+
+            mongoTemplate.save(paperEntity, Constant.collectionName);
+        }
+
+        return new BasicResponse(200, "Success", "修改成功");
     }
 
     @Override
     public BasicResponse mergeAuthorInfo(List<String> src, String desc) {
-        return null;
+        String fieldName = "authors.id";
+        for (String str : src) {
+            Criteria criteria = new Criteria();
+            criteria.andOperator(criteria.where(fieldName).is(str));
+            Query query = new Query(criteria);
+
+            Update update = new Update();
+            update.set("authors.$.name", desc);
+            mongoTemplate.updateMulti(query, update, PaperEntity.class);
+        }
+        return new BasicResponse(200, "Success", "修改成功");
+
+    }
+
+    @Override
+    public BasicResponse mergeAffiliationInfo(List<String> src, String desc) {
+        String fieldName = "authors.affiliation";
+        for (String str : src) { //机构的更新比较特殊，因为用数组下标$只能更新一个，而一个数组中可能有多个机构
+            Criteria criteria = new Criteria();
+            criteria.andOperator(criteria.where(fieldName).is(str));
+            Query query = new Query(criteria);
+            List<PaperEntity> matchRes = mongoTemplate.find(query, PaperEntity.class);
+
+            for (PaperEntity p : matchRes) {
+                for (AuthorEntity authorEntity : p.getAuthors()) {
+                    if (authorEntity.getAffiliation().equals(str)) {
+                        authorEntity.setAffiliation(desc);
+                    }
+                }
+                mongoTemplate.save(p, Constant.collectionName);
+            }
+
+        }
+        return new BasicResponse(200, "Success", "修改成功");
     }
 
 

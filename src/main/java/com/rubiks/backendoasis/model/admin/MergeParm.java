@@ -5,11 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ModifyParm implements Serializable {
-    private String src;
+@AllArgsConstructor
+public class MergeParm implements Serializable {
+    private List<String> src;
     private String dest;
 }
