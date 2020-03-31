@@ -42,7 +42,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
-    @Cacheable(value = "affiliation")
+    @Cacheable(value = "affiliation_rank")
     public BasicResponse getAffiliationBasicRanking(String sortKey, int year) {
         // "acceptanceCount"|"citationCount"
         Aggregation aggregation = newAggregation(
