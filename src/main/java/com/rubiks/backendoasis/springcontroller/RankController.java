@@ -39,6 +39,25 @@ public class RankController {
         return  rankBlService.getAffiliationBasicRanking(sortKey, year);
     }
 
+
+    @GetMapping("/rank/basic/conference")
+    public BasicResponse getConferenceBasicRanking(@RequestParam(value = "sortKey") String sortKey,
+                                                    @RequestParam(value = "year") int year) {
+        return  rankBlService.getConferenceBasicRanking(sortKey, year);
+    }
+
+    @GetMapping("/rank/basic/journal")
+    public BasicResponse getJournalBasicRanking(@RequestParam(value = "sortKey") String sortKey,
+                                                   @RequestParam(value = "year") int year) {
+        return  rankBlService.getJournalBasicRanking(sortKey, year);
+    }
+
+    @GetMapping("/rank/basic/keyword")
+    public BasicResponse getKeywordBasicRanking(@RequestParam(value = "year") int year) {
+        return  rankBlService.getKeywordBasicRanking(year);
+    }
+
+
     @GetMapping("/rank/basic/author")
     @ApiOperation(value = "接口4 查看作者简略排名", notes = "根据topic和sortkey查看排名")
     @ApiResponses(value = {

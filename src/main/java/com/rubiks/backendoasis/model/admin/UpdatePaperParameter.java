@@ -13,11 +13,11 @@ import java.util.List;
 public class UpdatePaperParameter {
     private String id;
     private String title;
-//    private List<String> authors;？
+    private List<String> authors;
     private String _abstract;
     private int publicationYear;
     private MetricsEntity metrics;
-//    private List<String> keywords;
+    private List<String> keywords;
     private String contentType;
     private String publicationName;
     private String link;

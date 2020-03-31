@@ -6,7 +6,7 @@ import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.MetricsEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.model.rank.AffiliationRank;
+import com.rubiks.backendoasis.model.rank.BasicRank;
 import com.rubiks.backendoasis.model.PaperWithoutRef;
 import com.rubiks.backendoasis.model.PapersWithSize;
 import com.rubiks.backendoasis.response.BasicResponse;
@@ -60,7 +60,7 @@ public class PaperControllerUnitTest {
     private MockMvc mockMvc;
 
     private List<PaperEntity> paperEntities;
-    private List<AffiliationRank> affiliationRanks;
+    private List<BasicRank> basicRanks;
 
     private PapersWithSize res;
 
@@ -83,11 +83,11 @@ public class PaperControllerUnitTest {
         paperEntities.add(paperEntity1);
         paperEntities.add(paperEntity2);
 
-        AffiliationRank affiliationRank1 = AffiliationRank.builder().name("NJU").count(100).build();
-        AffiliationRank affiliationRank2 = AffiliationRank.builder().name("NJU gulou").count(10).build();
-        affiliationRanks = new ArrayList<>();
-        affiliationRanks.add(affiliationRank1);
-        affiliationRanks.add(affiliationRank2);
+        BasicRank basicRank1 = BasicRank.builder().name("NJU").count(100).build();
+        BasicRank basicRank2 = BasicRank.builder().name("NJU gulou").count(10).build();
+        basicRanks = new ArrayList<>();
+        basicRanks.add(basicRank1);
+        basicRanks.add(basicRank2);
 
         res = new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(paperEntities), 1);
 
@@ -134,7 +134,7 @@ public class PaperControllerUnitTest {
     //TODO
     public void testAffiliationBasicRanking() throws Exception {
         when(rankBlService.getAffiliationBasicRanking(any(String.class), any(Integer.class)))
-                .thenReturn(new BasicResponse(200, "Suceess", affiliationRanks));
+                .thenReturn(new BasicResponse(200, "Suceess", basicRanks));
         //"acceptanceCount"|"citationCount"
         mockMvc.perform(get("/rank/basic/affiliation")
                 .param("sortKey", "acceptanceCount")

@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.bl;
 
+import com.mongodb.WriteResult;
 import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
@@ -200,6 +201,13 @@ public class AdminBlServiceImpl implements AdminBlService {
             paperEntity.setContentType(parm.getContentType());
             paperEntity.setPublicationName(parm.getPublicationName());
             paperEntity.setLink(parm.getLink());
+            paperEntity.setKeywords(parm.getKeywords());
+
+            List<AuthorEntity> authorEntities = paperEntity.getAuthors();
+            List<String> nameList = parm.getAuthors();
+            for (int i = 0; i < authorEntities.size(); i++) {
+                authorEntities.get(i).setName(nameList.get(i));
+            }
 
             mongoTemplate.save(paperEntity, Constant.collectionName);
         }

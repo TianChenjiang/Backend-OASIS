@@ -4,7 +4,7 @@ import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.model.*;
-import com.rubiks.backendoasis.model.rank.AffiliationRank;
+import com.rubiks.backendoasis.model.rank.BasicRank;
 import com.rubiks.backendoasis.model.rank.AuthorRank;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -71,8 +71,8 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAffiliationBasicRanking() {
-        List<AffiliationRank> res = (List<AffiliationRank>)rankBlService.getAffiliationBasicRanking("citationCount", 2011).getData();
-        AffiliationRank former, latter;
+        List<BasicRank> res = (List<BasicRank>)rankBlService.getAffiliationBasicRanking("citationCount", 2011).getData();
+        BasicRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);
             latter = res.get(i+1);

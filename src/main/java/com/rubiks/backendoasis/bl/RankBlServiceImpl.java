@@ -60,16 +60,14 @@ public class RankBlServiceImpl implements RankBlService {
             if (res.getMappedResults().size() == 0) {
                 throw new NoSuchYearException();
             }
-            return new BasicResponse<>(200, "Success", AffiliationRank.transformToBasic(res.getMappedResults()));
+            return new BasicResponse<>(200, "Success", BasicRank.transformToBasic(res.getMappedResults()));
 
         } else if (sortKey.equals("citationCount")) {
             AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,collectionName, CitationCountRank.class);
             if (res.getMappedResults().size() == 0) {
                 throw  new NoSuchYearException();
             }
-            return new BasicResponse<>(200, "Success", AffiliationRank.transformToBasic(res.getMappedResults()));
-        } else {
-
+            return new BasicResponse<>(200, "Success", BasicRank.transformToBasic(res.getMappedResults()));
         }
         return null;
     }
@@ -105,6 +103,70 @@ public class RankBlServiceImpl implements RankBlService {
         return null;
     }
 
+    @Override
+    public BasicResponse getJournalBasicRanking(String sortKey, int year) {
+        Aggregation aggregation = newAggregation(
+                project("publicationName", "publicationYear", "metrics", "contentType"),
+                match(Criteria.where("publicationYear").is(year)),
+                match(Criteria.where("contentType").is("periodicals")),
+                group("publicationName").count().as("acceptanceCount").
+                        sum("metrics.citationCountPaper").as("citationCount"),
+                sort(Sort.Direction.DESC, sortKey),
+                limit(10)
+        );
+        return getSortRes(sortKey, aggregation);
+    }
+
+    @Override
+    public BasicResponse getConferenceBasicRanking(String sortKey, int year) {
+        Aggregation aggregation = newAggregation(
+                project("publicationName", "publicationYear", "metrics", "contentType"),
+                match(Criteria.where("publicationYear").is(year)),
+                match(Criteria.where("contentType").is("conferences")),
+                group("publicationName").count().as("acceptanceCount").
+                        sum("metrics.citationCountPaper").as("citationCount"),
+                sort(Sort.Direction.DESC, sortKey),
+                limit(10)
+        );
+        return getSortRes(sortKey, aggregation);
+    }
+
+    @Override
+    public BasicResponse getKeywordBasicRanking(int year) {
+        Aggregation aggregation = newAggregation(
+                project("keywords", "publicationYear", "metrics"),
+                match(Criteria.where("publicationYear").is(year)),
+                unwind("keywords"),
+                group("keywords").count().as("acceptanceCount"),
+                sort(Sort.Direction.DESC, "acceptanceCount"),
+                limit(10)
+        );
+        AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
+        if (res.getMappedResults().size() == 0) {
+            throw new NoSuchYearException();
+        }
+        return new BasicResponse<>(200, "Success", BasicRank.transformToBasic(res.getMappedResults()));
+    }
+
+
+    private <T> BasicResponse getSortRes(String sortKey, Aggregation aggregation) {
+        if (sortKey.equals("acceptanceCount")) {
+            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
+            if (res.getMappedResults().size() == 0) {
+                throw new NoSuchYearException();
+            }
+            return new BasicResponse<>(200, "Success", BasicRank.transformToBasic(res.getMappedResults()));
+
+        } else if (sortKey.equals("citationCount")) {
+            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, CitationCountRank.class);
+            if (res.getMappedResults().size() == 0) {
+                throw  new NoSuchYearException();
+            }
+            return new BasicResponse<>(200, "Success", BasicRank.transformToBasic(res.getMappedResults()));
+        }
+        else return null;
+    }
+
 
     @Override
     public BasicResponse getAuthorAdvancedRanking(String sortKey, int startYear, int endYear) { //TODO 当数据过大，会超过group的表示范围
@@ -128,26 +190,6 @@ public class RankBlServiceImpl implements RankBlService {
                 limit(20)
         );
         AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class);
-
-        //计算author对应的十年 publicaitonTrend
-//        int curYear = Calendar.getInstance().get(Calendar.YEAR);
-//        for (AuthorAdvanceRank advance : firstRes) {
-//            String auId = advance.getAuthorId();
-//            Aggregation aggregation1 = newAggregation(
-//                    match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
-//                    match(Criteria.where("authors.id").is(auId)),
-//                    sort(Sort.Direction.ASC, "publicationYear"),
-//                    group("publicationYear").count().as("num").addToSet("publicationYear").as("publicationYear")
-//            );
-//            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
-//            List<Integer> publicationTrends = new ArrayList<>();
-//
-//            List<PublicationTrend> yearNumMap = curRes.getMappedResults();
-//            for (int i = curYear-9; i <= curYear; i++) {
-//                publicationTrends.add(PublicationTrend.getNumOfYear(yearNumMap, i)); //得到年份对应的num
-//            }
-//            advance.setPublicationTrend(publicationTrends);
-//        }
 
 
         // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
