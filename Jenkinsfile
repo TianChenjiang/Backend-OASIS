@@ -19,6 +19,9 @@ pipeline {
     }
 
     stage('Test') {
+      environment {
+        ESHOST=credentials('greenwood-server-host')
+      }
       steps {
         sh 'mvn test'
       }
