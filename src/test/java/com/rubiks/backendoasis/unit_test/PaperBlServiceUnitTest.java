@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @SpringBootTest
@@ -39,11 +40,10 @@ public class PaperBlServiceUnitTest {
 
 
     @Test
-    @Ignore
-    public void testBasicSearch() {
+    public void testBasicSearch() throws Exception {
         String keyword = "software、";
         int page = 1;
-        PapersWithSize res = (PapersWithSize) searchBlService.basicSearch(keyword, page, "related").getData();
+        PapersWithSize res = (PapersWithSize) searchBlService.basicSearchByES(keyword, page, "related").getData();
         List<PaperWithoutRef> paperEntities = res.getPapers();
         for (PaperWithoutRef pa : paperEntities) {
 //            assertThat(pa.getPublicationYear(), lessThanOrEqualTo(endYear));
@@ -71,7 +71,7 @@ public class PaperBlServiceUnitTest {
 
     @Test
     public void testGetAffiliationBasicRanking() {
-        List<BasicRank> res = (List<BasicRank>)rankBlService.getAffiliationBasicRanking("citationCount", 2011).getData();
+        List<BasicRank> res = (List<BasicRank>)rankBlService.getAffiliationBasicRanking("citationCount", 2019).getData();
         BasicRank former, latter;
         for (int i = 0; i < res.size() - 1; i++) {
             former = res.get(i);

@@ -55,21 +55,7 @@ public class RankBlServiceImpl implements RankBlService {
                 limit(10)
         );
 
-        if (sortKey.equals("acceptanceCount")) {
-            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
-            if (res.getMappedResults().size() == 0) {
-                throw new NoSuchYearException();
-            }
-            return new BasicResponse<>(200, "Success", BasicRank.transformToBasic(res.getMappedResults()));
-
-        } else if (sortKey.equals("citationCount")) {
-            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation,collectionName, CitationCountRank.class);
-            if (res.getMappedResults().size() == 0) {
-                throw  new NoSuchYearException();
-            }
-            return new BasicResponse<>(200, "Success", BasicRank.transformToBasic(res.getMappedResults()));
-        }
-        return null;
+        return getSortRes(sortKey, aggregation);
     }
 
     @Override
@@ -104,6 +90,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    @Cacheable(value = "journal")
     public BasicResponse getJournalBasicRanking(String sortKey, int year) {
         Aggregation aggregation = newAggregation(
                 project("publicationName", "publicationYear", "metrics", "contentType"),
@@ -118,6 +105,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    @Cacheable(value = "conference")
     public BasicResponse getConferenceBasicRanking(String sortKey, int year) {
         Aggregation aggregation = newAggregation(
                 project("publicationName", "publicationYear", "metrics", "contentType"),
@@ -132,6 +120,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    @Cacheable(value = "keyword")
     public BasicResponse getKeywordBasicRanking(int year) {
         Aggregation aggregation = newAggregation(
                 project("keywords", "publicationYear", "metrics"),

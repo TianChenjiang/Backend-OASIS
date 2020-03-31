@@ -39,9 +39,8 @@ public class PaperControllerIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void testBasicSearch() throws Exception {
-        mockMvc.perform(get("/search/basic/mongo")
+        mockMvc.perform(get("/search/basic/es")
                 .param("keyword", "Software、")
                 .param("page", "1")
 //                .param("startYear", "2012").param("endYear", "2012")
@@ -86,7 +85,7 @@ public class PaperControllerIntegrationTest {
     public void testAffiliationBasicRanking() throws Exception {
         mockMvc.perform(get("/rank/basic/affiliation")
                 .param("sortKey", "acceptanceCount")
-                .param("year", "2011")
+                .param("year", "2019")
                 .contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
                 .andDo(print());
