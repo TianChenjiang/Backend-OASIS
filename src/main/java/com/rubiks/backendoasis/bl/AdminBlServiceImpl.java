@@ -64,18 +64,24 @@ public class AdminBlServiceImpl implements AdminBlService {
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
+                project("authors"),
+                nameMatch,      // 先进行一次match，为了命中索引，也为了减少进入管道的文档数量
                 unwind("authors"),
                 nameMatch,
                 group(fieldName).addToSet(fieldName).as("name"),
+                project("name"),
                 skip(previousNum),
                 limit(Constant.pageSize)
         );
 
         Aggregation countAgg = newAggregation(
+                project("authors"),
+                nameMatch,
                 unwind("authors"),
                 nameMatch,
                 group(fieldName),
-                count().as("size")
+                count().as("size"),
+                project("size")
         );
 
         List<AdminAffiliation> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminAffiliation.class).getMappedResults();
@@ -95,14 +101,17 @@ public class AdminBlServiceImpl implements AdminBlService {
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
+//                project("contentType", fieldName),
                 typeMatch,
                 nameMatch,
                 group(fieldName).addToSet(fieldName).as("name"),
+                project("name"),
                 skip(previousNum),
                 limit(Constant.pageSize)
         );
 
         Aggregation countAgg = newAggregation(
+                project("contentType", fieldName),
                 typeMatch,
                 nameMatch,
                 group(fieldName),
@@ -125,6 +134,8 @@ public class AdminBlServiceImpl implements AdminBlService {
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
+//                project("authors", "metrics"),
+                nameMatch,
                 unwind("authors"),
                 nameMatch,
                 group("authors.id").addToSet(fieldName).as("name")    // 应该是同名不同人
@@ -137,6 +148,7 @@ public class AdminBlServiceImpl implements AdminBlService {
         );
 
         Aggregation countAgg = newAggregation(
+                nameMatch,
                 unwind("authors"),
                 nameMatch,
                 group(fieldName),

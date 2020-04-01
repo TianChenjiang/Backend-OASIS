@@ -16,7 +16,6 @@ public class ResearchInterest implements Serializable {
     }
 
     public static List<ResearchInterest> constructNameValueMap(List<PaperEntity> paperEntities) {
-        List<String> keywordList = new ArrayList<>();
         List<ResearchInterest> res = new ArrayList<>();
         HashMap<String, Integer> map = new HashMap<>();
 
@@ -38,7 +37,7 @@ public class ResearchInterest implements Serializable {
             Map.Entry<String, Integer> entry =  iterator.next();
             res.add(new ResearchInterest(entry.getKey(), entry.getValue()));
         }
-        
+
         return res;
     }
 }
