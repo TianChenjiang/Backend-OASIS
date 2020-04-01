@@ -72,9 +72,10 @@ public class PaperBlServiceImpl implements PaperBlService {
     public BasicResponse getConferenceInterest(String conference) {
         MatchOperation idMatch =  match(Criteria.where("publicationName").is(conference));
         Aggregation aggregation = newAggregation(
+                project("contentType", "keywords", "publicationName"),
                 idMatch,
                 match(Criteria.where("contentType").is("conferences")),
-                project( "keywords", "authors.affiliation")
+                project( "keywords")
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
@@ -84,9 +85,10 @@ public class PaperBlServiceImpl implements PaperBlService {
     @Override
     public BasicResponse getJournalInterest(String journal) {
         Aggregation aggregation = newAggregation(
+                project("contentType", "keywords", "publicationName"),
                 match(Criteria.where("publicationName").is(journal)),
                 match(Criteria.where("contentType").is("periodicals")),
-                project( "keywords", "authors.affiliation")
+                project( "keywords")
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
