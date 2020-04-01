@@ -86,7 +86,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
         if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.name", author).operator(Operator.AND));
         if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND));
-        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("conferenceName",publicationName).operator(Operator.AND));
+        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("publicationName",publicationName).operator(Operator.AND));
         if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
 //                .must(QueryBuilders.matchQuery("authors.name", authors).operator(Operator.AND))
 //                .must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND))
@@ -95,11 +95,13 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
+        searchSourceBuilder.trackTotalHits(true);
+        
         searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return new BasicResponse(200, "Success", null);
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), searchResponse.getHits().getTotalHits().value));
     }
 
     @Override
