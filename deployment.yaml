@@ -28,17 +28,16 @@ spec:
           - name: ES_PASS
             value: EPASS
         readinessProbe:
-            periodSeconds: 5
+            periodSeconds: 1
             httpGet:
               path: /
               port: 8081
-            initialDelaySeconds: 10
         livenessProbe:
-            periodSeconds: 5
+            periodSeconds: 10
             httpGet:
               path: /
               port: 8081
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
         resources:
           limits:
             memory: "1Gi"
