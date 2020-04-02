@@ -41,8 +41,8 @@ spec:
             initialDelaySeconds: 360
         resources:
           limits:
-            memory: "1Gi"
-            cpu: "500m"
+            memory: "2Gi"
+            cpu: 1
         ports:
         - containerPort: 8081
 ---
