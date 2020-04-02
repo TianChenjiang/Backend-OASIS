@@ -6,11 +6,13 @@ variables:
   ESHOST: elastic-cluster-es-http.svc.cluster.local
   MONGO: "mongodb://se3-cluster-1.se3-cluster-svc.mongodb.svc.cluster.local"
   KUBECONFIG: /etc/deploy/config
-  MAVEN_OPTS: "-Dmaven.repo.local=/home/cache/maven"
+  MAVEN_OPTS: "-Dmaven.repo.local=/opt/cache/.m2/repository"
+  REGISTRY: "backend-oasis"
 
 stages:
   - package
   - test
+  - build
 
 maven-build:
   image: maven:3-jdk-8
@@ -24,3 +26,10 @@ maven-test:
   artifacts:
     paths:
       - target/surefire-reports/*.xml
+
+build-image:
+  stage: build
+  script:
+    - docker login -u $HUB_USER -p $HUB_PASS
+    - docker build -t $HUB_USER/$REGISTRY:$CI_COMMIT_SHORT_SHA .
+    - docker push $HUB_PASS/$REGISTRY:latest
