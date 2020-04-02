@@ -43,7 +43,9 @@ build-image:
 
 deploy-k8s:
   stage: deploy
+  image: google/cloud-sdk
   script:
+    - source /root/.bashrc
     - sed -i "s/TAG/$CI_PIPELINE_ID/g" deployment.yaml
     - sed -i "s/EUSER/$ES_USER/g" deployment.yaml
     - sed -i "s/EPASS/$ES_PASS/g" deployment.yaml
