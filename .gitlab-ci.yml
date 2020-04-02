@@ -35,8 +35,7 @@ maven-test:
 build-image:
   stage: build
   script:
-    - mkdir target
-    - cp /opt/cache/app.jar target/app.jar 
+    - ls
     - echo "$HUB_PASS" | docker login -u $HUB_USER --password-stdin
     - docker build -t $HUB_USER/$REGISTRY:$CI_COMMIT_SHORT_SHA .
     - docker push $HUB_PASS/$REGISTRY:latest
