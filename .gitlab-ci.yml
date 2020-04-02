@@ -47,8 +47,7 @@ deploy-k8s:
   script:
     # - mkdir deploy
     # - echo $KUBE_CONFIG |base64 -d > deploy/config
-    # - kubectl config --kubeconfig="deploy/config"
-    - echo $KUBECONFIG
+    # - set KUBECONFIG $pwd/deploy/config
     - sed -i "s/TAG/latest/g" deployment.yaml
     # - sed -i "s/TAG/$CI_PIPELINE_ID/g" deployment.yaml
     - sed -i "s/EUSER/$ES_USER/g" deployment.yaml
