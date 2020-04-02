@@ -1,0 +1,24 @@
+image: docker:latest
+services:
+  - docker:latest
+  - maven:3-jdk-8
+
+variables:
+  REDIS_HOST: redis-master.default.svc.cluster.local
+  ESHOST: elastic-cluster-es-http.svc.cluster.local
+  MONGO: "mongodb://se3-cluster-1.se3-cluster-svc.mongodb.svc.cluster.local"
+
+stages:
+  - package
+  - test
+
+maven-build:
+  stage: package
+  script: "mvn -B -DskipTests clean package"
+  artifacts:
+    paths:
+      - target/*.jar
+
+maven-test:
+  stage: test
+  script: "mvn test"
