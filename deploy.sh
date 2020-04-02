@@ -14,4 +14,9 @@
 docker pull registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
 docker stop backend-oasis
 docker rm backend-oasis
-docker run -d --network="host" --name=backend-oasis --restart=always -p 8081:8081 registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
+docker run -d --network="host" \
+--name=backend-oasis \
+--restart=always \
+-p 8081:8081 \
+-e MONGO="mongodb://47.101.33.219:27017,116.62.23.105:27017/?replicaSet=rs0" \
+registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend
