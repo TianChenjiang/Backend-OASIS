@@ -26,7 +26,7 @@ maven-test:
   stage: test
   script: 
     - mkdir target
-    - cp /opt/cache/app.jar /target/app.jar 
+    - cp /opt/cache/app.jar target/app.jar 
     - mvn test
   artifacts:
     paths:
@@ -36,7 +36,7 @@ build-image:
   stage: build
   script:
     - mkdir target
-    - cp /opt/cache/app.jar /target/app.jar 
+    - cp /opt/cache/app.jar target/app.jar 
     - echo "$HUB_PASS" | docker login -u $HUB_USER --password-stdin
     - docker build -t $HUB_USER/$REGISTRY:$CI_COMMIT_SHORT_SHA .
     - docker push $HUB_PASS/$REGISTRY:latest
