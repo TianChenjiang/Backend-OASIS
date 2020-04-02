@@ -45,8 +45,6 @@ deploy-k8s:
   image: bitnami/kubectl
   stage: deploy
   script:
-    - mkdir -p /etc/deploy
-    - echo $kube_config |base64 -d > $KUBECONFIG
     - sed -i "s/IMAGE/$CI_REGISTRY_IMAGE/g" deployment.yaml
     - sed -i "s/TAG/$CI_PIPELINE_ID/g" deployment.yaml
     - sed -i "s/USER/$ES_USER/g" deployment.yaml
