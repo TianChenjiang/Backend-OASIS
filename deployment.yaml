@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend-oasis
-        image: IMAGE:TAG
+        image: greenw00d/backend-oasis:TAG
         imagePullPolicy: Always
         env:
           - name: REDIS_HOST
