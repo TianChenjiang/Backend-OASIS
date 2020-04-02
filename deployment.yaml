@@ -24,9 +24,9 @@ spec:
           - name: MONGO
             value: mongodb://se3-cluster-1.se3-cluster-svc.mongodb.svc.cluster.local
           - name: ES_USER
-            value: USER
+            value: EUSER
           - name: ES_PASS
-            value: PASS
+            value: EPASS
         readinessProbe:
             periodSeconds: 5
             httpGet:
