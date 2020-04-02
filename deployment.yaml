@@ -32,6 +32,13 @@ spec:
             httpGet:
               path: /
               port: 8081
+            initialDelaySeconds: 10
+        livenessProbe:
+            periodSeconds: 5
+            httpGet:
+              path: /
+              port: 8081
+            initialDelaySeconds: 10
         resources:
           limits:
             memory: "1Gi"
