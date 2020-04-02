@@ -7,7 +7,6 @@ variables:
   MONGO: "mongodb://se3-cluster-1.se3-cluster-svc.mongodb.svc.cluster.local"
   KUBECONFIG: /etc/deploy/config
   MAVEN_OPTS: "-Dmaven.repo.local=/opt/cache/.m2/repository"
-  REGISTRY: "backend-oasis"
 
 stages:
   - package
@@ -35,7 +34,9 @@ maven-test:
 build-image:
   stage: build
   script:
-    - ls
-    - echo "$HUB_PASS" | docker login -u $HUB_USER --password-stdin
-    - docker build -t $HUB_USER/$REGISTRY:$CI_COMMIT_SHORT_SHA .
-    - docker push $HUB_PASS/$REGISTRY:latest
+    - ls target
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+
