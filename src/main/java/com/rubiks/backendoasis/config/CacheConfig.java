@@ -19,7 +19,7 @@ import java.time.Duration;
 @Configuration
 public class CacheConfig {
 
-    @Value("{REDIS_HOST:localhost}")
+    @Value("${REDIS_HOST:localhost}")
     private String host;
 
     @Bean(name = "jedis")

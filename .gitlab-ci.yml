@@ -5,16 +5,12 @@ variables:
   REDIS_HOST: redis-master.default.svc.cluster.local
   ESHOST: elastic-cluster-es-http.svc.cluster.local
   MONGO: "mongodb://se3-cluster-1.se3-cluster-svc.mongodb.svc.cluster.local"
-  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  KUBECONFIG: /etc/deploy/config
+  MAVEN_OPTS: "-Dmaven.repo.local=/home/cache/maven"
 
 stages:
   - package
   - test
-
-cache:
-  paths:
-    - .m2/repository/
-
 
 maven-build:
   image: maven:3-jdk-8
