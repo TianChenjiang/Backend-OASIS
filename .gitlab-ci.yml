@@ -17,12 +17,17 @@ stages:
 maven-build:
   image: maven:3-jdk-8
   stage: package
-  script: "mvn -B -DskipTests clean package"
+  script: 
+    - mvn -B -DskipTests clean package
+    - cp target/app.jar /opt/cache
 
 maven-test:
   image: maven:3-jdk-8
   stage: test
-  script: "mvn test"
+  script: 
+    - mkdir target
+    - cp /opt/cache/app.jar /target/app.jar 
+    - mvn test
   artifacts:
     paths:
       - target/surefire-reports/*.xml
@@ -30,6 +35,8 @@ maven-test:
 build-image:
   stage: build
   script:
-    - docker login -u $HUB_USER -p $HUB_PASS
+    - mkdir target
+    - cp /opt/cache/app.jar /target/app.jar 
+    - echo "$HUB_PASS" | docker login -u $HUB_USER --password-stdin
     - docker build -t $HUB_USER/$REGISTRY:$CI_COMMIT_SHORT_SHA .
     - docker push $HUB_PASS/$REGISTRY:latest
