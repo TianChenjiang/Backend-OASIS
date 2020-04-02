@@ -46,7 +46,7 @@ deploy-k8s:
   image: bitnami/kubectl
   script:
     - mkdir deploy
-    - echo $KUBE_CONFIG |base64 -d > deploy
+    - echo $KUBE_CONFIG |base64 -d > deploy/config
     - kubectl config --kubeconfig="deploy/config"
     - sed -i "s/TAG/latest/g" deployment.yaml
     # - sed -i "s/TAG/$CI_PIPELINE_ID/g" deployment.yaml
