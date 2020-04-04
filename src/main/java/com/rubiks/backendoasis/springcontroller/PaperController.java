@@ -109,4 +109,9 @@ public class PaperController {
         return paperBlService.getKeywordPapers(keyword, page, sortKey);
     }
 
+    @GetMapping("/paper/id")
+    public BasicResponse getPaperById(@RequestParam(value = "id") String id) {
+        return paperBlService.getPaperById(id);
+    }
+
 }

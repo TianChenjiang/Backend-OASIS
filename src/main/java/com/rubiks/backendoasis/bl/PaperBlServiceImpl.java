@@ -177,6 +177,16 @@ public class PaperBlServiceImpl implements PaperBlService {
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
+    @Override
+    public BasicResponse getPaperById(String id) {
+        Criteria criteria = new Criteria();
+        criteria.andOperator(criteria.where("id").is(id));
+        Query query = new Query(criteria);
+
+        PaperEntity paperEntity = mongoTemplate.findOne(query, PaperEntity.class);
+        return new BasicResponse(200, "Success", paperEntity);
+    }
+
     class AuthorKeywordsList {
         private String name;
         private List<String> keywords;
