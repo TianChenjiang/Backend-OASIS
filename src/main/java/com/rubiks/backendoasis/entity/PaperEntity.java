@@ -67,4 +67,7 @@ public class PaperEntity {
     @Field("link")
     private String link;
 
+    @Field("ieeeId")
+    private String ieeeId;
+
 }
