@@ -17,6 +17,7 @@ spec:
         rollingUpdate:
           maxSurge: 1
           maxUnavailable: 1
+        type: RollingUpdate
       containers:
       - name: backend-oasis
         image: greenw00d/backend-oasis:TAG
