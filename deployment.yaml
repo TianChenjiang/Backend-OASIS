@@ -8,16 +8,16 @@ spec:
   selector:
     matchLabels:
       app: backend-oasis
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       labels:
         app: backend-oasis
     spec:
-      strategy:
-        rollingUpdate:
-          maxSurge: 1
-          maxUnavailable: 1
-        type: RollingUpdate
       containers:
       - name: backend-oasis
         image: greenw00d/backend-oasis:TAG
