@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-oasis-test
+  namespace: gitlab-managed-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-oasis-test
+  template:
+    metadata:
+      labels:
+        app: backend-oasis-test
+    spec:
+      containers:
+      - name: backend-oasis-test
+        image: greenw00d/backend-oasis:TAG
+        imagePullPolicy: Always
+        env:
+          - name: REDIS_HOST
+            value: redis-test.default.svc.cluster.local
+          - name: ESHOST
+            value: elastic-standalone-test-es-http.default.svc.cluster.local
+          - name: MONGO
+            value: mongodb://se3-standalone-test-0.se3-standalone-test-svc.mongodb.svc.cluster.local
+          - name: ES_USER
+            value: EUSER
+          - name: ES_PASS
+            value: EPASS
+        readinessProbe:
+            periodSeconds: 5
+            httpGet:
+              path: /actuator/health
+              port: 8081
+        livenessProbe:
+            periodSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 360
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1"
+        ports:
+        - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-oasis-test-svc
+  namespace: gitlab-managed-apps
+spec:
+  ports:
+  - port: 8081
+    targetPort: 8081
+    name: backend-oasis-test-svc
+  selector:
+    app: backend-oasis-test
+  type: LoadBalancer

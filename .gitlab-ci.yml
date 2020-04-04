@@ -11,11 +11,14 @@ stages:
   - package
   - test
   - build
-  - deploy
+  - deploy-test
+  - deploy-prod
 
 maven-build:
   image: maven:3-jdk-8
   stage: package
+  only:
+    - develop
   script: 
     - mvn -B -DskipTests clean package
     - cp target/app.jar /opt/cache
@@ -23,6 +26,8 @@ maven-build:
 maven-test:
   image: maven:3-jdk-8
   stage: test
+  only:
+    - develop
   script: 
     - mkdir target
     - cp /opt/cache/app.jar target/app.jar 
@@ -33,6 +38,8 @@ maven-test:
 
 build-image:
   stage: build
+  only:
+    - develop
   script:
     - ls target
     - cp /opt/cache/app.jar target/app.jar
@@ -41,9 +48,23 @@ build-image:
     - docker push $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
     - docker push $CI_REGISTRY_IMAGE:latest
 
-deploy-k8s:
-  stage: deploy
+deploy-k8s-test:
+  stage: deploy-test
   image: bitnami/kubectl
+  only:
+    - develop
+  script:
+    - sed -i "s/TAG/$CI_PIPELINE_ID/g" deploy-test.yaml
+    - sed -i "s/EUSER/$ES_USER/g" deploy-test.yaml
+    - sed -i "s/EPASS/$ES_PASS_TEST/g" deploy-test.yaml
+    - cat deploy-test.yaml
+    - kubectl apply -f deploy-test.yaml
+
+deploy-k8s_prod:
+  stage: deploy-prod
+  image: bitnami/kubectl
+  only:
+    - develop
   script:
     - sed -i "s/TAG/$CI_PIPELINE_ID/g" deployment.yaml
     - sed -i "s/EUSER/$ES_USER/g" deployment.yaml
