@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-oasis
-  namespace: gitlab-managed-apps
+  namespace: default
 spec:
   replicas: 3
   selector:
@@ -13,6 +13,10 @@ spec:
       labels:
         app: backend-oasis
     spec:
+      strategy:
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 1
       containers:
       - name: backend-oasis
         image: greenw00d/backend-oasis:TAG
@@ -41,8 +45,8 @@ spec:
             initialDelaySeconds: 360
         resources:
           limits:
-            memory: "2Gi"
-            cpu: 1
+            memory: "1Gi"
+            cpu: "0.5"
         ports:
         - containerPort: 8081
 ---
@@ -50,7 +54,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend-oasis-svc
-  namespace: gitlab-managed-apps
+  namespace: default
 spec:
   ports:
   - port: 8081
