@@ -23,7 +23,7 @@ spec:
           - name: ESHOST
             value: elastic-standalone-test-es-http.default.svc.cluster.local
           - name: MONGO
-            value: mongodb://se3-standalone-test-0.se3-standalone-test-svc.mongodb.svc.cluster.local
+            value: mongodb://se3-test-0.se3-test-svc.mongodb.svc.cluster.local
           - name: ES_USER
             value: EUSER
           - name: ES_PASS

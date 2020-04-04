@@ -4,7 +4,7 @@ variables:
   DOCKER_DRIVER: overlay2
   REDIS_HOST: redis-test.default.svc.cluster.local
   ESHOST: elastic-standalone-test-es-http.default.svc.cluster.local
-  MONGO: "mongodb://se3-standalone-test-0.se3-standalone-test-svc.mongodb.svc.cluster.local"
+  MONGO: "mongodb://se3-test-0.se3-test-svc.mongodb.svc.cluster.local"
   MAVEN_OPTS: "-Dmaven.repo.local=/opt/cache/.m2/repository"
 
 stages:
