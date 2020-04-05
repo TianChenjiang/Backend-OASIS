@@ -3,9 +3,10 @@ package com.rubiks.backendoasis.bl;
 import com.rubiks.backendoasis.blservice.PictureBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.model.AuthorCollection;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@CacheConfig(cacheNames = "picture")
 @Service
 public class PictureBlServiceImpl implements PictureBlService {
     private final MongoTemplate mongoTemplate;
@@ -27,6 +29,7 @@ public class PictureBlServiceImpl implements PictureBlService {
         this.mongoTemplate = mongoTemplate;
     }
 
+    @Cacheable(value = "academic_relation")
     @Override
     public BasicResponse getAcademicRelationByAuthorId(String id) {
         Criteria criteria = new Criteria();
