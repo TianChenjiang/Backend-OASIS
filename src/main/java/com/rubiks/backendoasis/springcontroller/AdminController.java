@@ -5,8 +5,15 @@ import com.rubiks.backendoasis.model.admin.MergeParm;
 import com.rubiks.backendoasis.model.admin.ModifyParm;
 import com.rubiks.backendoasis.model.admin.UpdatePaperParameter;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.response.Response;
+import com.rubiks.backendoasis.response.SuccessResponse;
+import com.rubiks.backendoasis.response.WrongResponse;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class AdminController {
@@ -15,6 +22,17 @@ public class AdminController {
 
     public AdminController(AdminBlService adminBlService) {
         this.adminBlService = adminBlService;
+    }
+
+
+    @PostMapping("/import/paper")
+    @ApiOperation(value = "接口 6导入论文数据")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = SuccessResponse.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
+            @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
+    public BasicResponse importPaperData(@RequestParam("paperData") MultipartFile paperData) {
+        return adminBlService.importPaperData(paperData);
     }
 
     @GetMapping("/info/conference")

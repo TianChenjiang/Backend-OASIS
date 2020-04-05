@@ -2,10 +2,13 @@ package com.rubiks.backendoasis.blservice;
 
 import com.rubiks.backendoasis.model.admin.UpdatePaperParameter;
 import com.rubiks.backendoasis.response.BasicResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface AdminBlService {
+    BasicResponse importPaperData(MultipartFile file);
+
     BasicResponse getConferenceInfo(int page, String name);
     BasicResponse getAffiliationInfo(int page, String name);
     BasicResponse getJournalInfo(int page, String name);
