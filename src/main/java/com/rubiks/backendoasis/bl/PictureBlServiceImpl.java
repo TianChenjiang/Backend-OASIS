@@ -29,7 +29,7 @@ public class PictureBlServiceImpl implements PictureBlService {
         this.mongoTemplate = mongoTemplate;
     }
 
-    @Cacheable(value = "academic_relation")
+    @Cacheable(value = "academic_relation_pic")
     @Override
     public BasicResponse getAcademicRelationByAuthorId(String id) {
         Criteria criteria = new Criteria();
