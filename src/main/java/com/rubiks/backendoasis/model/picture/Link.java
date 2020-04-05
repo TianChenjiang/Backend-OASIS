@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class Link {
     private String source; // authorId
     private String target; // authorId
-    private int value; // 线段长度（距离）
+    private long value; // 线段长度（距离）
 }
