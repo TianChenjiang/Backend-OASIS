@@ -69,7 +69,7 @@ public class PictureBlServiceImpl implements PictureBlService {
 
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         String name = "";
-        int count = 0, citation = 0;
+        int count = res.size(), citation = 0;
         if (res.size() > 0) {
              PaperEntity p1 = res.get(0);
             for (AuthorEntity authorEntity : p1.getAuthors()) {
