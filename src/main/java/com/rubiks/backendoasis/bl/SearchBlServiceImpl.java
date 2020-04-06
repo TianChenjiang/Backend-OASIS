@@ -88,6 +88,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND));
         if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("publicationName",publicationName).operator(Operator.AND));
         if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
+        ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
 
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.from(page-1);
