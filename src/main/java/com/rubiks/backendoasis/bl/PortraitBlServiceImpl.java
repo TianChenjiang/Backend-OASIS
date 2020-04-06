@@ -218,6 +218,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
                 Criteria.where("contentType").is("periodicals")
         );
         Query query = new Query(criteria);
+        query.fields().include("authors").include("metrics");
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
 
         int count = 0, citation = 0, authorNum = 0;
@@ -236,6 +237,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
 
             int curYear = Calendar.getInstance().get(Calendar.YEAR);
             Aggregation aggregation1 = newAggregation(
+                    project("publicationYear", "publicationName", "contentType", "metrics"),
                     match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
                     match(Criteria.where("publicationName").is(journal)),
                     match(Criteria.where("contentType").is("periodicals")),
