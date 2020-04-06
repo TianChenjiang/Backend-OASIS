@@ -153,12 +153,9 @@ public class SearchBlServiceImpl implements SearchBlService {
 
     @Override
     public BasicResponse getBasicSearchFilterCondition(String keyword) throws Exception{
-//        TextCriteria textCriteria = TextCriteria.forLanguage("en").matching(keyword);
-////        Query query = TextQuery.queryText(textCriteria);
-////        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
+        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors.name", "authors.affiliation", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
         searchSourceBuilder.query(queryBuilder);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
