@@ -124,7 +124,10 @@ public class PortraitBlServiceImpl implements PortraitBlService {
 
     @Override
     public BasicResponse getKeywordPortrait(String keyword) {
-        List<PaperEntity> res = mongoTemplate.find(new Query(Criteria.where("keywords").is(keyword)), PaperEntity.class);
+        Query query = new Query(Criteria.where("keywords").is(keyword));
+        query.fields().include("metrics").include("authors");
+
+        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         int count = 0, citation = 0, authorNum = 0;
         if (res.size() > 0) {
             count = res.size();

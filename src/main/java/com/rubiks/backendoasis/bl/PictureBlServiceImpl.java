@@ -44,7 +44,7 @@ public class PictureBlServiceImpl implements PictureBlService {
         String affiliation = "";
         for (PaperEntity p : paperEntity) {
             for (AuthorEntity authorEntity : p.getAuthors()) {
-                if (!authorEntity.getId().equals(id)) {
+                if (authorEntity.getId()!= null && !authorEntity.getId().equals(id)) {
                     nodesId.add(authorEntity.getId());
                 } else {
                     affiliation = authorEntity.getAffiliation();
@@ -72,7 +72,7 @@ public class PictureBlServiceImpl implements PictureBlService {
         if (res.size() > 0) {
              PaperEntity p1 = res.get(0);
             for (AuthorEntity authorEntity : p1.getAuthors()) {
-                if (authorEntity.getId().equals(nodeId)) {
+                if (authorEntity.getId() != null && authorEntity.getId().equals(nodeId)) {
                     name = authorEntity.getName();
                     break;
                 }
@@ -103,7 +103,7 @@ public class PictureBlServiceImpl implements PictureBlService {
         String affiliation2 = "";
         for (PaperEntity p: paperEntities) {
             for (AuthorEntity a : p.getAuthors()) {
-                if (a.getId().equals(authorId2)) {
+                if (a.getId()!=null && a.getId().equals(authorId2)) {
                     affiliation2 = a.getAffiliation();
                     res++;
                     break;
