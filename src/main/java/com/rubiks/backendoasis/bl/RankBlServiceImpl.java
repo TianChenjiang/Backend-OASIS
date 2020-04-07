@@ -83,7 +83,7 @@ public class RankBlServiceImpl implements RankBlService {
         } else if (sortKey.equals("citationCount")) {
             AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, CitationCountRank.class);
             if (res.getMappedResults().size() == 0) {
-                throw  new NoSuchYearException();
+                throw new NoSuchYearException();
             }
             return new BasicResponse<>(200, "Success", AuthorRank.transformToBasic(res.getMappedResults()));
         }
@@ -172,10 +172,12 @@ public class RankBlServiceImpl implements RankBlService {
                 project("authors", "publicationYear", "metrics"),
                 yearOperation,
                 match(Criteria.where("authors.id").ne(null)),
+
                 unwind("authors"),
                 group("authors.id").count().as("count").
                         sum("metrics.citationCountPaper").as("citation").addToSet("authors.name").as("authorName")
                         .addToSet("authors.id").as("authorId"),
+                project("authorId", "citation", "authorName", "count"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
@@ -185,6 +187,7 @@ public class RankBlServiceImpl implements RankBlService {
         // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
         int curYear = Calendar.getInstance().get(Calendar.YEAR);
         Aggregation aggregation1 = newAggregation(
+                project("publicationYear", "authors"),
                 match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
                 unwind("authors"),
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")

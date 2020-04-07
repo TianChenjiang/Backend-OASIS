@@ -2,6 +2,7 @@ package com.rubiks.backendoasis.springcontroller;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
+import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.ResearchInterest;
 import com.rubiks.backendoasis.model.rank.AuthorRankDetail;
 import com.rubiks.backendoasis.response.BasicResponse;
@@ -36,25 +37,49 @@ public class RankController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse getAffiliationBasicRanking(@RequestParam(value = "sortKey") String sortKey,
                                                     @RequestParam(value = "year") int year) {
-        return  rankBlService.getAffiliationBasicRanking(sortKey, year);
+        try {
+            BasicResponse basicResponse = rankBlService.getAffiliationBasicRanking(sortKey, year);
+            return basicResponse;
+        } catch (NoSuchYearException e) {
+            e.printStackTrace();
+            return new BasicResponse(e.getCode(), e.getMessage(), null);
+        }
     }
 
 
     @GetMapping("/rank/basic/conference")
     public BasicResponse getConferenceBasicRanking(@RequestParam(value = "sortKey") String sortKey,
                                                     @RequestParam(value = "year") int year) {
-        return  rankBlService.getConferenceBasicRanking(sortKey, year);
+        try {
+            BasicResponse basicResponse = rankBlService.getConferenceBasicRanking(sortKey, year);
+            return basicResponse;
+        } catch (NoSuchYearException e) {
+            e.printStackTrace();
+            return new BasicResponse(e.getCode(), e.getMessage(), null);
+        };
     }
 
     @GetMapping("/rank/basic/journal")
     public BasicResponse getJournalBasicRanking(@RequestParam(value = "sortKey") String sortKey,
                                                    @RequestParam(value = "year") int year) {
-        return  rankBlService.getJournalBasicRanking(sortKey, year);
+        try {
+            BasicResponse basicResponse = rankBlService.getJournalBasicRanking(sortKey, year);
+            return basicResponse;
+        } catch (NoSuchYearException e) {
+            e.printStackTrace();
+            return new BasicResponse(e.getCode(), e.getMessage(), null);
+        }
     }
 
     @GetMapping("/rank/basic/keyword")
     public BasicResponse getKeywordBasicRanking(@RequestParam(value = "year") int year) {
-        return  rankBlService.getKeywordBasicRanking(year);
+        try {
+            BasicResponse basicResponse = rankBlService.getKeywordBasicRanking(year);
+            return basicResponse;
+        } catch (NoSuchYearException e) {
+            e.printStackTrace();
+            return new BasicResponse(e.getCode(), e.getMessage(), null);
+        }
     }
 
 
@@ -66,7 +91,14 @@ public class RankController {
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse getAuthorBasicRanking(@RequestParam(value = "sortKey") String sortKey,
                                                @RequestParam(value = "year") int year) {
-        return rankBlService.getAuthorBasicRanking(sortKey, year);
+
+        try {
+            BasicResponse basicResponse = rankBlService.getAuthorBasicRanking(sortKey, year);
+            return basicResponse;
+        } catch (NoSuchYearException e) {
+            e.printStackTrace();
+            return new BasicResponse(e.getCode(), e.getMessage(), null);
+        }
     }
 
     @GetMapping("/rank/advanced/author")
