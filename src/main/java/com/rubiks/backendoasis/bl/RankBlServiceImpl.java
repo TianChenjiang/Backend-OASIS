@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.rubiks.backendoasis.util.Constant.collectionName;
-import static org.hibernate.criterion.Projections.sum;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
 

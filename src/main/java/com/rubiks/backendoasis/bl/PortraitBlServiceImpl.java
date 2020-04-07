@@ -78,7 +78,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             return new BasicResponse(200, "Success", new AuthorPortrait(name, res.size(), citation, affiliation, citationTrend, publicationTrends));
         } else {
             // 查无此人异常
-            return new BasicResponse(200, "no author", null);
+            return new BasicResponse(200, "no such author", null);
         }
     }
 
@@ -118,7 +118,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             return new BasicResponse(200, "Success", new AffiliationPortrait(count, citation, authorNum, citationTrend, publicationTrends));
         } else {
             // 查无此人异常
-            return new BasicResponse(200, "no author", null);
+            return new BasicResponse(200, "no such affiliation", null);
         }
     }
 
@@ -158,7 +158,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             return new BasicResponse(200, "Success", new AffiliationPortrait(count, citation, authorNum, citationTrend, publicationTrends));
         } else {
             // 查无此人异常
-            return new BasicResponse(200, "no author", null);
+            return new BasicResponse(200, "no such keyword", null);
         }
     }
 
@@ -208,7 +208,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             return new BasicResponse(200, "Success", new AffiliationPortrait(count, citation, authorNum, citationTrend, publicationTrends));
         } else {
             // 查无此人异常
-            return new BasicResponse(200, "no author", null);
+            return new BasicResponse(200, "no such conference", null);
         }
     }
 
@@ -260,7 +260,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             return new BasicResponse(200, "Success", new AffiliationPortrait(count, citation, authorNum, citationTrend, publicationTrends));
         } else {
             // 查无此人异常
-            return new BasicResponse(200, "no author", null);
+            return new BasicResponse(200, "no such journal", null);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.rubiks.backendoasis.springcontroller;
 
 import com.rubiks.backendoasis.blservice.AdminBlService;
+import com.rubiks.backendoasis.exception.FileFormatNotSupportException;
 import com.rubiks.backendoasis.model.admin.MergeParm;
 import com.rubiks.backendoasis.model.admin.ModifyParm;
 import com.rubiks.backendoasis.model.admin.UpdatePaperParameter;
@@ -32,7 +33,13 @@ public class AdminController {
             @ApiResponse(code = 401, message = "Unauthorized", response = WrongResponse.class),
             @ApiResponse(code = 500, message = "Failure", response = WrongResponse.class)})
     public BasicResponse importPaperData(@RequestParam("paperData") MultipartFile paperData) {
-        return adminBlService.importPaperData(paperData);
+        try {
+            BasicResponse basicResponse = adminBlService.importPaperData(paperData);
+            return basicResponse;
+        } catch (FileFormatNotSupportException e) {
+            return new BasicResponse(e.getCode(), e.getMessage(), null);
+        }
+
     }
 
     @GetMapping("/info/conference")
