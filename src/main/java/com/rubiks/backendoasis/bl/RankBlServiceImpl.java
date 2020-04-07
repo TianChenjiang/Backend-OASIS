@@ -180,7 +180,7 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
-        AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class);
+        List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class).getMappedResults();
 
 
         // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
@@ -193,26 +193,9 @@ public class RankBlServiceImpl implements RankBlService {
         );
         List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
 
-        for (AuthorAdvanceRank authorAdvanceRank : firstRes.getMappedResults()) {
-            String curId = authorAdvanceRank.getAuthorId();
-            List<Integer> publicationTrends = new ArrayList<>(Collections.nCopies(10, 0));
+        res = CalAndSetPublicationTrends(res, curRes);
 
-            int low  = curYear-9;
-            for (IdYearMap idYearMap : curRes) {
-                if (idYearMap.getAuthorId() == null) {
-                    continue;  //有authorId为空的情况
-                }
-                else if (idYearMap.getAuthorId().equals(curId)) {
-                    int index = idYearMap.getYear()-low;
-                    int origin = publicationTrends.get(index);
-                    publicationTrends.set(index, ++origin);
-                }
-            }
-
-            authorAdvanceRank.setPublicationTrend(publicationTrends);
-        }
-
-        return new BasicResponse(200, "Success", firstRes.getMappedResults());
+        return new BasicResponse(200, "Success", res);
     }
 
 
@@ -325,6 +308,13 @@ public class RankBlServiceImpl implements RankBlService {
         );
         List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
 
+        res = CalAndSetPublicationTrends(res, curRes);
+
+        return new BasicResponse(200, "Success", res);
+    }
+
+    private List<AuthorAdvanceRank> CalAndSetPublicationTrends(List<AuthorAdvanceRank> res, List<IdYearMap> curRes) {
+        int curYear = Calendar.getInstance().get(Calendar.YEAR);
         for (AuthorAdvanceRank authorAdvanceRank : res) {
             String curId = authorAdvanceRank.getAuthorId();
             List<Integer> publicationTrends = new ArrayList<>(Collections.nCopies(10, 0));
@@ -343,8 +333,7 @@ public class RankBlServiceImpl implements RankBlService {
 
             authorAdvanceRank.setPublicationTrend(publicationTrends);
         }
-
-        return new BasicResponse(200, "Success", res);
+        return res;
     }
 
 }

@@ -121,16 +121,7 @@ public class PaperBlServiceImpl implements PaperBlService {
         Query query = new Query(criteria);
         long size = mongoTemplate.count(query, PaperEntity.class);
 
-       if (sortKey.equals("recent")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
-        }
-        else if (sortKey.equals("early")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.ASC, "publicationYear")));
-        }
-        else if (sortKey.equals("citation")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "metrics.citationCountPaper")));
-        }
-
+        query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
@@ -142,16 +133,7 @@ public class PaperBlServiceImpl implements PaperBlService {
         Query query = new Query(criteria);
         long size = mongoTemplate.count(query, PaperEntity.class);
 
-        if (sortKey.equals("recent")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
-        }
-        else if (sortKey.equals("early")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.ASC, "publicationYear")));
-        }
-        else if (sortKey.equals("citation")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "metrics.citationCountPaper")));
-        }
-
+        query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
@@ -163,15 +145,7 @@ public class PaperBlServiceImpl implements PaperBlService {
         Query query = new Query(criteria);
         long size = mongoTemplate.count(query, PaperEntity.class);
 
-        if (sortKey.equals("recent")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "publicationYear")));
-        }
-        else if (sortKey.equals("early")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Direction.ASC, "publicationYear")));
-        }
-        else if (sortKey.equals("citation")) {
-            query.with(PageRequest.of(page-1, pageSize, Sort.by(Sort.Direction.DESC, "metrics.citationCountPaper")));
-        }
+        query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
@@ -189,6 +163,21 @@ public class PaperBlServiceImpl implements PaperBlService {
     class AuthorKeywordsList {
         private String name;
         private List<String> keywords;
+    }
+
+    private Query getQueryAfterPaginationAndSort(Query query, String sortKey, int page) {
+        switch (sortKey) {
+            case "recent":
+                query.with(PageRequest.of(page - 1, pageSize, Sort.by(Direction.DESC, "publicationYear")));
+                break;
+            case "early":
+                query.with(PageRequest.of(page - 1, pageSize, Sort.by(Direction.ASC, "publicationYear")));
+                break;
+            case "citation":
+                query.with(PageRequest.of(page - 1, pageSize, Sort.by(Direction.DESC, "metrics.citationCountPaper")));
+                break;
+        }
+        return query;
     }
 
 }
