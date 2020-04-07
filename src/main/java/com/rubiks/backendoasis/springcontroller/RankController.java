@@ -56,7 +56,7 @@ public class RankController {
         } catch (NoSuchYearException e) {
             e.printStackTrace();
             return new BasicResponse(e.getCode(), e.getMessage(), null);
-        };
+        }
     }
 
     @GetMapping("/rank/basic/journal")
