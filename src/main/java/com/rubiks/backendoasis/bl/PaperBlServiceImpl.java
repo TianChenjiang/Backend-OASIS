@@ -29,7 +29,6 @@ import java.util.*;
 
 
 @Service
-@CacheConfig(cacheNames = "papers")
 public class PaperBlServiceImpl implements PaperBlService {
     private RestHighLevelClient client;
     private ObjectMapper objectMapper;
@@ -97,7 +96,7 @@ public class PaperBlServiceImpl implements PaperBlService {
 
 
     @Override
-    @Cacheable()
+    @Cacheable(value = "active_abstract")
     public BasicResponse getActivePaperAbstract() {
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("publicationYear").is(2019)),

@@ -31,7 +31,7 @@ public class CacheConfig {
     public CacheManager cacheManager(@Autowired @Qualifier("jedis") RedisConnectionFactory connectionFactory) {
         return RedisCacheManager
                 .builder(connectionFactory)
-                .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(1))) //1天刷新一次
+//                .cacheDefaults(RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(1))) //1天刷新一次
                 .transactionAware()
                 .build();
     }

@@ -12,6 +12,7 @@ import com.rubiks.backendoasis.util.CSVConvertor;
 import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.MultiPartFileToFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
@@ -38,6 +39,7 @@ public class AdminBlServiceImpl implements AdminBlService {
     private MongoTemplate mongoTemplate;
 
 
+    @CacheEvict(value = {"affiliation_rank", "author_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "academic_relation_pic"}, allEntries = true)
     @Override
     public BasicResponse importPaperData(MultipartFile file) {
 //        File f = (File) file;
@@ -237,6 +239,7 @@ public class AdminBlServiceImpl implements AdminBlService {
     }
 
 
+    @CacheEvict(value = {"conference_rank"}, allEntries = true)
     @Override
     public BasicResponse updateConferenceInfo(String src, String desc) {
         String fieldName = "publicationName";
@@ -253,6 +256,8 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", "修改成功");
     }
 
+
+    @CacheEvict(value = {"journal_rank"}, allEntries = true)
     @Override
     public BasicResponse updateJournalInfo(String src, String desc) {
         String fieldName = "publicationName";
@@ -269,6 +274,7 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", "修改成功");
     }
 
+    @CacheEvict(value = {"affiliation_rank", "author_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "academic_relation_pic"}, allEntries = true)
     @Override
     public BasicResponse updatePaperInfo(UpdatePaperParameter parm) {
         Criteria criteria = new Criteria();
@@ -298,6 +304,7 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", "修改成功");
     }
 
+    @CacheEvict(value = {"author_rank", "academic_relation_pic"}, allEntries = true)
     @Override
     public BasicResponse mergeAuthorInfo(List<String> src, String desc) {
         String fieldName = "authors.id";
@@ -314,6 +321,7 @@ public class AdminBlServiceImpl implements AdminBlService {
 
     }
 
+    @CacheEvict(value = {"affiliation_rank"}, allEntries = true)
     @Override
     public BasicResponse mergeAffiliationInfo(List<String> src, String desc) {
         String fieldName = "authors.affiliation";

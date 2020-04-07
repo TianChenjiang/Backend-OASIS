@@ -59,7 +59,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
-    @Cacheable(value = "author")
+    @Cacheable(value = "author_rank")
     public BasicResponse getAuthorBasicRanking(String sortKey, int year) {
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
@@ -90,7 +90,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
-    @Cacheable(value = "journal")
+    @Cacheable(value = "journal_rank")
     public BasicResponse getJournalBasicRanking(String sortKey, int year) {
         Aggregation aggregation = newAggregation(
                 project("publicationName", "publicationYear", "metrics", "contentType"),
@@ -105,7 +105,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
-    @Cacheable(value = "conference")
+    @Cacheable(value = "conference_rank")
     public BasicResponse getConferenceBasicRanking(String sortKey, int year) {
         Aggregation aggregation = newAggregation(
                 project("publicationName", "publicationYear", "metrics", "contentType"),
@@ -120,7 +120,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
-    @Cacheable(value = "keyword")
+    @Cacheable(value = "keyword_rank")
     public BasicResponse getKeywordBasicRanking(int year) {
         Aggregation aggregation = newAggregation(
                 project("keywords", "publicationYear", "metrics"),
