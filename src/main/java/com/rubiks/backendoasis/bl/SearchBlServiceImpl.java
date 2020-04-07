@@ -63,7 +63,13 @@ public class SearchBlServiceImpl implements SearchBlService {
     public BasicResponse basicSearchByES(String keyword, int page, String sortKey) throws Exception{
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors.name", "authors.affiliation", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
+        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword)
+                .field("authors.name", 2f)
+                .field("authors.affiliation")
+                .field("authors.affiliation")
+                .field("title", 2f)
+                .field("keywords")
+                .field("publicationName");
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.trackTotalHits(true);
 
@@ -155,7 +161,13 @@ public class SearchBlServiceImpl implements SearchBlService {
     public BasicResponse getBasicSearchFilterCondition(String keyword) throws Exception{
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword, "authors.name", "authors.affiliation", "abstract", "title", "publicationTitle", "doi", "keywords", "publicationName");
+        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword)
+                .field("authors.name", 2f)
+                .field("authors.affiliation")
+                .field("authors.affiliation")
+                .field("title", 2f)
+                .field("keywords")
+                .field("publicationName");
         searchSourceBuilder.query(queryBuilder);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
