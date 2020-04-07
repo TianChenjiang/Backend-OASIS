@@ -4,7 +4,7 @@ metadata:
   name: backend-oasis
   namespace: gitlab-managed-apps
 spec:
-  replicas: 3
+  replicas: 4
   selector:
     matchLabels:
       app: backend-oasis
@@ -39,18 +39,18 @@ spec:
               path: /actuator/health
               port: 8081
         livenessProbe:
-            periodSeconds: 10
+            periodSeconds: 2
             httpGet:
               path: /actuator/health
               port: 8081
             initialDelaySeconds: 360
         resources:
           requests:
-            memory: "500M"
-            cpu: "0.5"
+            memory: "300M"
+            cpu: "0.2Gi"
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: "600M"
+            cpu: "1Gi"
         ports:
         - containerPort: 8081
 ---
