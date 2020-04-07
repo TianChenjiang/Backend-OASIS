@@ -47,10 +47,10 @@ spec:
         resources:
           requests:
             memory: "300M"
-            cpu: "0.2Gi"
+            cpu: "0.5"
           limits:
             memory: "600M"
-            cpu: "1Gi"
+            cpu: "1"
         ports:
         - containerPort: 8081
 ---
