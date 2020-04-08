@@ -41,7 +41,9 @@ public class PortraitBlServiceImpl implements PortraitBlService {
 
     @Override
     public BasicResponse getAuthorPortraitById(String id) {
-        List<PaperEntity> res = mongoTemplate.find(new Query(Criteria.where("authors.id").is(id)), PaperEntity.class);
+        Query query = new Query(Criteria.where("authors.id").is(id));
+        query.fields().include("authors").include("metrics");
+        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         String name = "", affiliation = "";
         int count = 0, citation = 0;
         if (res.size() > 0) {
@@ -59,6 +61,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
 
             int curYear = Calendar.getInstance().get(Calendar.YEAR);
             Aggregation aggregation1 = newAggregation(
+                    project("publicationYear", "authors", "metrics"),
                     match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
                     match(Criteria.where("authors.id").is(id)),
                     sort(Sort.Direction.ASC, "publicationYear"),
@@ -84,7 +87,9 @@ public class PortraitBlServiceImpl implements PortraitBlService {
 
     @Override
     public BasicResponse getAffiliationPortrait(String affiliation) {
-        List<PaperEntity> res = mongoTemplate.find(new Query(Criteria.where("authors.affiliation").is(affiliation)), PaperEntity.class);
+        Query query = new Query(Criteria.where("authors.affiliation").is(affiliation));
+        query.fields().include("authors").include("metrics");
+        List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         int count = 0, citation = 0, authorNum = 0;
         if (res.size() > 0) {
             count = res.size();
@@ -99,6 +104,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
 
             int curYear = Calendar.getInstance().get(Calendar.YEAR);
             Aggregation aggregation1 = newAggregation(
+                    project("publicationYear", "authors", "metrics"),
                     match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)),  //过去十年
                     match(Criteria.where("authors.affiliation").is(affiliation)),
                     sort(Sort.Direction.ASC, "publicationYear"),
@@ -134,8 +140,12 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             Set<String> nonRepeatedAuthors = new HashSet<>();
             for (PaperEntity p : res) {
                 citation += p.getMetrics().getCitationCountPaper();
-                for (AuthorEntity author : p.getAuthors()) {
-                    nonRepeatedAuthors.add(author.getName());
+                if (p.getAuthors() != null) {
+                    for (AuthorEntity author : p.getAuthors()) {
+                        if (author.getName() != null) {
+                            nonRepeatedAuthors.add(author.getName());
+                        }
+                    }
                 }
             }
             authorNum = nonRepeatedAuthors.size();
