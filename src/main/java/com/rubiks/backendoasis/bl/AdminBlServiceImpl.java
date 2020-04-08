@@ -321,6 +321,12 @@ public class AdminBlServiceImpl implements AdminBlService {
 
     }
 
+    @CacheEvict(value = {"affiliation_rank", "author_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract"}, allEntries = true)
+    @Override
+    public BasicResponse updateMainPageCache() {
+        return new BasicResponse(200, "Success", null);
+    }
+
     @CacheEvict(value = {"affiliation_rank"}, allEntries = true)
     @Override
     public BasicResponse mergeAffiliationInfo(List<String> src, String desc) {
@@ -343,6 +349,8 @@ public class AdminBlServiceImpl implements AdminBlService {
         }
         return new BasicResponse(200, "Success", "修改成功");
     }
+
+
 
 
     private Pattern getPattern(String keyword) {

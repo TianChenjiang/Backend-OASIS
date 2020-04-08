@@ -20,4 +20,6 @@ public interface AdminBlService {
     BasicResponse updatePaperInfo(UpdatePaperParameter parameter);
     BasicResponse mergeAuthorInfo(List<String> src, String desc);
 
+    BasicResponse updateMainPageCache();
+
 }

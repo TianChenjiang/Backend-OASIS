@@ -91,4 +91,9 @@ public class AdminController {
         return adminBlService.updatePaperInfo(updatePaperParameter);
     }
 
+    @GetMapping("/cache")
+    public BasicResponse updateMainPageCache() {
+        return adminBlService.updateMainPageCache();
+    }
+
 }
