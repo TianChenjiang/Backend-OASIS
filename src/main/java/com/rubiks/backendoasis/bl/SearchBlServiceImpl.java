@@ -14,6 +14,7 @@ import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.springcontroller.SearchController;
 import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.StrProcesser;
+import javafx.scene.text.Text;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -25,6 +26,8 @@ import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
@@ -73,14 +76,52 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.trackTotalHits(true);
 
+        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
-        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
 
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), searchResponse.getHits().getTotalHits().value));
+    }
+
+    @Override
+    public BasicResponse basicSearchByESWithHighLight(String keyword, int page, String sortKey) throws Exception {
+        SearchRequest searchRequest = new SearchRequest(INDEX);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword)
+                .field("authors.name", 2f)
+                .field("authors.affiliation")
+                .field("authors.affiliation")
+                .field("title", 2f)
+                .field("keywords")
+                .field("publicationName");
+        searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder.trackTotalHits(true);
+
+        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
+        searchSourceBuilder.from(page-1);
+        searchSourceBuilder.size(pageSize);
+
+
+        String preTag = "<font color='#dd4b39'>";
+        String postTag = "</font>";
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("_abstract").field("title").field("authors.name");
+        highlightBuilder.requireFieldMatch(false);
+        highlightBuilder.preTags(preTag);
+        highlightBuilder.postTags(postTag);
+        searchSourceBuilder.highlighter(highlightBuilder);
+
+//        highlightBuilder.fragmentSize(800000); //最大高亮分片数
+//        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResultWithHighLight(searchResponse)), searchResponse.getHits().getTotalHits().value));
     }
 
     @Override
@@ -219,6 +260,38 @@ public class SearchBlServiceImpl implements SearchBlService {
         }
         return paperDocuments;
     }
+
+    private List<PaperDocument> getSearchResultWithHighLight(SearchResponse response) {
+        List<PaperDocument> paperDocuments = new ArrayList<>();
+        for (SearchHit hit : response.getHits()) {
+            PaperDocument paperDocument = objectMapper.convertValue(hit.getSourceAsMap(), PaperDocument.class);
+            paperDocument.setId(hit.getId());
+            paperDocument.set_abstract((String)(hit.getSourceAsMap().get("abstract"))); //很奇怪，这里的abstract会为null，必须这样设置一下
+
+//            HighlightField authorNameField = hit.getHighlightFields().get("authors.name");
+//            if (authorNameField != null) {
+//                List<Author> authors = paperDocument.getAuthors();
+//                int index = 0;
+//                for (int i = 0; i < authors.size(); i++) {
+//                    Author author = authors.get(i);
+//                    String curName = authorNameField.fragments()[index].toString();
+//                    author.setName();
+//                }
+//            }
+            HighlightField titleField = hit.getHighlightFields().get("title");
+            if (titleField != null) {
+                paperDocument.setTitle(titleField.fragments()[0].toString());
+            }
+            HighlightField abstractField = hit.getHighlightFields().get("_abstract");
+            if (abstractField != null) {
+                paperDocument.set_abstract(abstractField.fragments()[0].toString());
+            }
+            paperDocuments.add(paperDocument);
+        }
+
+        return paperDocuments;
+    }
+
 
     private Pattern getPattern(String keyword) {
         Pattern pattern = Pattern.compile("^.*" + keyword + ".*$", Pattern.CASE_INSENSITIVE);

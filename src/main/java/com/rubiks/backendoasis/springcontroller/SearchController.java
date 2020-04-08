@@ -38,6 +38,13 @@ public class SearchController {
         return searchBlService.basicSearchByES(keyword, page, sortKey);
     }
 
+    @GetMapping("/search/basic/es/highlight")
+    public BasicResponse basicSearchByESWithHighLight(@RequestParam(value = "keyword") String keyword,
+                                         @RequestParam(value = "page") int page,
+                                         @RequestParam(value = "sortKey") String sortKey) throws Exception {
+        return searchBlService.basicSearchByESWithHighLight(keyword, page, sortKey);
+    }
+
     @GetMapping("/search/advanced/es")
     @ApiOperation(value = "es的普通搜索", notes = "根据关键词获得相关论文")
     @ApiResponses(value = {

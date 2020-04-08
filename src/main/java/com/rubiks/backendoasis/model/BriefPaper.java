@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class BriefPaper implements Serializable {
-    private List<String> authors;
+    private List<AuthorNameId> authors;
     private String link;
     private String title;
     private String _abstract;
@@ -21,9 +21,9 @@ public class BriefPaper implements Serializable {
     public static List<BriefPaper> PapersToBriefPapers(List<PaperEntity> paperEntities) {
         List<BriefPaper> res = new ArrayList<>();
         for (PaperEntity p : paperEntities) {
-            List<String> author_names = new ArrayList<>();
+            List<AuthorNameId> author_names = new ArrayList<>();
             for (AuthorEntity a : p.getAuthors()) {
-                author_names.add(a.getName());
+                author_names.add(new AuthorNameId(a.getName(), a.getId()));
             }
             res.add(new BriefPaper(author_names, p.getLink(), p.getTitle(), p.get_abstract(), p.getPublicationYear()));
         }

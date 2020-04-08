@@ -19,7 +19,7 @@ import java.util.List;
 public class PaperWithoutRef implements Serializable {
     private String id;
     private String title;
-    private List<String> authors;
+    private List<AuthorNameId> authors;
     private String _abstract;
     private int publicationYear;
     private MetricsEntity metrics;
@@ -31,9 +31,11 @@ public class PaperWithoutRef implements Serializable {
     public static List<PaperWithoutRef> PaperToPaperWithoutRef(List<PaperEntity>paperEntities) {
         List<PaperWithoutRef> res = new ArrayList<>();
         for (PaperEntity p : paperEntities) {
-            List<String> author_names = new ArrayList<>();
+            List<AuthorNameId> author_names = new ArrayList<>();
             for (AuthorEntity a : p.getAuthors()) {
-                author_names.add(a.getName());
+                if (p.getAuthors() != null) {
+                    author_names.add(new AuthorNameId(a.getName(), a.getId()));
+                }
             }
             res.add(new PaperWithoutRef(p.getId(),
                     p.getTitle(),
@@ -53,10 +55,10 @@ public class PaperWithoutRef implements Serializable {
     public static List<PaperWithoutRef> PaperDocToPaperWithoutRef(List<PaperDocument> paperdocs) {
         List<PaperWithoutRef> res = new ArrayList<>();
         for (PaperDocument p : paperdocs) {
-            List<String> author_names = new ArrayList<>();
+            List<AuthorNameId> author_names = new ArrayList<>();
             if (p.getAuthors()!=null) {
                 for (Author a : p.getAuthors()) {
-                    author_names.add(a.getName());
+                    author_names.add(new AuthorNameId(a.getName(), a.getId()));
                 }
             }
             res.add(new PaperWithoutRef(p.getId(),
