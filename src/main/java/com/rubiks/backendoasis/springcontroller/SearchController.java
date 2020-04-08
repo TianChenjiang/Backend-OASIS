@@ -67,6 +67,23 @@ public class SearchController {
         return searchBlService.advancedSearchByES(author, affiliation, publicationName, keyword, startYear, endYear, page, sortKey);
     }
 
+    @GetMapping("/search/advanced/es/highlight")
+    public BasicResponse advancedSearchByESWithHighLight(@RequestParam(value = "author", required = false) String author,
+                                            @RequestParam(value = "affiliation", required = false) String affiliation,
+                                            @RequestParam(value = "publicationName", required = false) String publicationName,
+                                            @RequestParam(value = "keyword", required = false) String keyword,
+                                            @RequestParam(value = "page") int page,
+                                            @RequestParam(value = "startYear") int startYear,
+                                            @RequestParam(value = "endYear") int endYear,
+                                            @RequestParam(value = "sortKey") String sortKey)  throws Exception{
+        if (author == null) author = "";
+        if (affiliation == null) affiliation = "";
+        if (publicationName == null) publicationName = "";
+        if (keyword == null) keyword = "";
+
+        return searchBlService.advancedSearchByESWithHighLight(author, affiliation, publicationName, keyword, startYear, endYear, page, sortKey);
+    }
+
     @GetMapping("/search/basic/mongo")
     @ApiOperation(value = "接口1 普通搜索", notes = "根据关键词获得相关论文")
     @ApiResponses(value = {

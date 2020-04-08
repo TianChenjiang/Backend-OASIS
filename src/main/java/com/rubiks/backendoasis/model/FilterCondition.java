@@ -18,6 +18,9 @@ public class FilterCondition implements Serializable {
     private List<NameCount> journals;
 
     public static List<NameCount> addNameCount(List<NameCount> l, String name) {
+        if (!name.isEmpty()) {
+            return l; //name如果为空，直接跳过
+        }
         for (NameCount n : l) {
             if (n.getName().equals(name)) {
                 n.setCount(n.getCount()+1);

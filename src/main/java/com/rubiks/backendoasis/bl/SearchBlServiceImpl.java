@@ -137,15 +137,51 @@ public class SearchBlServiceImpl implements SearchBlService {
         ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
 
         searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
+
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
         searchSourceBuilder.trackTotalHits(true);
 
-        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), searchResponse.getHits().getTotalHits().value));
+    }
+
+    @Override
+    public BasicResponse advancedSearchByESWithHighLight(String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception {
+        SearchRequest searchRequest = new SearchRequest(INDEX);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+
+        QueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.name", author).operator(Operator.AND));
+        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND));
+        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("publicationName",publicationName).operator(Operator.AND));
+        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
+        ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
+
+        searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
+        searchSourceBuilder.from(page-1);
+        searchSourceBuilder.size(pageSize);
+        searchSourceBuilder.trackTotalHits(true);
+
+        String preTag = "<font color='#dd4b39'>";
+        String postTag = "</font>";
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        if (!author.isEmpty()) highlightBuilder.field("authors.name");
+
+        highlightBuilder.requireFieldMatch(false);
+        highlightBuilder.preTags(preTag);
+        highlightBuilder.postTags(postTag);
+        searchSourceBuilder.highlighter(highlightBuilder);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResultWithHighLight(searchResponse)), searchResponse.getHits().getTotalHits().value));
     }
 
     @Override

@@ -10,6 +10,7 @@ public interface SearchBlService {
     BasicResponse basicSearchByES(String keyword, int page, String sortKey) throws Exception;
     BasicResponse basicSearchByESWithHighLight(String keyword, int page, String sortKey) throws Exception;
     BasicResponse advancedSearchByES(String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception;
+    BasicResponse advancedSearchByESWithHighLight(String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception;
     BasicResponse basicSearch(String keyword, int page, String sortKey);
     BasicResponse advancedSearch(String author, String affiliation, String publicationName, String keyword, int page, int startYear, int endYear);
     BasicResponse getBasicSearchFilterCondition(String keyword) throws Exception;
