@@ -20,7 +20,7 @@ public class PaperDocument implements Serializable {
 
     private List<Author> authors;
 
-    @Field(name = "_abstract")
+    @Field(name = "abstract")
     private String _abstract;
 
     private String publicationTitle;

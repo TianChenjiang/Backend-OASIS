@@ -108,14 +108,14 @@ public class SearchBlServiceImpl implements SearchBlService {
         String postTag = "</font>";
 
         HighlightBuilder highlightBuilder = new HighlightBuilder();
-        highlightBuilder.field("_abstract").field("title").field("authors.name");
+        highlightBuilder.field("abstract").field("title").field("authors.name");
         highlightBuilder.requireFieldMatch(false);
         highlightBuilder.preTags(preTag);
         highlightBuilder.postTags(postTag);
         searchSourceBuilder.highlighter(highlightBuilder);
 
-//        highlightBuilder.fragmentSize(800000); //最大高亮分片数
-//        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+        highlightBuilder.fragmentSize(800000); //最大高亮分片数
+        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
 
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -317,7 +317,7 @@ public class SearchBlServiceImpl implements SearchBlService {
             if (titleField != null) {
                 paperDocument.setTitle(titleField.fragments()[0].toString());
             }
-            HighlightField abstractField = hit.getHighlightFields().get("_abstract");
+            HighlightField abstractField = hit.getHighlightFields().get("abstract");
             if (abstractField != null) {
                 paperDocument.set_abstract(abstractField.fragments()[0].toString());
             }
