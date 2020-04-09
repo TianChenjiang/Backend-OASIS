@@ -158,6 +158,7 @@ public class RankBlServiceImpl implements RankBlService {
 
 
     @Override
+    @Cacheable(value = "author_advance_rank")
     public BasicResponse getAuthorAdvancedRanking(String sortKey, int startYear, int endYear) { //TODO 当数据过大，会超过group的表示范围
         if (sortKey.equals("citationCount")) {
             sortKey = "citation";
@@ -227,6 +228,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    @Cacheable(value = "affiliation_advance_rank")
     public BasicResponse getAffiliationAdvancedRanking(String sortKey, int startYear, int endYear) {
         if (sortKey.equals("citationCount")) {
             sortKey = "citation";

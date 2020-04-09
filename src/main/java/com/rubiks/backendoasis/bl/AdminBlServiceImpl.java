@@ -39,7 +39,7 @@ public class AdminBlServiceImpl implements AdminBlService {
     private MongoTemplate mongoTemplate;
 
 
-    @CacheEvict(value = {"affiliation_rank", "author_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "academic_relation_pic"}, allEntries = true)
+    @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "academic_relation_pic"}, allEntries = true)
     @Override
     public BasicResponse importPaperData(MultipartFile file) {
 //        File f = (File) file;
@@ -274,7 +274,7 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", "修改成功");
     }
 
-    @CacheEvict(value = {"affiliation_rank", "author_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "academic_relation_pic"}, allEntries = true)
+    @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "academic_relation_pic"}, allEntries = true)
     @Override
     public BasicResponse updatePaperInfo(UpdatePaperParameter parm) {
         Criteria criteria = new Criteria();
@@ -304,7 +304,7 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", "修改成功");
     }
 
-    @CacheEvict(value = {"author_rank", "academic_relation_pic"}, allEntries = true)
+    @CacheEvict(value = {"author_rank", "author_advance_rank", "academic_relation_pic"}, allEntries = true)
     @Override
     public BasicResponse mergeAuthorInfo(List<String> src, String desc) {
         String fieldName = "authors.id";
@@ -321,13 +321,13 @@ public class AdminBlServiceImpl implements AdminBlService {
 
     }
 
-    @CacheEvict(value = {"affiliation_rank", "author_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract"}, allEntries = true)
+    @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract"}, allEntries = true)
     @Override
     public BasicResponse updateMainPageCache() {
         return new BasicResponse(200, "Success", null);
     }
 
-    @CacheEvict(value = {"affiliation_rank"}, allEntries = true)
+    @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank"}, allEntries = true)
     @Override
     public BasicResponse mergeAffiliationInfo(List<String> src, String desc) {
         String fieldName = "authors.affiliation";
