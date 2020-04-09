@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -192,8 +193,10 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             Set<String> nonRepeatedAuthors = new HashSet<>();
             for (PaperEntity p : res) {
                 citation += p.getMetrics().getCitationCountPaper();
-                for (AuthorEntity author : p.getAuthors()) {
-                    nonRepeatedAuthors.add(author.getName());
+                if (p.getAuthors() != null) {
+                    for (AuthorEntity author : p.getAuthors()) {
+                        nonRepeatedAuthors.add(author.getName());
+                    }
                 }
             }
             authorNum = nonRepeatedAuthors.size();

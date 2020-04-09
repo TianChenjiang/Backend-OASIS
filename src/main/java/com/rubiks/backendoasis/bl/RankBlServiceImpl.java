@@ -181,12 +181,19 @@ public class RankBlServiceImpl implements RankBlService {
                 limit(20)
         );
         List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class).getMappedResults();
+        
+        List<String> ids = new ArrayList<>();
+        for (AuthorAdvanceRank authorAdvanceRank : res) {
+            ids.add(authorAdvanceRank.getAuthorId());
+        }
 
 
         // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
         int curYear = Calendar.getInstance().get(Calendar.YEAR);
+        MatchOperation idMatch = match(Criteria.where("authors.id").in(ids));
         Aggregation aggregation1 = newAggregation(
                 project("publicationYear", "authors"),
+                idMatch,
                 match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
                 unwind("authors"),
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")
@@ -325,7 +332,7 @@ public class RankBlServiceImpl implements RankBlService {
                     continue;  //有authorId为空的情况
                 }
                 else if (idYearMap.getAuthorId().equals(curId)) {
-                    int index = idYearMap.getYear()-low;
+                    int index = idYearMap.getYear()-low;   //数组中应该存放的位置
                     int origin = publicationTrends.get(index);
                     publicationTrends.set(index, ++origin);
                 }
