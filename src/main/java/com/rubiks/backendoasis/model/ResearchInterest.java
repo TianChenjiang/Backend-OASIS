@@ -31,13 +31,19 @@ public class ResearchInterest implements Serializable {
                 }
             }
         }
-
-        Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, Integer> entry =  iterator.next();
+        List<Map.Entry<String, Integer>> l  = new ArrayList<>(map.entrySet());
+        l.sort((a1, a2) -> (a2.getValue() - a1.getValue()));
+        int count = 0;
+        for (Map.Entry<String, Integer> entry : l) {
             res.add(new ResearchInterest(entry.getKey(), entry.getValue()));
+            count++;
+            if (count == 100) {
+                break;
+            }
         }
-
+//        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+//            res.add(new ResearchInterest(entry.getKey(), entry.getValue()));
+//        }
         return res;
     }
 }
