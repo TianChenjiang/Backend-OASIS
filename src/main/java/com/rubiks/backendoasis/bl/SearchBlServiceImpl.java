@@ -104,8 +104,8 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchSourceBuilder.size(pageSize);
 
 
-        String preTag = "<font color='#dd4b39'>";
-        String postTag = "</font>";
+        String preTag = "<em>";
+        String postTag = "</em>";
 
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         highlightBuilder.field("abstract").field("title").field("authors.name");
@@ -169,8 +169,8 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchSourceBuilder.size(pageSize);
         searchSourceBuilder.trackTotalHits(true);
 
-        String preTag = "<font color='#dd4b39'>";
-        String postTag = "</font>";
+        String preTag = "<em>";
+        String postTag = "</em>";
 
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         if (!author.isEmpty()) highlightBuilder.field("authors.name");
