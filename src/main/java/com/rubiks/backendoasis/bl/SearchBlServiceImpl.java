@@ -303,16 +303,20 @@ public class SearchBlServiceImpl implements SearchBlService {
             paperDocument.setId(hit.getId());
             paperDocument.set_abstract((String)(hit.getSourceAsMap().get("abstract"))); //很奇怪，这里的abstract会为null，必须这样设置一下
 
-//            HighlightField authorNameField = hit.getHighlightFields().get("authors.name");
-//            if (authorNameField != null) {
-//                List<Author> authors = paperDocument.getAuthors();
-//                int index = 0;
-//                for (int i = 0; i < authors.size(); i++) {
-//                    Author author = authors.get(i);
-//                    String curName = authorNameField.fragments()[index].toString();
-//                    author.setName();
-//                }
-//            }
+            HighlightField authorNameField = hit.getHighlightFields().get("authors.name");
+            if (authorNameField != null) {
+                List<Author> authors = paperDocument.getAuthors();
+                int index = 0;
+                for (int i = 0; i < authors.size(); i++) {
+                    Author author = authors.get(i);
+                    String curName = authorNameField.fragments()[index].toString();
+                    if (curName.replaceAll("<[^>]*>","").equals(author.getName())) {
+                        author.setName(curName);
+                        index++;
+                        if (index == authorNameField.fragments().length) break;
+                    }
+                }
+            }
             HighlightField titleField = hit.getHighlightFields().get("title");
             if (titleField != null) {
                 paperDocument.setTitle(titleField.fragments()[0].toString());
