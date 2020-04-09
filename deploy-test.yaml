@@ -40,8 +40,11 @@ spec:
               port: 8081
             initialDelaySeconds: 360
         resources:
+          requests:
+            memory: "300M"
+            cpu: "0.25"
           limits:
-            memory: "1Gi"
+            memory: "600M"
             cpu: "0.5"
         ports:
         - containerPort: 8081
