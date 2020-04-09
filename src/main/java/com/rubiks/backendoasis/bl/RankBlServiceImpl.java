@@ -181,7 +181,7 @@ public class RankBlServiceImpl implements RankBlService {
                 limit(20)
         );
         List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class).getMappedResults();
-        
+
         List<String> ids = new ArrayList<>();
         for (AuthorAdvanceRank authorAdvanceRank : res) {
             ids.add(authorAdvanceRank.getAuthorId());
@@ -304,10 +304,17 @@ public class RankBlServiceImpl implements RankBlService {
         AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class);
         List<AuthorAdvanceRank> res = firstRes.getMappedResults();
 
+        List<String> ids = new ArrayList<>();
+        for (AuthorAdvanceRank authorAdvanceRank : res) {
+            ids.add(authorAdvanceRank.getAuthorId());
+        }
+
         //计算author对应的十年 publicationTrend
         //换了一种实现，直接group
         int curYear = Calendar.getInstance().get(Calendar.YEAR);
+        MatchOperation idMatch = match(Criteria.where("authors.id").in(ids));
         Aggregation aggregation1 = newAggregation(
+                idMatch,
                 affMatch,
                 match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
                 unwind("authors"),
