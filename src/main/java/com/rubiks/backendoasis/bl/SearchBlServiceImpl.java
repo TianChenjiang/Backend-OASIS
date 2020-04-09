@@ -130,10 +130,11 @@ public class SearchBlServiceImpl implements SearchBlService {
 
 
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.name", author).operator(Operator.AND));
-        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("authors.affiliation", affiliation).operator(Operator.AND));
-        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("publicationName",publicationName).operator(Operator.AND));
-        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchQuery("keywords", keyword).operator(Operator.AND));
+
+        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(author,"authors.name"));
+        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(affiliation,"authors.affiliation"));
+        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(publicationName,"publicationName"));
+        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(keyword,"keywords"));
         ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
 
         searchSourceBuilder.query(queryBuilder);
