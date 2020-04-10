@@ -197,6 +197,7 @@ public class RankBlServiceImpl implements RankBlService {
                 idMatch,
                 match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
                 unwind("authors"),
+                idMatch,
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")
         );
         List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
@@ -316,10 +317,12 @@ public class RankBlServiceImpl implements RankBlService {
         int curYear = Calendar.getInstance().get(Calendar.YEAR);
         MatchOperation idMatch = match(Criteria.where("authors.id").in(ids));
         Aggregation aggregation1 = newAggregation(
-                idMatch,
+//                idMatch,
                 affMatch,
                 match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
                 unwind("authors"),
+                idMatch,
+                affMatch,
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")
         );
         List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
