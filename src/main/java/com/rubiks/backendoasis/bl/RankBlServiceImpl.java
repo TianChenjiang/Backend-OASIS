@@ -296,9 +296,9 @@ public class RankBlServiceImpl implements RankBlService {
         MatchOperation affMatch = match(Criteria.where("authors.affiliation").is(affiliation));
         Aggregation aggregation = newAggregation(
                 project("authors", "publicationYear", "metrics"),
-                affMatch,
-//                match(Criteria.where("authors.id").ne(null)),
+                affMatch,  //提前match，减少unwind的数量
                 unwind("authors"),
+                affMatch,
                 group("authors.id").count().as("count").
                         sum("metrics.citationCountPaper").as("citation").addToSet("authors.name").as("authorName")
                         .addToSet("authors.id").as("authorId")
