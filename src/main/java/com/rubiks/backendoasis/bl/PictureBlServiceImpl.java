@@ -28,7 +28,7 @@ public class PictureBlServiceImpl implements PictureBlService {
         this.mongoTemplate = mongoTemplate;
     }
 
-    @Cacheable(value = "academic_relation_pic")
+    @Cacheable(value = "academic_relation_pic_new")
     @Override
     public BasicResponse getAcademicRelationByAuthorId(String id) {
         Criteria criteria = new Criteria();
@@ -64,10 +64,12 @@ public class PictureBlServiceImpl implements PictureBlService {
         Criteria criteria = new Criteria();
         criteria.andOperator(criteria.where("authors.id").is(nodeId));
         Query query = new Query(criteria);
-        query.fields().include("authors").include("metrics");
+        query.fields().include("authors").include("metrics").include("references.order");
 
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         String name = "";
+        double value = 0.0;
+        double impactOfNodeToOthers = 0.0, impactOfOthersToNode = 0.0;
         int count = res.size(), citation = 0;
         if (res.size() > 0) {
              PaperEntity p1 = res.get(0);
@@ -78,10 +80,13 @@ public class PictureBlServiceImpl implements PictureBlService {
                 }
             }
             for (PaperEntity p : res) {
+                impactOfNodeToOthers += p.getAuthors().size() * p.getMetrics().getCitationCountPaper();
+                impactOfOthersToNode += p.getReferences().size() / p.getAuthors().size();
                 citation += p.getMetrics().getCitationCountPaper();
             }
         }
-        return  new Node(nodeId, name, count, citation);
+
+        return  new Node(nodeId, name, count, citation, impactOfNodeToOthers / impactOfOthersToNode);
     }
 
 

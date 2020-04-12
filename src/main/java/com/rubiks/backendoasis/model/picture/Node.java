@@ -14,4 +14,5 @@ public class Node implements Serializable {
     private String name;
     private int count; // 论文数
     private int citation; // 被引量
+    private double value; // 衡量影响力的指标
 }
