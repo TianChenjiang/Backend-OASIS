@@ -258,10 +258,12 @@ public class SearchBlServiceImpl implements SearchBlService {
 
 
         for (PaperDocument p : res) {
-           for (Author authorEntity : p.getAuthors()) {
-               FilterCondition.addNameCount(authors, authorEntity.getName());
-               FilterCondition.addNameCount(affiliations, authorEntity.getAffiliation());
-           }
+            if (p.getAuthors() != null) {
+                for (Author authorEntity : p.getAuthors()) {
+                    FilterCondition.addNameCount(authors, authorEntity.getName());
+                    FilterCondition.addNameCount(affiliations, authorEntity.getAffiliation());
+                }
+            }
            if (p.getContentType().equals("conference")) {
                FilterCondition.addNameCount(conferences, p.getPublicationName());
            } else if (p.getContentType().equals("periodicals")) {
