@@ -131,10 +131,10 @@ public class SearchBlServiceImpl implements SearchBlService {
 
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(author,"authors.name"));
-        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(affiliation,"authors.affiliation"));
-        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(publicationName,"publicationName"));
-        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(keyword,"keywords"));
+        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("authors.name", author));
+        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
+        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
+        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("keywords", keyword));
         ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
 
         searchSourceBuilder.query(queryBuilder);
@@ -157,10 +157,10 @@ public class SearchBlServiceImpl implements SearchBlService {
 
         QueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(author,"authors.name"));
-        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(affiliation,"authors.affiliation"));
-        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(publicationName,"publicationName"));
-        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.multiMatchQuery(keyword,"keywords"));
+        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("authors.name", author));
+        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
+        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
+        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("keywords", keyword));
         ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
 
         searchSourceBuilder.query(queryBuilder);
