@@ -23,6 +23,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -68,7 +69,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword)
                 .field("authors.name", 2f)
                 .field("authors.affiliation")
-                .field("authors.affiliation")
+                .field("abstract")
                 .field("title", 2f)
                 .field("keywords")
                 .field("publicationName");
@@ -92,8 +93,8 @@ public class SearchBlServiceImpl implements SearchBlService {
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword)
                 .field("authors.name", 2f)
                 .field("authors.affiliation")
-                .field("authors.affiliation")
                 .field("title", 2f)
+                .field("abstract")
                 .field("keywords")
                 .field("publicationName");
         searchSourceBuilder.query(queryBuilder);
@@ -124,18 +125,25 @@ public class SearchBlServiceImpl implements SearchBlService {
     }
 
     @Override
-    public BasicResponse advancedSearchByES(String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception {
+    public BasicResponse advancedSearchByES(String field, String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
 
-        QueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("authors.name", author));
-        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
-        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
-        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("keywords", keyword));
-        ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
+        if (!author.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("authors.name", author));
+        if (!affiliation.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
+        if (!publicationName.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
+        if (!field.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("keywords", keyword));
+        queryBuilder.must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
+
+
+        if (!keyword.isEmpty()) {
+            BoolQueryBuilder keywordQuery = QueryBuilders.boolQuery().should(QueryBuilders.matchPhraseQuery("abstract", keyword))
+                    .should(QueryBuilders.matchPhraseQuery("title", keyword));
+            queryBuilder.must(keywordQuery);
+        }
 
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
@@ -151,17 +159,25 @@ public class SearchBlServiceImpl implements SearchBlService {
     }
 
     @Override
-    public BasicResponse advancedSearchByESWithHighLight(String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception {
+    public BasicResponse advancedSearchByESWithHighLight(String field, String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-        QueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        if (!author.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("authors.name", author));
-        if (!affiliation.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
-        if (!publicationName.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
-        if (!keyword.isEmpty()) ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.matchPhraseQuery("keywords", keyword));
-        ((BoolQueryBuilder) queryBuilder).must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
+
+        if (!author.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("authors.name", author));
+        if (!affiliation.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
+        if (!publicationName.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
+        if (!field.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("keywords", keyword));
+        queryBuilder.must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
+
+
+        if (!keyword.isEmpty()) {
+            BoolQueryBuilder keywordQuery = QueryBuilders.boolQuery().should(QueryBuilders.matchPhraseQuery("abstract", keyword))
+                    .should(QueryBuilders.matchPhraseQuery("title", keyword));
+            queryBuilder.must(keywordQuery);
+        }
 
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
@@ -174,6 +190,56 @@ public class SearchBlServiceImpl implements SearchBlService {
 
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         if (!author.isEmpty()) highlightBuilder.field("authors.name");
+        if (!keyword.isEmpty()) highlightBuilder.field("abstract").field("title");
+
+        highlightBuilder.requireFieldMatch(false);
+        highlightBuilder.preTags(preTag);
+        highlightBuilder.postTags(postTag);
+        searchSourceBuilder.highlighter(highlightBuilder);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResultWithHighLight(searchResponse)), searchResponse.getHits().getTotalHits().value));
+    }
+
+    @Override
+    public BasicResponse basicFilterSearch(String keyword, String author, String affiliation, String publicationName, int startYear, int endYear, int page, String sortKey) throws Exception {
+        SearchRequest searchRequest = new SearchRequest(INDEX);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        BoolQueryBuilder filterBuilder = QueryBuilders.boolQuery();
+
+        QueryBuilder basicSearchBuilder = QueryBuilders.multiMatchQuery(keyword)
+                .field("authors.name", 2f)
+                .field("authors.affiliation")
+                .field("title", 2f)
+                .field("abstract")
+                .field("keywords")
+                .field("publicationName");
+
+
+        BoolQueryBuilder advancedSearchBuilder = new BoolQueryBuilder();
+
+        if (!author.isEmpty()) advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("authors.name", author));
+        if (!affiliation.isEmpty()) advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
+        if (!publicationName.isEmpty()) advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
+        advancedSearchBuilder.must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
+
+        filterBuilder.must(basicSearchBuilder);
+        filterBuilder.must(advancedSearchBuilder);
+
+        searchSourceBuilder.query(filterBuilder);
+        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey); //根据sortKey排序
+        searchSourceBuilder.from(page-1);
+        searchSourceBuilder.size(pageSize);
+        searchSourceBuilder.trackTotalHits(true);
+
+        String preTag = "<em>";
+        String postTag = "</em>";
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        if (!author.isEmpty()) highlightBuilder.field("authors.name");
+        if (!keyword.isEmpty()) highlightBuilder.field("abstract").field("title");
 
         highlightBuilder.requireFieldMatch(false);
         highlightBuilder.preTags(preTag);
