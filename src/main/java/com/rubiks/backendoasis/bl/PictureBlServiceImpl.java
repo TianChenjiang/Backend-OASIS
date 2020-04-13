@@ -80,8 +80,12 @@ public class PictureBlServiceImpl implements PictureBlService {
                 }
             }
             for (PaperEntity p : res) {
-                impactOfNodeToOthers += p.getAuthors().size() * p.getMetrics().getCitationCountPaper();
-                impactOfOthersToNode += p.getReferences().size() / p.getAuthors().size();
+                if (p.getAuthors() != null) {
+                    impactOfNodeToOthers += p.getAuthors().size() * p.getMetrics().getCitationCountPaper();
+                }
+                if (p.getReferences() != null && p.getAuthors() != null) {
+                    impactOfOthersToNode += p.getReferences().size() / p.getAuthors().size();
+                }
                 citation += p.getMetrics().getCitationCountPaper();
             }
         }

@@ -296,8 +296,8 @@ public class RankBlServiceImpl implements RankBlService {
     public BasicResponse getAuthorDetailRanking(String affiliation) {
         MatchOperation affMatch = match(Criteria.where("authors.affiliation").is(affiliation));
         Aggregation aggregation = newAggregation(
-                project("authors", "publicationYear", "metrics"),
-                affMatch,  //提前match，减少unwind的数量
+                project("authors", "publicationYear", "metrics"), //投影，减少网络传输时间
+                affMatch,  //提前match，减少进入管道的数据量
                 unwind("authors"),
                 affMatch,
                 group("authors.id").count().as("count").
