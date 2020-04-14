@@ -66,9 +66,9 @@ public class PaperControllerIntegrationTest {
 
     @Test
     public void testAdvancedSearch() throws Exception {
-        mockMvc.perform(get("/search/advanced/mongo")
+        mockMvc.perform(get("/search/advanced/es")
                 .param("publicationName", "ASE")
-                .param("keyword", "Software、")
+                .param("field", "software")
                 .param("author", "a")
                 .param("startYear","2010")
                 .param("endYear", "2015")
@@ -76,7 +76,7 @@ public class PaperControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.papers[0].publicationName", containsString("ASE")))
-//                .andExpect(jsonPath("$.data.papers[0].keywords", (hasItem(equalToIgnoringCase("software")))))
+                .andExpect(jsonPath("$.data.papers[0].keywords", (hasItem(equalToIgnoringCase("software")))))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", greaterThanOrEqualTo(2010)))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", lessThanOrEqualTo(2015)))
         ;
