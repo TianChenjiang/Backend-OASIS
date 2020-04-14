@@ -39,23 +39,19 @@ public class PaperControllerIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void testBasicSearch() throws Exception {
         mockMvc.perform(get("/search/basic/es")
                 .param("keyword", "Software、")
                 .param("page", "1")
-//                .param("startYear", "2012").param("endYear", "2012")
                 .param("sortKey", "related")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Software")))
-                .andExpect(jsonPath("$.data.papers[0].publicationYear", is(2012)))
+
         ;
-        mockMvc.perform(get("/search/basic/mongo")
+        mockMvc.perform(get("/search/basic/es")
                 .param("keyword", "\"Architecture、.\"")
                 .param("page", "1")
-//                .param("startYear", "2010")
-//                .param("endYear", "2018")
                 .param("sortKey", "related")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -69,14 +65,14 @@ public class PaperControllerIntegrationTest {
         mockMvc.perform(get("/search/advanced/es")
                 .param("publicationName", "ASE")
                 .param("field", "software")
-                .param("author", "a")
                 .param("startYear","2010")
                 .param("endYear", "2015")
                 .param("page", "1")
+                .param("sortKey", "related")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.papers[0].publicationName", containsString("ASE")))
-                .andExpect(jsonPath("$.data.papers[0].keywords", (hasItem(equalToIgnoringCase("software")))))
+                .andExpect(jsonPath("$.data.papers[0].keywords", (hasItem(containsString("software")))))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", greaterThanOrEqualTo(2010)))
                 .andExpect(jsonPath("$.data.papers[0].publicationYear", lessThanOrEqualTo(2015)))
         ;

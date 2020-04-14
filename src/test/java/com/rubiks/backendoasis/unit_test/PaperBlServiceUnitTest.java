@@ -40,7 +40,6 @@ public class PaperBlServiceUnitTest {
 
 
     @Test
-    @Ignore
     public void testBasicSearch() throws Exception {
         String keyword = "software、";
         int page = 1;
@@ -53,14 +52,10 @@ public class PaperBlServiceUnitTest {
         }
     }
 
-    @Test
-    public void testSearchDateError() {
-
-    }
 
     @Test
-    public void testAdvancedSearch() {
-        PapersWithSize res = (PapersWithSize) searchBlService.advancedSearch("ab", "ca", "ASE", "soft", 1, 2011, 2012).getData();
+    public void testAdvancedSearch() throws Exception {
+        PapersWithSize res = (PapersWithSize) searchBlService.advancedSearchByES("software", "jia liu", "nanjing university", "", "",  2011, 2012, 1, "related").getData();
         List<PaperWithoutRef> paperEntities = res.getPapers();
         for (PaperWithoutRef pa : paperEntities) {
             assertThat(pa.getPublicationYear(), lessThanOrEqualTo(2012));

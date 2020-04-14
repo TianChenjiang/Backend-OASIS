@@ -6,11 +6,12 @@ import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.MetricsEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.model.rank.BasicRank;
 import com.rubiks.backendoasis.model.PaperWithoutRef;
 import com.rubiks.backendoasis.model.PapersWithSize;
+import com.rubiks.backendoasis.model.rank.BasicRank;
 import com.rubiks.backendoasis.response.BasicResponse;
-import com.rubiks.backendoasis.springcontroller.PaperController;
+import com.rubiks.backendoasis.springcontroller.RankController;
+import com.rubiks.backendoasis.springcontroller.SearchController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,43 +21,32 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Transactional
-public class PaperControllerUnitTest {
+public class SearchControllerUnitTest {
     @Autowired
-    private PaperController paperController;
+    private SearchController searchController;
 
     @Autowired
     protected WebApplicationContext wac;
 
     @MockBean
-    PaperBlService paperBlService;
-    @MockBean
     SearchBlService searchBlService;
-    @MockBean
-    RankBlService rankBlService;
 
     private MockMvc mockMvc;
 
@@ -67,7 +57,7 @@ public class PaperControllerUnitTest {
 
     @Before
     public void setupMockMvc() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new PaperController(paperBlService, rankBlService, searchBlService)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new SearchController(searchBlService)).build();
 
         AuthorEntity authorEntity1 = AuthorEntity.builder().name("lq").affiliation("NJU").build();
         AuthorEntity authorEntity2 = AuthorEntity.builder().name("mxp").affiliation("NJU gulou").build();
@@ -90,30 +80,30 @@ public class PaperControllerUnitTest {
         basicRanks.add(basicRank2);
 
         res = new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(paperEntities), 1);
-
     }
 
     @Test
-    public void testWeb() throws Exception{
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/test");
-        MvcResult result =  mockMvc.perform(builder)
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("Success"))
-                .andReturn();
-    }
-
-
-
-    @Test
-    public void testGetActivePaperAbstract() throws Exception {
-        when(paperBlService.getActivePaperAbstract())
-                .thenReturn(new BasicResponse(200, "Success", paperEntities));
-        mockMvc.perform(get("/paper/abstract")
+    public void testBasicSearch() throws Exception {
+        when(searchBlService.basicSearchByES(any(String.class), any(Integer.class), any(String.class))).thenReturn(new BasicResponse(200, "Suceess", res));
+        mockMvc.perform(get("/search/basic/es")
+                .param("keyword", "Software").param("page", "1").param("sortKey", "related")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].title", is("Software Architecture"))
-        );
+                .andExpect(jsonPath("$.data.papers[0].title", is("Software Architecture")))
+                .andExpect(jsonPath("$.data.papers[1].title", is("Software Design")));
     }
 
-
+    @Test
+    public void testAdvancedSearch() throws Exception {
+        when(searchBlService.advancedSearchByES(any(String.class), any(String.class), any(String.class), any(String.class), any(String.class), any(Integer.class), any(Integer.class), any(Integer.class), any(String.class)))
+                .thenReturn(new BasicResponse(200, "Success", res));
+        mockMvc.perform(get("/search/advanced/es")
+                .param("field", "software")
+                .param("startYear","2011")
+                .param("endYear", "2011")
+                .param("page", "1")
+                .param("sortKey", "related")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }
