@@ -135,7 +135,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         if (!author.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("authors.name", author));
         if (!affiliation.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
         if (!publicationName.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
-        if (!field.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("keywords", keyword));
+        if (!field.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("keywords", field));
         queryBuilder.must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
 
 
@@ -169,7 +169,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         if (!author.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("authors.name", author));
         if (!affiliation.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
         if (!publicationName.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
-        if (!field.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("keywords", keyword));
+        if (!field.isEmpty()) queryBuilder.must(QueryBuilders.matchPhraseQuery("keywords", field));
         queryBuilder.must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
 
 
