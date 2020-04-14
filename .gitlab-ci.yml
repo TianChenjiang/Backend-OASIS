@@ -56,7 +56,7 @@ deploy-k8s-test:
   script:
     - sed -i "s/TAG/$CI_PIPELINE_ID/g" deploy-test.yaml
     - sed -i "s/EUSER/$ES_USER/g" deploy-test.yaml
-    - sed -i "s/EPASS/$ES_PASS_TEST/g" deploy-test.yaml
+    - sed -i "s/EPASS/$ES_PASS/g" deploy-test.yaml
     - cat deploy-test.yaml
     - kubectl apply -f deploy-test.yaml
 
@@ -68,6 +68,6 @@ deploy-k8s_prod:
   script:
     - sed -i "s/TAG/$CI_PIPELINE_ID/g" deployment.yaml
     - sed -i "s/EUSER/$ES_USER/g" deployment.yaml
-    - sed -i "s/EPASS/$ES_PASS/g" deployment.yaml
+    - sed -i "s/EPASS/$ES_PASS_DEP/g" deployment.yaml
     - cat deployment.yaml
     - kubectl apply -f deployment.yaml
