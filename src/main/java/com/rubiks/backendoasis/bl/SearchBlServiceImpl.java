@@ -217,8 +217,17 @@ public class SearchBlServiceImpl implements SearchBlService {
 
         BoolQueryBuilder advancedSearchBuilder = new BoolQueryBuilder();
 
-        if (!author.isEmpty()) advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("authors.name", author));
-        if (!affiliation.isEmpty()) advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliation));
+        if (!author.isEmpty()) {
+            for (String authorName : getNameList(author)) {
+                advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("authors.name", authorName));
+            }
+        }
+        if (!affiliation.isEmpty()) {
+            for (String affiliationName : getNameList(author)) {
+                advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliationName));
+            }
+        }
+
         if (!publicationName.isEmpty()) advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("publicationName", publicationName));
         advancedSearchBuilder.must(QueryBuilders.rangeQuery("publicationYear").gte(startYear).lte(endYear));
 
@@ -247,6 +256,16 @@ public class SearchBlServiceImpl implements SearchBlService {
 
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResultWithHighLight(searchResponse)), searchResponse.getHits().getTotalHits().value));
     }
+
+
+    private List<String> getNameList(String parm) {
+        List<String> res = new ArrayList<>();
+        for (String str : parm.split("#")) {
+            res.add(str);
+        }
+        return res;
+    }
+
 
     @Override
     public BasicResponse basicSearch(String keyword, int page, String sortKey) {
