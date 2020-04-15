@@ -307,7 +307,7 @@ public class SearchBlServiceImpl implements SearchBlService {
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword)
                 .field("authors.name", 2f)
                 .field("authors.affiliation")
-                .field("authors.affiliation")
+                .field("abstract")
                 .field("title", 2f)
                 .field("keywords")
                 .field("publicationName");
