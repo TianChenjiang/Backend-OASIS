@@ -318,26 +318,23 @@ public class SearchBlServiceImpl implements SearchBlService {
         HashMap<String, Integer> conferenceMap = new HashMap<>();
         HashMap<String, Integer> journalMap = new HashMap<>();
 
-        for (int page = 0; page <= 10; page++) {
-            searchSourceBuilder.from(page).size(10);
-            searchRequest.source(searchSourceBuilder);
-            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+        searchSourceBuilder.from(0).size(100);
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-            for (PaperFilter p : getFilterSearchResult(searchResponse)) {
-                if (p.getAuthors() != null) {
-                    for (Author authorEntity : p.getAuthors()) {
-                        FilterCondition.addNameToMap(authorMap, authorEntity.getName());
-                        FilterCondition.addNameToMap(affiliationMap, authorEntity.getAffiliation());
-                    }
-                }
-                if (p.getContentType().equals("conferences")) {
-                    FilterCondition.addNameToMap(conferenceMap, p.getPublicationName());
-                } else if (p.getContentType().equals("periodicals")) {
-                    FilterCondition.addNameToMap(journalMap, p.getPublicationName());
+        for (PaperFilter p : getFilterSearchResult(searchResponse)) {
+            if (p.getAuthors() != null) {
+                for (Author authorEntity : p.getAuthors()) {
+                    FilterCondition.addNameToMap(authorMap, authorEntity.getName());
+                    FilterCondition.addNameToMap(affiliationMap, authorEntity.getAffiliation());
                 }
             }
+            if (p.getContentType().equals("conferences")) {
+                FilterCondition.addNameToMap(conferenceMap, p.getPublicationName());
+            } else if (p.getContentType().equals("periodicals")) {
+                FilterCondition.addNameToMap(journalMap, p.getPublicationName());
+            }
         }
-
 
         return new BasicResponse(200, "Success",
                 new FilterCondition(FilterCondition.mapToNameCount(authorMap),
