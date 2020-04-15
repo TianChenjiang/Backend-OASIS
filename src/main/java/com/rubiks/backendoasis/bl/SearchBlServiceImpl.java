@@ -300,49 +300,52 @@ public class SearchBlServiceImpl implements SearchBlService {
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
+
     @Override
     public BasicResponse getBasicSearchFilterCondition(String keyword) throws Exception{
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword)
-                .field("authors.name", 2f)
+                .field("authors.name")
                 .field("authors.affiliation")
+                .field("title")
                 .field("abstract")
-                .field("title", 2f)
                 .field("keywords")
                 .field("publicationName");
+
         searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder.trackTotalHits(true);
+        searchSourceBuilder.size(10000);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
         List<PaperDocument> res = getSearchResult(searchResponse);
 
-        List<NameCount> authors = new ArrayList<>();
-        List<NameCount> affiliations = new ArrayList<>();
-        List<NameCount> conferences = new ArrayList<>();
-        List<NameCount> journals = new ArrayList<>();
+        HashMap<String, Integer> authorMap = new HashMap<>();
+        HashMap<String, Integer> affiliationMap = new HashMap<>();
+        HashMap<String, Integer> conferenceMap = new HashMap<>();
+        HashMap<String, Integer> journalMap = new HashMap<>();
 
 
         for (PaperDocument p : res) {
             if (p.getAuthors() != null) {
                 for (Author authorEntity : p.getAuthors()) {
-                    FilterCondition.addNameCount(authors, authorEntity.getName());
-                    FilterCondition.addNameCount(affiliations, authorEntity.getAffiliation());
+                    FilterCondition.addNameToMap(authorMap, authorEntity.getName());
+                    FilterCondition.addNameToMap(affiliationMap, authorEntity.getAffiliation());
                 }
             }
-           if (p.getContentType().equals("conference")) {
-               FilterCondition.addNameCount(conferences, p.getPublicationName());
-           } else if (p.getContentType().equals("periodicals")) {
-               FilterCondition.addNameCount(journals, p.getPublicationName());
-           }
+            if (p.getContentType().equals("conferences")) {
+                FilterCondition.addNameToMap(conferenceMap, p.getPublicationName());
+            } else if (p.getContentType().equals("periodicals")) {
+                FilterCondition.addNameToMap(journalMap, p.getPublicationName());
+            }
         }
 
-        Collections.sort(authors);
-        Collections.sort(affiliations);
-        Collections.sort(conferences);
-        Collections.sort(journals);
-
-        return new BasicResponse(200, "Success", new FilterCondition(authors, affiliations, conferences, journals));
+        return new BasicResponse(200, "Success",
+                new FilterCondition(FilterCondition.mapToNameCount(authorMap),
+                        FilterCondition.mapToNameCount(affiliationMap),
+                        FilterCondition.mapToNameCount(conferenceMap),
+                        FilterCondition.mapToNameCount(journalMap)));
     }
 
     // 建立基本请求的接口
