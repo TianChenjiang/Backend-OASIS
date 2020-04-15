@@ -315,7 +315,7 @@ public class SearchBlServiceImpl implements SearchBlService {
 
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.trackTotalHits(true);
-        searchSourceBuilder.size(10000);
+        searchSourceBuilder.size(1000);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
