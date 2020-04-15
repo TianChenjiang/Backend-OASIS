@@ -223,7 +223,7 @@ public class SearchBlServiceImpl implements SearchBlService {
             }
         }
         if (!affiliation.isEmpty()) {
-            for (String affiliationName : getNameList(author)) {
+            for (String affiliationName : getNameList(affiliation)) {
                 advancedSearchBuilder.must(QueryBuilders.matchPhraseQuery("authors.affiliation", affiliationName));
             }
         }
