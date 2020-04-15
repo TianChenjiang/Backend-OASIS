@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Transactional
-public class SearchControllerUnitTest {
+public class SearchBlServiceUnitTest {
     @Autowired
     private SearchController searchController;
 

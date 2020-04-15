@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Transactional
-public class RankControllerUnitTest {
+public class RankBlServiceUnitTest {
     @Autowired
     private RankController rankController;
 
@@ -86,7 +86,7 @@ public class RankControllerUnitTest {
     @Test
     public void testAffiliationBasicRanking() throws Exception {
         when(rankBlService.getAffiliationBasicRanking(any(String.class), any(Integer.class)))
-                .thenReturn(new BasicResponse(200, "Suceess", basicRanks));
+                .thenReturn(new BasicResponse(200, "Success", basicRanks));
         //"acceptanceCount"|"citationCount"
         mockMvc.perform(get("/rank/basic/affiliation")
                 .param("sortKey", "acceptanceCount")

@@ -238,8 +238,8 @@ public class SearchBlServiceImpl implements SearchBlService {
         String postTag = "</em>";
 
         HighlightBuilder highlightBuilder = new HighlightBuilder();
-        if (!author.isEmpty()) highlightBuilder.field("authors.name");
         if (!keyword.isEmpty()) highlightBuilder.field("abstract").field("title").field("authors.name");
+        else if (!author.isEmpty()) highlightBuilder.field("authors.name");
 
         highlightBuilder.requireFieldMatch(false);
         highlightBuilder.preTags(preTag);
