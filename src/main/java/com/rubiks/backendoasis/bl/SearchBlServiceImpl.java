@@ -6,24 +6,21 @@ import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
-import com.rubiks.backendoasis.model.FilterCondition;
-import com.rubiks.backendoasis.model.NameCount;
-import com.rubiks.backendoasis.model.PaperWithoutRef;
-import com.rubiks.backendoasis.model.PapersWithSize;
+import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.springcontroller.SearchController;
 import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.StrProcesser;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -314,32 +311,33 @@ public class SearchBlServiceImpl implements SearchBlService {
                 .field("publicationName");
 
         searchSourceBuilder.query(queryBuilder);
-        searchSourceBuilder.trackTotalHits(true);
-        searchSourceBuilder.size(1000);
-        searchRequest.source(searchSourceBuilder);
-        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-
-        List<PaperDocument> res = getSearchResult(searchResponse);
+        searchSourceBuilder = sortByKey(searchSourceBuilder, "related");
 
         HashMap<String, Integer> authorMap = new HashMap<>();
         HashMap<String, Integer> affiliationMap = new HashMap<>();
         HashMap<String, Integer> conferenceMap = new HashMap<>();
         HashMap<String, Integer> journalMap = new HashMap<>();
 
+        for (int page = 0; page <= 10; page++) {
+            searchSourceBuilder.from(page).size(10);
+            searchRequest.source(searchSourceBuilder);
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        for (PaperDocument p : res) {
-            if (p.getAuthors() != null) {
-                for (Author authorEntity : p.getAuthors()) {
-                    FilterCondition.addNameToMap(authorMap, authorEntity.getName());
-                    FilterCondition.addNameToMap(affiliationMap, authorEntity.getAffiliation());
+            for (PaperFilter p : getFilterSearchResult(searchResponse)) {
+                if (p.getAuthors() != null) {
+                    for (Author authorEntity : p.getAuthors()) {
+                        FilterCondition.addNameToMap(authorMap, authorEntity.getName());
+                        FilterCondition.addNameToMap(affiliationMap, authorEntity.getAffiliation());
+                    }
+                }
+                if (p.getContentType().equals("conferences")) {
+                    FilterCondition.addNameToMap(conferenceMap, p.getPublicationName());
+                } else if (p.getContentType().equals("periodicals")) {
+                    FilterCondition.addNameToMap(journalMap, p.getPublicationName());
                 }
             }
-            if (p.getContentType().equals("conferences")) {
-                FilterCondition.addNameToMap(conferenceMap, p.getPublicationName());
-            } else if (p.getContentType().equals("periodicals")) {
-                FilterCondition.addNameToMap(journalMap, p.getPublicationName());
-            }
         }
+
 
         return new BasicResponse(200, "Success",
                 new FilterCondition(FilterCondition.mapToNameCount(authorMap),
@@ -364,6 +362,16 @@ public class SearchBlServiceImpl implements SearchBlService {
             paperDocument.set_abstract((String)(hit.getSourceAsMap().get("abstract"))); //很奇怪，这里的abstract会为null，必须这样设置一下
             paperDocuments.add(paperDocument);
 
+        }
+        return paperDocuments;
+    }
+
+    private List<PaperFilter> getFilterSearchResult(SearchResponse response) {
+        SearchHit[] searchHit = response.getHits().getHits();
+        List<PaperFilter> paperDocuments = new ArrayList<>();
+        for (SearchHit hit : searchHit){
+            PaperFilter paperFilter = objectMapper.convertValue(hit.getSourceAsMap(), PaperFilter.class);
+            paperDocuments.add(paperFilter);
         }
         return paperDocuments;
     }
