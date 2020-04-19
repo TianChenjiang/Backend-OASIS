@@ -29,10 +29,10 @@ spec:
             value: elastic-cluster-es-http.default.svc.cluster.local
           - name: MONGO
             value: mongodb://se3-cluster-0.se3-cluster-svc.mongodb.svc.cluster.local,se3-cluster-2.se3-cluster-svc.mongodb.svc.cluster.local,se3-cluster-1.se3-cluster-svc.mongodb.svc.cluster.local/oasis?replicaSet=se3-cluster
-          - name: ES_USER
-            value: EUSER
-          - name: ES_PASS
-            value: EPASS
+          # - name: ES_USER
+          #   value: EUSER
+          # - name: ES_PASS
+          #   value: EPASS
         readinessProbe:
             periodSeconds: 5
             httpGet:

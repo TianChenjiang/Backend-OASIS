@@ -67,7 +67,5 @@ deploy-k8s_prod:
     - develop
   script:
     - sed -i "s/TAG/$CI_PIPELINE_ID/g" deployment.yaml
-    - sed -i "s/EUSER/$ES_USER/g" deployment.yaml
-    - sed -i "s/EPASS/$ES_PASS_DEP/g" deployment.yaml
     - cat deployment.yaml
     - kubectl apply -f deployment.yaml
