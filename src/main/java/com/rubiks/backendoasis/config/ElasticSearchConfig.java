@@ -32,16 +32,16 @@ public class ElasticSearchConfig {
     @Primary
     @Bean(destroyMethod = "close")
     public RestHighLevelClient restClient() {
-        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials(userName, password));
-
-        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port))
-                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
-        RestHighLevelClient client = new RestHighLevelClient(builder);
-//        RestHighLevelClient client = new RestHighLevelClient(
-////                RestClient.builder(new HttpHost("47.101.33.219", 9200)));
-//                RestClient.builder(new HttpHost(host, port)));
+//        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+//        credentialsProvider.setCredentials(AuthScope.ANY,
+//                new UsernamePasswordCredentials(userName, password));
+//
+//        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port))
+//                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+//        RestHighLevelClient client = new RestHighLevelClient(builder);
+        RestHighLevelClient client = new RestHighLevelClient(
+//                RestClient.builder(new HttpHost("47.101.33.219", 9200)));
+                RestClient.builder(new HttpHost(host, port)));
         return client;
     }
 }
