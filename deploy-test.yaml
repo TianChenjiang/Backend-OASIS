@@ -13,7 +13,6 @@ spec:
       labels:
         app: backend-oasis-test
     spec:
-      serviceAccountName: gitlab-admin
       containers:
       - name: backend-oasis-test
         image: greenw00d/backend-oasis:TAG
@@ -56,7 +55,6 @@ metadata:
   name: backend-oasis-test-svc
   namespace: gitlab-managed-apps
 spec:
-  serviceAccountName: gitlab-admin
   ports:
   - port: 8081
     targetPort: 8081
