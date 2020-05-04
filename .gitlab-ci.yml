@@ -21,7 +21,7 @@ maven-build:
     - develop
   script: 
     - mvn -B -DskipTests clean package
-    - cp target/app.jar /opt/cache
+    - cp target/app.jar /opt/cache/app.jar
 
 maven-test:
   image: maven:3-jdk-8
