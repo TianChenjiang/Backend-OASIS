@@ -34,12 +34,12 @@ spec:
         readinessProbe:
             periodSeconds: 5
             httpGet:
-              path: /actuator/health
+              path: /prod/actuator/health
               port: 8081
         livenessProbe:
             periodSeconds: 2
             httpGet:
-              path: /actuator/health
+              path: /prod/actuator/health
               port: 8081
             initialDelaySeconds: 360
         resources:
