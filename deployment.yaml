@@ -62,4 +62,4 @@ spec:
     name: backend-oasis-svc
   selector:
     app: backend-oasis
-  type: LoadBalancer
+  type: NodePort
