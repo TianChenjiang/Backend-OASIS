@@ -29,6 +29,8 @@ spec:
             value: elastic-cluster-es-http.default.svc.cluster.local
           - name: MONGO
             value: mongodb://se3-shard-mongos-0.se3-shard-svc.mongodb.svc.cluster.local,se3-shard-mongos-1.se3-shard-svc.mongodb.svc.cluster.local
+          - name: SERVER_SERVLET_CONTEXT_PATH
+            value: /prod
         readinessProbe:
             periodSeconds: 5
             httpGet:

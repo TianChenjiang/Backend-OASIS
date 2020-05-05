@@ -55,8 +55,6 @@ deploy-k8s-test:
     - develop
   script:
     - sed -i "s/TAG/$CI_PIPELINE_ID/g" deploy-test.yaml
-    - sed -i "s/EUSER/$ES_USER/g" deploy-test.yaml
-    - sed -i "s/EPASS/$ES_PASS/g" deploy-test.yaml
     - cat deploy-test.yaml
     - kubectl apply -f deploy-test.yaml
 
