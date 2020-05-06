@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -45,17 +46,19 @@ public class RankBlServiceImpl implements RankBlService {
     public BasicResponse getAffiliationBasicRanking(String sortKey, int year) {
         // "acceptanceCount"|"citationCount"
         Aggregation aggregation = newAggregation(
-                project("authors", "publicationYear", "metrics"),
+                project("authors", "publicationYear", "metrics", "_id"),
                 match(Criteria.where("authors.affiliation").ne("")),  //非空属性
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
-                group("authors.affiliation").count().as("acceptanceCount").
-                        sum("metrics.citationCountPaper").as("citationCount"),
+                group( "authors.affiliation", "_id").count().as("acceptanceCount").
+                        sum("metrics.citationCountPaper").as("citationCount")
+                        .addToSet("authors.affiliation").as("name"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(10)
         );
 
         return getSortRes(sortKey, aggregation);
+
     }
 
     @Override
@@ -187,7 +190,6 @@ public class RankBlServiceImpl implements RankBlService {
         for (AuthorAdvanceRank authorAdvanceRank : res) {
             ids.add(authorAdvanceRank.getAuthorId());
         }
-
 
         // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
         int curYear = Calendar.getInstance().get(Calendar.YEAR);
