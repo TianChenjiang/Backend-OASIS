@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 @Data
 public class CitationCountRank implements Serializable {
+    private String doi;
     private String id;
     private int citationCount;
     private String name;

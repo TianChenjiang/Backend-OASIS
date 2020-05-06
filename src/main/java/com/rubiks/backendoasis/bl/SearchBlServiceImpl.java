@@ -17,6 +17,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
@@ -28,6 +29,13 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.SuggestionBuilder;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
+import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
@@ -257,13 +265,37 @@ public class SearchBlServiceImpl implements SearchBlService {
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResultWithHighLight(searchResponse)), searchResponse.getHits().getTotalHits().value));
     }
 
-
     private List<String> getNameList(String parm) {
         List<String> res = new ArrayList<>();
         for (String str : parm.split("#")) {
             res.add(str);
         }
         return res;
+    }
+
+    @Override
+    public BasicResponse searchSuggestion(String keyword) throws Exception {
+        SearchRequest searchRequest = new SearchRequest(INDEX);
+        CompletionSuggestionBuilder suggestBuilder = new CompletionSuggestionBuilder("title");
+
+//        suggestBuilder.prefix(keyword).skipDuplicates(true).analyzer("standard");
+        suggestBuilder.regex("^.*" + keyword + ".*$");
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        sourceBuilder.suggest(new SuggestBuilder().addSuggestion("test", suggestBuilder));
+        searchRequest.source(sourceBuilder);
+
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        Suggest suggest = searchResponse.getSuggest();
+        CompletionSuggestion termSuggestion = suggest.getSuggestion("test");
+        List<String> result = new ArrayList<>();
+        for (CompletionSuggestion.Entry entry : termSuggestion.getEntries()) {
+            for (CompletionSuggestion.Entry.Option option : entry) {
+                String suggestText = option.getText().string();
+                result.add(suggestText);
+            }
+        }
+        return new BasicResponse(200, "Success", result);
     }
 
 

@@ -152,4 +152,10 @@ public class SearchController {
     public BasicResponse getBasicSearchFilterCondition(@RequestParam(value = "keyword") String keyword) throws Exception {
         return searchBlService.getBasicSearchFilterCondition(keyword);
     }
+
+
+    @GetMapping("/search/suggest")
+    public BasicResponse searchSuggestion(@RequestParam(value = "keyword") String keyword) throws Exception {
+        return searchBlService.searchSuggestion(keyword);
+    }
 }

@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class ElasticSearchConfig {
-//    @Value("${elasticsearch.host}")
+//    @Value("104.199.248.49")
     @Value("${ESHOST:localhost}")
     private String host;
 
