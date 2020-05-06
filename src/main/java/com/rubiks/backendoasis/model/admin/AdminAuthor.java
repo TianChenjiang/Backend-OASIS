@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class AdminAuthor implements Serializable {
     private String authorId;
     private String authorName;
+    private String affiliation;
     private int count;
     private int citation;
 }

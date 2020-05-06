@@ -214,6 +214,7 @@ public class AdminBlServiceImpl implements AdminBlService {
                 group("authors.id").addToSet(fieldName).as("name")    // 应该是同名不同人
                 .addToSet("authors.id").as("authorId")
                 .addToSet("authors.name").as("authorName")
+                .addToSet("authors.affiliation").as("affiliation")
                 .count().as("count")
                 .sum("metrics.citationCountPaper").as("citation"),
                 skip(previousNum),
