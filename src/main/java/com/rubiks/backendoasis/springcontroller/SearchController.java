@@ -158,4 +158,14 @@ public class SearchController {
     public BasicResponse searchSuggestion(@RequestParam(value = "keyword") String keyword) throws Exception {
         return searchBlService.searchSuggestion(keyword);
     }
+
+    @GetMapping("/search/command")
+    public BasicResponse commandSearch(@RequestParam(value = "query") String query,
+                                        @RequestParam(value = "page") int page) {
+        try {
+            return searchBlService.commandSearch(query, page);
+        } catch (Exception e) {
+            return new BasicResponse(200, "Failed", "暂无相关信息");
+        }
+    }
 }

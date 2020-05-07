@@ -20,4 +20,6 @@ public interface SearchBlService {
     BasicResponse basicSearch(String keyword, int page, String sortKey);
     BasicResponse advancedSearch(String author, String affiliation, String publicationName, String keyword, int page, int startYear, int endYear);
     BasicResponse getBasicSearchFilterCondition(String keyword) throws Exception;
+
+    BasicResponse commandSearch(String query, int page) throws Exception;
 }

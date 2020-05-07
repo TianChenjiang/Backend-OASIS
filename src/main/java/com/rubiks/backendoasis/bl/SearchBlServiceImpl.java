@@ -9,6 +9,7 @@ import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.springcontroller.SearchController;
+import com.rubiks.backendoasis.util.CommandParser;
 import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.*;
@@ -133,7 +134,6 @@ public class SearchBlServiceImpl implements SearchBlService {
     public BasicResponse advancedSearchByES(String field, String author, String affiliation, String publicationName, String keyword, int startYear, int endYear, int page, String sortKey) throws Exception {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
@@ -392,6 +392,23 @@ public class SearchBlServiceImpl implements SearchBlService {
                         FilterCondition.mapToNameCount(affiliationMap),
                         FilterCondition.mapToNameCount(conferenceMap),
                         FilterCondition.mapToNameCount(journalMap)));
+    }
+
+    @Override
+    public BasicResponse commandSearch(String query, int page) throws Exception {
+        SearchRequest searchRequest = new SearchRequest(INDEX);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        QueryBuilder queryBuilder = new CommandParser().parseQuery(query);
+        searchSourceBuilder.query(queryBuilder);
+        searchSourceBuilder.trackTotalHits(true);
+
+        searchSourceBuilder.from(page-1);
+        searchSourceBuilder.size(pageSize);
+
+        searchRequest.source(searchSourceBuilder);
+        SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), searchResponse.getHits().getTotalHits().value));
     }
 
     // 建立基本请求的接口
