@@ -123,6 +123,13 @@ public class RankController {
         return rankBlService.getAffiliationAdvancedRanking(sortKey, startYear, endYear);
     }
 
+    @GetMapping("/rank/advanced/keyword")
+    public BasicResponse getKeywordAdvancedRanking(@RequestParam(value = "sortKey") String sortKey,
+                                                   @RequestParam(value = "startYear") int startYear,
+                                                   @RequestParam(value = "endYear") int endYear) {
+        return rankBlService.getKeywordAdvancedRanking(sortKey, startYear, endYear);
+    }
+
 
     @GetMapping("/rank/detail/affiliation")
     public BasicResponse getAffiliationDetailRankingById(@RequestParam(value = "affiliationId") String affiliationId) {

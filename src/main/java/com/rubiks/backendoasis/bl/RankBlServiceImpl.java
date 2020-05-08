@@ -231,6 +231,87 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    public BasicResponse getAuthorDetailRankingByKeyword(String keyword, String sortKey, int startYear, int endYear) {
+        if (sortKey.equals("citationCount")) {
+            sortKey = "citation";
+        } else if(sortKey.equals("acceptanceCount")) {
+            sortKey = "count";
+        }
+
+        //选出符合条件的author
+        MatchOperation yearOperation = match(Criteria.where("publicationYear").gte(startYear).lte(endYear));
+        Aggregation aggregation = newAggregation(
+                project("authors", "publicationYear", "metrics"),
+                yearOperation,
+                match(Criteria.where("authors.id").ne(null)),
+
+                unwind("authors"),
+                group("authors.id").count().as("count").
+                        sum("metrics.citationCountPaper").as("citation").addToSet("authors.name").as("authorName")
+                        .addToSet("authors.id").as("authorId"),
+                project("authorId", "citation", "authorName", "count"),
+                sort(Sort.Direction.DESC, sortKey),
+                limit(20)
+        );
+        List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class).getMappedResults();
+
+        List<String> ids = new ArrayList<>();
+        for (AuthorAdvanceRank authorAdvanceRank : res) {
+            ids.add(authorAdvanceRank.getAuthorId());
+        }
+
+        // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
+        int curYear = Calendar.getInstance().get(Calendar.YEAR);
+        MatchOperation idMatch = match(Criteria.where("authors.id").in(ids));
+        Aggregation aggregation1 = newAggregation(
+                project("publicationYear", "authors"),
+                idMatch,
+                match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
+                unwind("authors"),
+                idMatch,
+                project().and("authors.id").as("authorId").and("publicationYear").as("year")
+        );
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+
+        res = CalAndSetPublicationTrends(res, curRes);
+
+        return new BasicResponse(200, "Success", res);
+    }
+
+    @Override
+    public BasicResponse getAffiliationDetailRankingByKeyword(String keyword, String sortKey, int startYear, int endYear) {
+        if (sortKey.equals("citationCount")) {
+            sortKey = "citation";
+        } else if(sortKey.equals("acceptanceCount")) {
+            sortKey = "count";
+        }
+
+        Aggregation aggregation = newAggregation(
+                match(Criteria.where("authors.affiliation").ne("")),  //非空属性
+                match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
+                unwind("authors"),
+                group("authors.affiliation").count().as("count")
+                        .sum("metrics.citationCountPaper").as("citation")
+                        .addToSet("authors.affiliation").as("affiliationName")
+                        .addToSet("authors.id").as("authorId"),
+                sort(Sort.Direction.DESC, sortKey),
+                limit(20)
+        );
+        AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, collectionName, BasicDBObject.class);
+        List<AffiliationAdvanceRank> affiliationAdvanceRanks = new ArrayList<>();
+        for (Iterator<BasicDBObject> iterator = res.iterator(); iterator.hasNext();) {
+            BasicDBObject obj = iterator.next();
+            String affiliationName = obj.getString("affiliationName");
+            affiliationName = affiliationName.substring(1, affiliationName.length()-1);
+            int  count = obj.getInt("count");
+            int citation = obj.getInt("citation");
+            List<String> authorIds = (List<String>)(obj.get("authorId"));
+            affiliationAdvanceRanks.add(new AffiliationAdvanceRank(affiliationName, count, citation, Counter.getCount(authorIds)));
+        }
+        return new BasicResponse(200, "Success", affiliationAdvanceRanks);
+    }
+
+    @Override
     @Cacheable(value = "affiliation_advance_rank")
     public BasicResponse getAffiliationAdvancedRanking(String sortKey, int startYear, int endYear) {
         if (sortKey.equals("citationCount")) {
@@ -262,6 +343,59 @@ public class RankBlServiceImpl implements RankBlService {
             affiliationAdvanceRanks.add(new AffiliationAdvanceRank(affiliationName, count, citation, Counter.getCount(authorIds)));
         }
         return new BasicResponse(200, "Success", affiliationAdvanceRanks);
+    }
+
+    @Override
+    public BasicResponse getKeywordAdvancedRanking(String sortKey, int startYear, int endYear) {
+        if (sortKey.equals("citationCount")) {
+            sortKey = "citation";
+        } else if(sortKey.equals("acceptanceCount")) {
+            sortKey = "count";
+        }
+
+        Aggregation aggregation = newAggregation(
+                project("keywords", "authors", "metrics", "publicationYear"),
+                match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
+                unwind("keywords"),
+                group("keywords").count().as("count")
+                        .sum("metrics.citationCountPaper").as("citation")
+                        .addToSet("keywords").as("keyword"),
+                sort(Sort.Direction.DESC, sortKey),
+                limit(20)
+        );
+
+        List<KeywordAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, KeywordAdvanceRank.class).getMappedResults();
+
+        List<String> ids = new ArrayList<>();
+        for (KeywordAdvanceRank keywordAdvanceRank : res) {
+            ids.add(keywordAdvanceRank.getKeyword());
+        }
+
+        // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
+        int curYear = Calendar.getInstance().get(Calendar.YEAR);
+        MatchOperation idMatch = match(Criteria.where("keywords").in(ids));
+        Aggregation aggregation1 = newAggregation(
+                project("publicationYear", "authors", "keywords"),
+                idMatch,
+                match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
+                unwind("keywords"),
+                idMatch,
+                project().and("keywords").as("authorId").and("publicationYear").as("year")  //这里为了复用IdYearMap，把keyword起名为authorId，它们都是group的对象
+        );
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+
+        res = KeywordAdvanceRank.CalAndSetPublicationTrends(res, curRes);
+
+        for (KeywordAdvanceRank keywordAdvanceRank : res) {
+            Aggregation mostInfluentialAgg = newAggregation(
+                    match(Criteria.where("keywords").is(keywordAdvanceRank.getKeyword())),
+                    sort(Sort.Direction.DESC, "metrics.citationCountPaper"),
+                    limit(5)
+            );
+            AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, collectionName, MostInfluentialPapers.class);
+            keywordAdvanceRank.setMostInfluentialPapers(mostInfluentialPapers.getMappedResults());
+        }
+        return new BasicResponse(200, "Success", res);
     }
 
 

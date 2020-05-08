@@ -12,8 +12,12 @@ public interface RankBlService {
 
     BasicResponse getAuthorAdvancedRanking(String sortKey, int startYear, int endYear);
     BasicResponse getAffiliationAdvancedRanking(String sortKey, int startYear, int endYear);
+    BasicResponse getKeywordAdvancedRanking(String sortKey, int startYear, int endYear);
 
     BasicResponse getAffiliationDetailRankingById(String id);
     BasicResponse getAuthorDetailRanking(String affiliation);
     AuthorRankDetail getAuthorDetailRankingById(String id);
+
+    BasicResponse getAuthorDetailRankingByKeyword(String keyword, String sortKey, int startYear, int endYear);
+    BasicResponse getAffiliationDetailRankingByKeyword(String keyword, String sortKey, int startYear, int endYear);
 }
