@@ -30,7 +30,8 @@ public class ConferenceBlServiceImpl implements ConferenceBlService {
         Query query = new Query(criteria);
         query.fields().include("titleId").include("publicationTitle");
 
-        long size = mongoTemplate.count(query, PaperEntity.class);
+//        long size = mongoTemplate.count(query, PaperEntity.class);
+        long size = mongoTemplate.find(query, ConferenceEntity.class).size();
 
         query.with(PageRequest.of(page-1, pageSize));
         List<ConferenceEntity> res = mongoTemplate.find(query, ConferenceEntity.class);

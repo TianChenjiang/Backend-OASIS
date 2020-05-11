@@ -3,6 +3,7 @@ package com.rubiks.backendoasis.bl;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.PaperEntity;
 
+import com.rubiks.backendoasis.entity.ReferenceEntity;
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.Constant;
@@ -111,7 +112,19 @@ public class PaperBlServiceImpl implements PaperBlService {
     @Override
     public BasicResponse getReferenceById(String paperId) {
         PaperEntity res = mongoTemplate.findById(paperId, PaperEntity.class);
-        return new BasicResponse(200, "Success", res.getReferences());
+        List<ReferenceEntity> refs = new ArrayList<>();
+        if (res.getReferences() != null) {
+            for (ReferenceEntity ref : res.getReferences()) {
+                if (ref.getTitle().isEmpty() || ref.getTitle() == null) {
+                    continue;
+                }
+                refs.add(ref);
+            }
+            return new BasicResponse(200, "Success", refs) ;
+        }
+        else {
+            return new BasicResponse(200, "Success", "no such paper!") ;
+        }
     }
 
     @Override
