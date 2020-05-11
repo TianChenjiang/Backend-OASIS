@@ -324,6 +324,7 @@ public class RankBlServiceImpl implements RankBlService {
                 match(Criteria.where("authors.affiliation").ne("")),  //非空属性
                 match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
                 unwind("authors"),
+                match(Criteria.where("authors.affiliation").ne("").ne(null)),
                 group("authors.affiliation").count().as("count")
                         .sum("metrics.citationCountPaper").as("citation")
                         .addToSet("authors.affiliation").as("affiliationName")
