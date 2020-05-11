@@ -49,7 +49,7 @@ public class RankBlServiceImpl implements RankBlService {
                 project("authors", "publicationYear", "metrics", "_id"),
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
-                match(Criteria.where("authors.affiliation").ne("")),  //非空属性
+                match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
                 group( "authors.affiliation").count().as("acceptanceCount").
                         sum("metrics.citationCountPaper").as("citationCount"),
 //                        .addToSet("authors.affiliation").as("id"),
