@@ -2,27 +2,19 @@ package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.SearchBlService;
-import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.response.BasicResponse;
-import com.rubiks.backendoasis.springcontroller.SearchController;
 import com.rubiks.backendoasis.util.CommandParser;
-import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.StrProcesser;
 import org.elasticsearch.action.search.*;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.client.core.CountResponse;
-import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.*;
-import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
-import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
@@ -32,11 +24,8 @@ import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
-import org.elasticsearch.search.suggest.SuggestBuilders;
-import org.elasticsearch.search.suggest.SuggestionBuilder;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
-import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
@@ -377,7 +366,9 @@ public class SearchBlServiceImpl implements SearchBlService {
             if (p.getAuthors() != null) {
                 for (Author authorEntity : p.getAuthors()) {
                     FilterCondition.addNameToMap(authorMap, authorEntity.getName());
-                    FilterCondition.addNameToMap(affiliationMap, authorEntity.getAffiliation());
+                    if (authorEntity.getAffiliation() != null) {
+                        FilterCondition.addNameToMap(affiliationMap, authorEntity.getAffiliation());
+                    }
                 }
             }
             if (p.getContentType().equals("conferences")) {
