@@ -101,12 +101,7 @@ public class RankController {
         }
     }
 
-    @GetMapping("/rank/advanced/author")
-    public BasicResponse getAuthorAdvancedRanking(@RequestParam(value = "sortKey") String sortKey,
-                                                  @RequestParam(value = "startYear") int startYear,
-                                                  @RequestParam(value = "endYear") int endYear) {
-        return rankBlService.getAuthorAdvancedRanking(sortKey, startYear, endYear);
-    }
+
 
     @GetMapping("/rank/detail/author")
     public BasicResponse getAuthorDetailRankingById(@RequestParam(value = "authorId") String authorId) {
@@ -115,6 +110,18 @@ public class RankController {
         authorRankDetail.setKeywords(keywords);
         return new BasicResponse(200, "Success", authorRankDetail);
     }
+
+    @GetMapping("/rank/detail/affiliation")
+    public BasicResponse getAffiliationDetailRankingById(@RequestParam(value = "affiliationId") String affiliationId) {
+        return rankBlService.getAffiliationDetailRankingById(affiliationId);
+    }
+
+    @GetMapping("/rank/detail/keyword")
+    public BasicResponse getKeywordDetailRanking(@RequestParam(value = "keyword") String keyword) {
+        return rankBlService.getKeywordDetailRankingById(keyword);
+    }
+
+
 
     @GetMapping("/rank/advanced/affiliation")
     public BasicResponse getAffiliationAdvancedRanking(@RequestParam(value = "sortKey") String sortKey,
@@ -130,14 +137,19 @@ public class RankController {
         return rankBlService.getKeywordAdvancedRanking(sortKey, startYear, endYear);
     }
 
-
-    @GetMapping("/rank/detail/affiliation")
-    public BasicResponse getAffiliationDetailRankingById(@RequestParam(value = "affiliationId") String affiliationId) {
-        return rankBlService.getAffiliationDetailRankingById(affiliationId);
+    @GetMapping("/rank/advanced/author")
+    public BasicResponse getAuthorAdvancedRanking(@RequestParam(value = "sortKey") String sortKey,
+                                                  @RequestParam(value = "startYear") int startYear,
+                                                  @RequestParam(value = "endYear") int endYear) {
+        return rankBlService.getAuthorAdvancedRanking(sortKey, startYear, endYear);
     }
+
+
 
     @GetMapping("/rank/affiliation/author")
     public BasicResponse getAuthorDetailRanking(@RequestParam(value = "affiliation") String affiliation) {
         return rankBlService.getAuthorDetailRanking(affiliation);
     }
+
+
 }

@@ -231,6 +231,33 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    public BasicResponse getKeywordDetailRankingById(String keyword) {
+        // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
+        int curYear = Calendar.getInstance().get(Calendar.YEAR);
+        MatchOperation idMatch = match(Criteria.where("keywords").is(keyword));
+        Aggregation aggregation1 = newAggregation(
+                project("publicationYear", "authors", "keywords"),
+                idMatch,
+                match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
+                unwind("keywords"),
+                idMatch,
+                project().and("keywords").as("authorId").and("publicationYear").as("year")  //这里为了复用IdYearMap，把keyword起名为authorId，它们都是group的对象
+        );
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+
+        KeywordDetailRank res = KeywordDetailRank.CalAndSetPublicationTrends(keyword, curRes);
+        Aggregation mostInfluentialAgg = newAggregation(
+                match(Criteria.where("keywords").is(keyword)),
+                sort(Sort.Direction.DESC, "metrics.citationCountPaper"),
+                limit(5)
+        );
+        AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, collectionName, MostInfluentialPapers.class);
+        res.setMostInfluentialPapers(mostInfluentialPapers.getMappedResults());
+
+        return new BasicResponse(200, "Success", res);
+    }
+
+    @Override
     public BasicResponse getAuthorDetailRankingByKeyword(String keyword, String sortKey, int startYear, int endYear) {
         if (sortKey.equals("citationCount")) {
             sortKey = "citation";
@@ -355,12 +382,13 @@ public class RankBlServiceImpl implements RankBlService {
         }
 
         Aggregation aggregation = newAggregation(
-                project("keywords", "authors", "metrics", "publicationYear"),
+                project("keywords", "metrics", "publicationYear").and(ArrayOperators.Size.lengthOfArray(ConditionalOperators.ifNull("authors").then(Collections.emptyList()))).as("authorNum"),
                 match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
                 unwind("keywords"),
                 group("keywords").count().as("count")
                         .sum("metrics.citationCountPaper").as("citation")
-                        .addToSet("keywords").as("keyword"),
+                        .addToSet("keywords").as("keyword")
+                        .sum("authorNum").as("authorNum"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
@@ -372,30 +400,6 @@ public class RankBlServiceImpl implements RankBlService {
             ids.add(keywordAdvanceRank.getKeyword());
         }
 
-        // 采用先读取全部符合条件的数据，然后在服务端过滤和reduce
-        int curYear = Calendar.getInstance().get(Calendar.YEAR);
-        MatchOperation idMatch = match(Criteria.where("keywords").in(ids));
-        Aggregation aggregation1 = newAggregation(
-                project("publicationYear", "authors", "keywords"),
-                idMatch,
-                match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
-                unwind("keywords"),
-                idMatch,
-                project().and("keywords").as("authorId").and("publicationYear").as("year")  //这里为了复用IdYearMap，把keyword起名为authorId，它们都是group的对象
-        );
-        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
-
-        res = KeywordAdvanceRank.CalAndSetPublicationTrends(res, curRes);
-
-        for (KeywordAdvanceRank keywordAdvanceRank : res) {
-            Aggregation mostInfluentialAgg = newAggregation(
-                    match(Criteria.where("keywords").is(keywordAdvanceRank.getKeyword())),
-                    sort(Sort.Direction.DESC, "metrics.citationCountPaper"),
-                    limit(5)
-            );
-            AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, collectionName, MostInfluentialPapers.class);
-            keywordAdvanceRank.setMostInfluentialPapers(mostInfluentialPapers.getMappedResults());
-        }
         return new BasicResponse(200, "Success", res);
     }
 
