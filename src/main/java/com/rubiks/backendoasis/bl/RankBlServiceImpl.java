@@ -378,6 +378,7 @@ public class RankBlServiceImpl implements RankBlService {
     }
 
     @Override
+    @Cacheable(value = "keyword_advance_rank")
     public BasicResponse getKeywordAdvancedRanking(String sortKey, int startYear, int endYear) {
         if (sortKey.equals("citationCount")) {
             sortKey = "citation";

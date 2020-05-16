@@ -66,6 +66,12 @@ public class AdminController {
         return adminBlService.getAuthorInfo(page, name);
     }
 
+    @GetMapping("/info/keyword")
+    public BasicResponse getKeywordInfo(@RequestParam(value = "page") int page,
+                                       @RequestParam(value = "name", required = false) String name) {
+        return adminBlService.getKeywordInfo(page, name);
+    }
+
     @PutMapping("/info/conference")
     public BasicResponse updateConferenceInfo(@RequestBody ModifyParm modifyParm) {
         return adminBlService.updateConferenceInfo(modifyParm.getSrc(), modifyParm.getDest());
@@ -84,6 +90,11 @@ public class AdminController {
     @PutMapping("/info/author")
     public BasicResponse mergeAuthorInfo(@RequestBody MergeParm mergeParm) {
         return adminBlService.mergeAuthorInfo(mergeParm.getSrc(), mergeParm.getDest());
+    }
+
+    @PutMapping("/info/keyword")
+    public BasicResponse mergeKeywordsInfo(@RequestBody MergeParm mergeParm) {
+        return adminBlService.mergeKeywordsInfo(mergeParm.getSrc(), mergeParm.getDest());
     }
 
     @PutMapping("/info/paper")

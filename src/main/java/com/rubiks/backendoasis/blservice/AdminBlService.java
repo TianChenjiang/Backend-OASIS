@@ -13,12 +13,14 @@ public interface AdminBlService {
     BasicResponse getAffiliationInfo(int page, String name);
     BasicResponse getJournalInfo(int page, String name);
     BasicResponse getAuthorInfo(int page, String name);
+    BasicResponse getKeywordInfo(int page, String name);
 
     BasicResponse mergeAffiliationInfo(List<String> src, String desc);
     BasicResponse updateConferenceInfo(String src, String desc);
     BasicResponse updateJournalInfo(String src, String desc);
     BasicResponse updatePaperInfo(UpdatePaperParameter parameter);
     BasicResponse mergeAuthorInfo(List<String> src, String desc);
+    BasicResponse mergeKeywordsInfo(List<String> src, String dest);
 
     BasicResponse updateMainPageCache();
 

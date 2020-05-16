@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.bl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.WriteResult;
 import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
@@ -11,8 +12,17 @@ import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.CSVConvertor;
 import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.MultiPartFileToFile;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
@@ -22,6 +32,8 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.rubiks.backendoasis.util.Constant.INDEX;
+import static com.rubiks.backendoasis.util.Constant.pageSize;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 
@@ -37,6 +49,10 @@ import java.util.regex.Pattern;
 public class AdminBlServiceImpl implements AdminBlService {
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private RestHighLevelClient client;
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
     @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "academic_relation_pic"}, allEntries = true)
@@ -239,6 +255,40 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", new AuthorInfo(res, size));
     }
 
+    @Override
+    public BasicResponse getKeywordInfo(int page, String name) {
+        String fieldName = "keywords";
+        MatchOperation nameMatch = match(Criteria.where(fieldName).is(getPattern(name)));
+
+        long previousNum = (page-1) * Constant.pageSize;
+        Aggregation aggregation = newAggregation(
+                project("keywords"),
+                nameMatch,
+                unwind("keywords"),
+                nameMatch,
+                group(fieldName).addToSet("keywords").as("name"),
+                skip(previousNum),
+                limit(Constant.pageSize)
+        );
+
+        Aggregation countAgg = newAggregation(
+                project(fieldName),
+                nameMatch,
+                unwind("keywords"),
+                nameMatch,
+                group(fieldName),
+                count().as("size")
+        );
+
+        List<KeywordName> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, KeywordName.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        long size = 0;
+        if (countList.size() != 0) {
+            size = countList.get(0).getSize();
+        }
+        return new BasicResponse(200, "Success", new KeywordInfo(res, size));
+    }
+
 
     @CacheEvict(value = {"conference_rank"}, allEntries = true)
     @Override
@@ -320,6 +370,21 @@ public class AdminBlServiceImpl implements AdminBlService {
         }
         return new BasicResponse(200, "Success", "修改成功");
 
+    }
+
+    @Override
+    public BasicResponse mergeKeywordsInfo(List<String> src, String dest) {
+        String fieldName = "keywords";
+        for (String str: src) {
+            Criteria criteria = new Criteria();
+            criteria.andOperator(criteria.where(fieldName).is(str));
+            Query query = new Query(criteria);
+
+            Update update = new Update();
+            update.set("keywords.$", dest);
+            mongoTemplate.updateMulti(query, update, PaperEntity.class);
+        }
+        return new BasicResponse(200, "Success", "修改成功");
     }
 
     @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract"}, allEntries = true)
