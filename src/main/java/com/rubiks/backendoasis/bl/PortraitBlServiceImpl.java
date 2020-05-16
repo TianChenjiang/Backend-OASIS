@@ -4,13 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.PortraitBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.model.PublicationTrend;
 import com.rubiks.backendoasis.model.portrait.AffiliationPortrait;
 import com.rubiks.backendoasis.model.portrait.AuthorPortrait;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,12 +16,11 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.rubiks.backendoasis.util.Constant.collectionName;
+import static com.rubiks.backendoasis.util.Constant.LARGE_COLLECTION;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
@@ -70,7 +67,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
                             .sum("metrics.citationCountPaper").as("citation")
                             .addToSet("publicationYear").as("publicationYear")
             );
-            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, PublicationTrend.class);
             List<Integer> citationTrend = new ArrayList<>();
             List<Integer> publicationTrends = new ArrayList<>();
 
@@ -115,7 +112,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
                             .sum("metrics.citationCountPaper").as("citation")
                             .addToSet("publicationYear").as("publicationYear")
             );
-            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, PublicationTrend.class);
             List<Integer> citationTrend = new ArrayList<>();
             List<Integer> publicationTrends = new ArrayList<>();
 
@@ -162,7 +159,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
                             .sum("metrics.citationCountPaper").as("citation")
                             .addToSet("publicationYear").as("publicationYear")
             );
-            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, PublicationTrend.class);
             List<Integer> citationTrend = new ArrayList<>();
             List<Integer> publicationTrends = new ArrayList<>();
 
@@ -214,7 +211,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
                             .sum("metrics.citationCountPaper").as("citation")
                             .addToSet("publicationYear").as("publicationYear")
             );
-            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, PublicationTrend.class);
             List<Integer> citationTrend = new ArrayList<>();
             List<Integer> publicationTrends = new ArrayList<>();
 
@@ -266,7 +263,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
                             .sum("metrics.citationCountPaper").as("citation")
                             .addToSet("publicationYear").as("publicationYear")
             );
-            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+            AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, PublicationTrend.class);
             List<Integer> citationTrend = new ArrayList<>();
             List<Integer> publicationTrends = new ArrayList<>();
 

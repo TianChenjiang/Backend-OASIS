@@ -17,12 +17,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.rubiks.backendoasis.util.Constant.collectionName;
+import static com.rubiks.backendoasis.util.Constant.LARGE_COLLECTION;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
 
@@ -76,14 +75,14 @@ public class RankBlServiceImpl implements RankBlService {
         );
 
         if (sortKey.equals("acceptanceCount")) {
-            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
+            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AcceptanceCountRank.class);
             if (res.getMappedResults().size() == 0) {
                 throw new NoSuchYearException();
             }
             return new BasicResponse<>(200, "Success", AuthorRank.transformToBasic(res.getMappedResults()));
 
         } else if (sortKey.equals("citationCount")) {
-            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, CitationCountRank.class);
+            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, CitationCountRank.class);
             if (res.getMappedResults().size() == 0) {
                 throw new NoSuchYearException();
             }
@@ -133,7 +132,7 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.DESC, "acceptanceCount"),
                 limit(10)
         );
-        AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
+        AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AcceptanceCountRank.class);
         if (res.getMappedResults().size() == 0) {
             throw new NoSuchYearException();
         }
@@ -143,14 +142,14 @@ public class RankBlServiceImpl implements RankBlService {
 
     private <T> BasicResponse getSortRes(String sortKey, Aggregation aggregation) {
         if (sortKey.equals("acceptanceCount")) {
-            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, AcceptanceCountRank.class);
+            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AcceptanceCountRank.class);
             if (res.getMappedResults().size() == 0) {
                 throw new NoSuchYearException();
             }
             return new BasicResponse<>(200, "Success", BasicRank.transformToBasic(res.getMappedResults()));
 
         } else if (sortKey.equals("citationCount")) {
-            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, collectionName, CitationCountRank.class);
+            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, CitationCountRank.class);
             if (res.getMappedResults().size() == 0) {
                 throw  new NoSuchYearException();
             }
@@ -184,7 +183,7 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
-        List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class).getMappedResults();
+        List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AuthorAdvanceRank.class).getMappedResults();
 
         List<String> ids = new ArrayList<>();
         for (AuthorAdvanceRank authorAdvanceRank : res) {
@@ -202,7 +201,7 @@ public class RankBlServiceImpl implements RankBlService {
                 idMatch,
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")
         );
-        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, IdYearMap.class).getMappedResults();
 
         res = CalAndSetPublicationTrends(res, curRes);
 
@@ -218,14 +217,14 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.DESC, "metrics.citationCountPaper"),
                 limit(5)
         );
-        AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, collectionName, MostInfluentialPapers.class);
+        AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, LARGE_COLLECTION, MostInfluentialPapers.class);
 
         Aggregation mostRecentAgg = newAggregation(
                 idMatch,
                 sort(Sort.Direction.DESC, "publicationYear"),
                 limit(5)
         );
-        AggregationResults<MostRecentPapers> mostRecentPapers = mongoTemplate.aggregate(mostRecentAgg, collectionName, MostRecentPapers.class);
+        AggregationResults<MostRecentPapers> mostRecentPapers = mongoTemplate.aggregate(mostRecentAgg, LARGE_COLLECTION, MostRecentPapers.class);
 
         return new AuthorRankDetail(null, mostInfluentialPapers.getMappedResults(), mostRecentPapers.getMappedResults());
     }
@@ -243,7 +242,7 @@ public class RankBlServiceImpl implements RankBlService {
                 idMatch,
                 project().and("keywords").as("authorId").and("publicationYear").as("year")  //这里为了复用IdYearMap，把keyword起名为authorId，它们都是group的对象
         );
-        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, IdYearMap.class).getMappedResults();
 
         KeywordDetailRank res = KeywordDetailRank.CalAndSetPublicationTrends(keyword, curRes);
         Aggregation mostInfluentialAgg = newAggregation(
@@ -251,7 +250,7 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.DESC, "metrics.citationCountPaper"),
                 limit(5)
         );
-        AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, collectionName, MostInfluentialPapers.class);
+        AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, LARGE_COLLECTION, MostInfluentialPapers.class);
         res.setMostInfluentialPapers(mostInfluentialPapers.getMappedResults());
 
         return new BasicResponse(200, "Success", res);
@@ -282,7 +281,7 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
-        List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class).getMappedResults();
+        List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AuthorAdvanceRank.class).getMappedResults();
 
         List<String> ids = new ArrayList<>();
         for (AuthorAdvanceRank authorAdvanceRank : res) {
@@ -301,7 +300,7 @@ public class RankBlServiceImpl implements RankBlService {
                 idMatch,
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")
         );
-        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, IdYearMap.class).getMappedResults();
 
         res = CalAndSetPublicationTrends(res, curRes);
 
@@ -328,7 +327,7 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
-        AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, collectionName, BasicDBObject.class);
+        AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, BasicDBObject.class);
         List<AffiliationAdvanceRank> affiliationAdvanceRanks = new ArrayList<>();
         for (Iterator<BasicDBObject> iterator = res.iterator(); iterator.hasNext();) {
             BasicDBObject obj = iterator.next();
@@ -363,7 +362,7 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
-        AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, collectionName, BasicDBObject.class);
+        AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, BasicDBObject.class);
         List<AffiliationAdvanceRank> affiliationAdvanceRanks = new ArrayList<>();
         for (Iterator<BasicDBObject> iterator = res.iterator(); iterator.hasNext();) {
             BasicDBObject obj = iterator.next();
@@ -398,7 +397,7 @@ public class RankBlServiceImpl implements RankBlService {
                 limit(20)
         );
 
-        List<KeywordAdvanceRank> res = mongoTemplate.aggregate(aggregation, collectionName, KeywordAdvanceRank.class).getMappedResults();
+        List<KeywordAdvanceRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, KeywordAdvanceRank.class).getMappedResults();
 
         List<String> ids = new ArrayList<>();
         for (KeywordAdvanceRank keywordAdvanceRank : res) {
@@ -419,7 +418,7 @@ public class RankBlServiceImpl implements RankBlService {
                 sort(Sort.Direction.ASC, "publicationYear"),
                 group("publicationYear").count().as("num").addToSet("publicationYear").as("publicationYear")
         );
-        AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, collectionName, PublicationTrend.class);
+        AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, PublicationTrend.class);
         List<Integer> publicationTrends = new ArrayList<>();
 
         List<PublicationTrend> yearNumMap = curRes.getMappedResults();
@@ -432,7 +431,7 @@ public class RankBlServiceImpl implements RankBlService {
                 idMatch,
                 project( "keywords", "authors.affiliation")
         );
-        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
 
         return new BasicResponse(200, "Success", new AffiliationRankDetail(publicationTrends, ResearchInterest.constructNameValueMap(aggregationList)));
@@ -450,7 +449,7 @@ public class RankBlServiceImpl implements RankBlService {
                         sum("metrics.citationCountPaper").as("citation").addToSet("authors.name").as("authorName")
                         .addToSet("authors.id").as("authorId")
         );
-        AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, collectionName, AuthorAdvanceRank.class);
+        AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AuthorAdvanceRank.class);
         List<AuthorAdvanceRank> res = firstRes.getMappedResults();
 
         List<String> ids = new ArrayList<>();
@@ -471,7 +470,7 @@ public class RankBlServiceImpl implements RankBlService {
                 affMatch,
                 project().and("authors.id").as("authorId").and("publicationYear").as("year")
         );
-        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, collectionName, IdYearMap.class).getMappedResults();
+        List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, IdYearMap.class).getMappedResults();
 
         res = CalAndSetPublicationTrends(res, curRes);
 

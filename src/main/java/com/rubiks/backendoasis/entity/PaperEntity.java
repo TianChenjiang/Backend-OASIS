@@ -6,15 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.TextScore;
 
 
 import java.util.List;
 
-@Document(collection = Constant.collectionName)
+@Document(collection = Constant.LARGE_COLLECTION)
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

@@ -6,11 +6,9 @@ import com.rubiks.backendoasis.entity.PaperEntity;
 import com.rubiks.backendoasis.entity.ReferenceEntity;
 import com.rubiks.backendoasis.model.*;
 import com.rubiks.backendoasis.response.BasicResponse;
-import com.rubiks.backendoasis.util.Constant;
 import org.elasticsearch.client.RestHighLevelClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,7 +19,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 
-import static com.rubiks.backendoasis.util.Constant.collectionName;
+import static com.rubiks.backendoasis.util.Constant.LARGE_COLLECTION;
 import static com.rubiks.backendoasis.util.Constant.pageSize;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import org.springframework.stereotype.Service;
@@ -51,7 +49,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 match(Criteria.where("authors.id").is(id)),
                 project( "keywords", "authors.id")
         );
-        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
         return new BasicResponse<>(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
@@ -63,7 +61,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 idMatch,
                 project( "keywords", "authors.affiliation")
         );
-        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
@@ -77,7 +75,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 match(Criteria.where("contentType").is("conferences")),
                 project( "keywords")
         );
-        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
@@ -90,7 +88,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 match(Criteria.where("contentType").is("periodicals")),
                 project( "keywords")
         );
-        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
@@ -104,7 +102,7 @@ public class PaperBlServiceImpl implements PaperBlService {
                 sort(Direction.DESC, "metrics.citationCountPaper"),
                 limit(5)
         );
-        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, collectionName, PaperEntity.class);
+        AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> Top5Papers = aggregationRes.getMappedResults();
         return new BasicResponse(200, "Success", BriefPaper.PapersToBriefPapers(Top5Papers));
     }

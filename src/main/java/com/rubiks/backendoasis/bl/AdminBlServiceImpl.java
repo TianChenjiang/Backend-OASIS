@@ -1,7 +1,6 @@
 package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.WriteResult;
 import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.entity.AuthorEntity;
 import com.rubiks.backendoasis.entity.PaperEntity;
@@ -12,17 +11,9 @@ import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.CSVConvertor;
 import com.rubiks.backendoasis.util.Constant;
 import com.rubiks.backendoasis.util.MultiPartFileToFile;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
@@ -32,8 +23,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.rubiks.backendoasis.util.Constant.INDEX;
-import static com.rubiks.backendoasis.util.Constant.pageSize;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 
@@ -85,7 +74,7 @@ public class AdminBlServiceImpl implements AdminBlService {
                     }
                 }
                 if (newPapers.size() != 0) {
-                    mongoTemplate.save(newPapers, Constant.collectionName);
+                    mongoTemplate.save(newPapers, Constant.LARGE_COLLECTION);
                 }
                 resSize = newPapers.size();
             } else {
@@ -103,7 +92,7 @@ public class AdminBlServiceImpl implements AdminBlService {
                     }
                 }
                 if (documents.size() != 0) {
-                    mongoTemplate.getCollection(Constant.collectionName).insertMany(documents);
+                    mongoTemplate.getCollection(Constant.LARGE_COLLECTION).insertMany(documents);
                 }
                 resSize = documents.size();
             }
@@ -137,8 +126,8 @@ public class AdminBlServiceImpl implements AdminBlService {
                 count().as("size")
         );
 
-        List<AdminConference> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminConference.class).getMappedResults();
-        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        List<AdminConference> res = mongoTemplate.aggregate(aggregation, Constant.LARGE_COLLECTION, AdminConference.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.LARGE_COLLECTION, ResSize.class).getMappedResults();
         long size = 0;
         if (countList.size() != 0) {
             size = countList.get(0).getSize();
@@ -173,8 +162,8 @@ public class AdminBlServiceImpl implements AdminBlService {
                 project("size")
         );
 
-        List<AdminAffiliation> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminAffiliation.class).getMappedResults();
-        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        List<AdminAffiliation> res = mongoTemplate.aggregate(aggregation, Constant.LARGE_COLLECTION, AdminAffiliation.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.LARGE_COLLECTION, ResSize.class).getMappedResults();
         long size = 0;
         if (countList.size() != 0) {
             size = countList.get(0).getSize();
@@ -207,8 +196,8 @@ public class AdminBlServiceImpl implements AdminBlService {
                 count().as("size")
         );
 
-        List<AdminJournal> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminJournal.class).getMappedResults();
-        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        List<AdminJournal> res = mongoTemplate.aggregate(aggregation, Constant.LARGE_COLLECTION, AdminJournal.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.LARGE_COLLECTION, ResSize.class).getMappedResults();
         long size = 0;
         if (countList.size() != 0) {
             size = countList.get(0).getSize();
@@ -245,8 +234,8 @@ public class AdminBlServiceImpl implements AdminBlService {
                 count().as("size")
         );
 
-        List<AdminAuthor> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, AdminAuthor.class).getMappedResults();
-        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        List<AdminAuthor> res = mongoTemplate.aggregate(aggregation, Constant.LARGE_COLLECTION, AdminAuthor.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.LARGE_COLLECTION, ResSize.class).getMappedResults();
 
         long size = 0;
         if (countList.size() != 0) {
@@ -280,8 +269,8 @@ public class AdminBlServiceImpl implements AdminBlService {
                 count().as("size")
         );
 
-        List<KeywordName> res = mongoTemplate.aggregate(aggregation, Constant.collectionName, KeywordName.class).getMappedResults();
-        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.collectionName, ResSize.class).getMappedResults();
+        List<KeywordName> res = mongoTemplate.aggregate(aggregation, Constant.LARGE_COLLECTION, KeywordName.class).getMappedResults();
+        List<ResSize> countList = mongoTemplate.aggregate(countAgg, Constant.LARGE_COLLECTION, ResSize.class).getMappedResults();
         long size = 0;
         if (countList.size() != 0) {
             size = countList.get(0).getSize();
@@ -349,7 +338,7 @@ public class AdminBlServiceImpl implements AdminBlService {
                 authorEntities.get(i).setName(nameList.get(i));
             }
 
-            mongoTemplate.save(paperEntity, Constant.collectionName);
+            mongoTemplate.save(paperEntity, Constant.LARGE_COLLECTION);
         }
 
         return new BasicResponse(200, "Success", "修改成功");
@@ -409,7 +398,7 @@ public class AdminBlServiceImpl implements AdminBlService {
                         authorEntity.setAffiliation(desc);
                     }
                 }
-                mongoTemplate.save(p, Constant.collectionName);
+                mongoTemplate.save(p, Constant.LARGE_COLLECTION);
             }
 
         }
