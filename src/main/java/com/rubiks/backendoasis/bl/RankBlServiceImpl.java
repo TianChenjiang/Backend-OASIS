@@ -267,7 +267,9 @@ public class RankBlServiceImpl implements RankBlService {
 
         //选出符合条件的author
         MatchOperation yearOperation = match(Criteria.where("publicationYear").gte(startYear).lte(endYear));
+        MatchOperation keywordOperation = match(Criteria.where("keywords").is(keyword));
         Aggregation aggregation = newAggregation(
+                keywordOperation,
                 project("authors", "publicationYear", "metrics"),
                 yearOperation,
                 match(Criteria.where("authors.id").ne(null)),
@@ -291,6 +293,7 @@ public class RankBlServiceImpl implements RankBlService {
         int curYear = Calendar.getInstance().get(Calendar.YEAR);
         MatchOperation idMatch = match(Criteria.where("authors.id").in(ids));
         Aggregation aggregation1 = newAggregation(
+                keywordOperation,
                 project("publicationYear", "authors"),
                 idMatch,
                 match(Criteria.where("publicationYear").gte(curYear-9).lte(curYear)), //过去十年
@@ -314,6 +317,7 @@ public class RankBlServiceImpl implements RankBlService {
         }
 
         Aggregation aggregation = newAggregation(
+                match(Criteria.where("keywords").is(keyword)),
                 match(Criteria.where("authors.affiliation").ne("")),  //非空属性
                 match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
                 unwind("authors"),

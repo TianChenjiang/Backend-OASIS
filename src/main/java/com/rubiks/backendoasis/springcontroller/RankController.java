@@ -121,6 +121,21 @@ public class RankController {
         return rankBlService.getKeywordDetailRankingById(keyword);
     }
 
+    @GetMapping("/rank/detail/author/keyword")
+    public BasicResponse getAuthorDetailRankingByKeyword(@RequestParam(value = "keyword") String keyword,
+                                                        @RequestParam(value = "sortKey") String sortKey,
+                                                        @RequestParam(value = "startYear") int startYear,
+                                                        @RequestParam(value = "endYear") int endYear) {
+        return rankBlService.getAuthorDetailRankingByKeyword(keyword, sortKey, startYear, endYear);
+    }
+
+    @GetMapping("/rank/detail/affiliation/keyword")
+    public BasicResponse getAffiliationDetailRankingByKeyword(@RequestParam(value = "keyword") String keyword,
+                                                         @RequestParam(value = "sortKey") String sortKey,
+                                                         @RequestParam(value = "startYear") int startYear,
+                                                         @RequestParam(value = "endYear") int endYear) {
+        return rankBlService.getAffiliationDetailRankingByKeyword(keyword, sortKey, startYear, endYear);
+    }
 
 
     @GetMapping("/rank/advanced/affiliation")
@@ -150,6 +165,5 @@ public class RankController {
     public BasicResponse getAuthorDetailRanking(@RequestParam(value = "affiliation") String affiliation) {
         return rankBlService.getAuthorDetailRanking(affiliation);
     }
-
 
 }
