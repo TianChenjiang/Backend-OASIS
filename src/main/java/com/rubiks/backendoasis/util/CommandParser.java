@@ -21,7 +21,6 @@ public class CommandParser {
             if (query.substring(i, i+3).equals(AND)) {
                 updateQueryBuilder(queryBuilder, formerType, query.substring(formerIndex, i));
                 formerType = AND; formerIndex = i+4;
-
             }
             else if (query.substring(i, i+2).equals(OR)) {
                 updateQueryBuilder(queryBuilder, formerType, query.substring(formerIndex, i));
