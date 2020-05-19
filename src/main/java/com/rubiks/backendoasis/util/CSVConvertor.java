@@ -2,7 +2,7 @@ package com.rubiks.backendoasis.util;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
-import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.opencsv.CSVReader;
 
 public class CSVConvertor {
 

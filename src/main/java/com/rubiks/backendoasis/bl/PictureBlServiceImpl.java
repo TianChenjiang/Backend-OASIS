@@ -1,11 +1,10 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.PictureBlService;
-import com.rubiks.backendoasis.entity.AuthorEntity;
-import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.entity.paper.AuthorEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;

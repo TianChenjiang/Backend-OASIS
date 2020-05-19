@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.model;
+package com.rubiks.backendoasis.model.paper;
 
 import com.rubiks.backendoasis.esdocument.Author;
 import lombok.AllArgsConstructor;

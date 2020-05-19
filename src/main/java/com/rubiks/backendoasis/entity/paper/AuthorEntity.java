@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.entity;
+package com.rubiks.backendoasis.entity.paper;
 
 import lombok.Builder;
 import lombok.Data;

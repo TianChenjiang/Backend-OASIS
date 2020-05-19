@@ -3,7 +3,7 @@ package com.rubiks.backendoasis.springcontroller;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.exception.NoSuchYearException;
-import com.rubiks.backendoasis.model.ResearchInterest;
+import com.rubiks.backendoasis.model.paper.ResearchInterest;
 import com.rubiks.backendoasis.model.rank.AuthorRankDetail;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.response.SuccessResponse;

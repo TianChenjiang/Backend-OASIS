@@ -1,7 +1,7 @@
-package com.rubiks.backendoasis.entity;
+package com.rubiks.backendoasis.entity.paper;
 
 
-import com.rubiks.backendoasis.util.Constant;
+import com.rubiks.backendoasis.entity.task.ProceedingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

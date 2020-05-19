@@ -2,9 +2,9 @@ package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.PortraitBlService;
-import com.rubiks.backendoasis.entity.AuthorEntity;
-import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.model.PublicationTrend;
+import com.rubiks.backendoasis.entity.paper.AuthorEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
+import com.rubiks.backendoasis.model.paper.PublicationTrend;
 import com.rubiks.backendoasis.model.portrait.AffiliationPortrait;
 import com.rubiks.backendoasis.model.portrait.AuthorPortrait;
 import com.rubiks.backendoasis.response.BasicResponse;

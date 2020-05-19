@@ -1,6 +1,6 @@
 package com.rubiks.backendoasis.model.admin;
 
-import com.rubiks.backendoasis.entity.MetricsEntity;
+import com.rubiks.backendoasis.entity.paper.MetricsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

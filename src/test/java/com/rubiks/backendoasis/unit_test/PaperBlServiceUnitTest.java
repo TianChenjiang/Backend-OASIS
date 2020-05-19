@@ -3,11 +3,13 @@ package com.rubiks.backendoasis.unit_test;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
-import com.rubiks.backendoasis.model.*;
+import com.rubiks.backendoasis.model.paper.BriefPaper;
+import com.rubiks.backendoasis.model.paper.PaperWithoutRef;
+import com.rubiks.backendoasis.model.paper.PapersWithSize;
+import com.rubiks.backendoasis.model.paper.ResearchInterest;
 import com.rubiks.backendoasis.model.rank.BasicRank;
 import com.rubiks.backendoasis.model.rank.AuthorRank;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -19,7 +21,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @SpringBootTest

@@ -1,14 +1,12 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.ConferenceBlService;
-import com.rubiks.backendoasis.entity.ConferenceEntity;
-import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.entity.paper.ConferenceEntity;
 import com.rubiks.backendoasis.model.conference.BriefPublication;
 import com.rubiks.backendoasis.model.conference.PublicationList;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

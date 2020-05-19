@@ -1,6 +1,6 @@
-package com.rubiks.backendoasis.model;
+package com.rubiks.backendoasis.model.paper;
 
-import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
 import lombok.Data;
 
 import java.io.Serializable;

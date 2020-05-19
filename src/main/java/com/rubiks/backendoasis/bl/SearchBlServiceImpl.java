@@ -2,10 +2,13 @@ package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.SearchBlService;
-import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
-import com.rubiks.backendoasis.model.*;
+import com.rubiks.backendoasis.model.paper.FilterCondition;
+import com.rubiks.backendoasis.model.paper.PaperFilter;
+import com.rubiks.backendoasis.model.paper.PaperWithoutRef;
+import com.rubiks.backendoasis.model.paper.PapersWithSize;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.CommandParser;
 import com.rubiks.backendoasis.util.StrProcesser;

@@ -2,10 +2,10 @@ package com.rubiks.backendoasis.bl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.AdminBlService;
-import com.rubiks.backendoasis.entity.AuthorEntity;
-import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.entity.paper.AuthorEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
 import com.rubiks.backendoasis.exception.FileFormatNotSupportException;
-import com.rubiks.backendoasis.model.ImportPaperRes;
+import com.rubiks.backendoasis.model.paper.ImportPaperRes;
 import com.rubiks.backendoasis.model.admin.*;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.util.CSVConvertor;

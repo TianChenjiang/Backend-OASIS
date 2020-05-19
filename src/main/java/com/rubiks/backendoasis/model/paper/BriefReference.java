@@ -1,11 +1,10 @@
-package com.rubiks.backendoasis.model;
+package com.rubiks.backendoasis.model.paper;
 
-import com.rubiks.backendoasis.entity.ReferenceEntity;
+import com.rubiks.backendoasis.entity.paper.ReferenceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 @AllArgsConstructor

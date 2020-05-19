@@ -1,8 +1,8 @@
-package com.rubiks.backendoasis.model;
+package com.rubiks.backendoasis.model.paper;
 
-import com.rubiks.backendoasis.entity.AuthorEntity;
-import com.rubiks.backendoasis.entity.MetricsEntity;
-import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.entity.paper.AuthorEntity;
+import com.rubiks.backendoasis.entity.paper.MetricsEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
 import com.rubiks.backendoasis.esdocument.Author;
 import com.rubiks.backendoasis.esdocument.PaperDocument;
 import lombok.AllArgsConstructor;

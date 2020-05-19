@@ -1,10 +1,13 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
-import com.rubiks.backendoasis.entity.PaperEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
 
-import com.rubiks.backendoasis.entity.ReferenceEntity;
-import com.rubiks.backendoasis.model.*;
+import com.rubiks.backendoasis.entity.paper.ReferenceEntity;
+import com.rubiks.backendoasis.model.paper.BriefPaper;
+import com.rubiks.backendoasis.model.paper.PaperWithoutRef;
+import com.rubiks.backendoasis.model.paper.PapersWithSize;
+import com.rubiks.backendoasis.model.paper.ResearchInterest;
 import com.rubiks.backendoasis.response.BasicResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import com.fasterxml.jackson.databind.ObjectMapper;

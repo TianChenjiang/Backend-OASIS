@@ -1,16 +1,13 @@
 package com.rubiks.backendoasis.unit_test;
 
-import com.rubiks.backendoasis.blservice.PaperBlService;
-import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
-import com.rubiks.backendoasis.entity.AuthorEntity;
-import com.rubiks.backendoasis.entity.MetricsEntity;
-import com.rubiks.backendoasis.entity.PaperEntity;
-import com.rubiks.backendoasis.model.PaperWithoutRef;
-import com.rubiks.backendoasis.model.PapersWithSize;
+import com.rubiks.backendoasis.entity.paper.AuthorEntity;
+import com.rubiks.backendoasis.entity.paper.MetricsEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
+import com.rubiks.backendoasis.model.paper.PaperWithoutRef;
+import com.rubiks.backendoasis.model.paper.PapersWithSize;
 import com.rubiks.backendoasis.model.rank.BasicRank;
 import com.rubiks.backendoasis.response.BasicResponse;
-import com.rubiks.backendoasis.springcontroller.RankController;
 import com.rubiks.backendoasis.springcontroller.SearchController;
 import org.junit.Before;
 import org.junit.Test;

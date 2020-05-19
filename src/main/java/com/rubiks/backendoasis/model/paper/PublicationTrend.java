@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.model;
+package com.rubiks.backendoasis.model.paper;
 
 import lombok.Data;
 

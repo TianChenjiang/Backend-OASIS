@@ -1,6 +1,6 @@
 package com.rubiks.backendoasis.model.rank;
 
-import com.rubiks.backendoasis.model.IdYearMap;
+import com.rubiks.backendoasis.model.paper.IdYearMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

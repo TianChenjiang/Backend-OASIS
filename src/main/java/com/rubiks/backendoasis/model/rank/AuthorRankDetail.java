@@ -1,6 +1,6 @@
 package com.rubiks.backendoasis.model.rank;
 
-import com.rubiks.backendoasis.model.ResearchInterest;
+import com.rubiks.backendoasis.model.paper.ResearchInterest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

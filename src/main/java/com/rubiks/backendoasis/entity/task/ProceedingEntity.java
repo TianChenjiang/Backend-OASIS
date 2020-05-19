@@ -1,6 +1,7 @@
-package com.rubiks.backendoasis.entity;
+package com.rubiks.backendoasis.entity.task;
 
 import lombok.Data;
+
 
 @Data
 public class ProceedingEntity {
