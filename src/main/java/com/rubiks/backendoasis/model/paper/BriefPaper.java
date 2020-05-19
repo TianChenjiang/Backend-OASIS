@@ -4,6 +4,7 @@ import com.rubiks.backendoasis.entity.paper.AuthorEntity;
 import com.rubiks.backendoasis.entity.paper.PaperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class BriefPaper implements Serializable {
     private List<AuthorNameId> authors;
     private String link;
