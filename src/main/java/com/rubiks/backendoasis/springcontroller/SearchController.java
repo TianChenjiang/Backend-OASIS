@@ -161,9 +161,10 @@ public class SearchController {
 
     @GetMapping("/search/command")
     public BasicResponse commandSearch(@RequestParam(value = "query") String query,
-                                        @RequestParam(value = "page") int page) {
+                                        @RequestParam(value = "page") int page,
+                                        @RequestParam(value = "sortKey") String sortKey) {
         try {
-            return searchBlService.commandSearch(query, page);
+            return searchBlService.commandSearch(query, page, sortKey);
         } catch (Exception e) {
             return new BasicResponse(200, "Failed", "暂无相关信息");
         }

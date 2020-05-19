@@ -389,13 +389,14 @@ public class SearchBlServiceImpl implements SearchBlService {
     }
 
     @Override
-    public BasicResponse commandSearch(String query, int page) throws Exception {
+    public BasicResponse commandSearch(String query, int page, String sortKey) throws Exception {
         SearchRequest searchRequest = new SearchRequest(INDEX);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         QueryBuilder queryBuilder = new CommandParser().parseQuery(query);
         searchSourceBuilder.query(queryBuilder);
         searchSourceBuilder.trackTotalHits(true);
 
+        searchSourceBuilder = sortByKey(searchSourceBuilder, sortKey);
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
 
