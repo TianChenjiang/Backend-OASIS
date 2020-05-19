@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.unit_test;
 
+import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.paper.AuthorEntity;
 import com.rubiks.backendoasis.entity.paper.MetricsEntity;
@@ -45,6 +46,9 @@ public class SearchBlServiceUnitTest {
     @MockBean
     SearchBlService searchBlService;
 
+    @Autowired
+    private AdminBlService adminBlService;
+
     private MockMvc mockMvc;
 
     private List<PaperEntity> paperEntities;
@@ -55,6 +59,7 @@ public class SearchBlServiceUnitTest {
     @Before
     public void setupMockMvc() {
         mockMvc = MockMvcBuilders.standaloneSetup(new SearchController(searchBlService)).build();
+        adminBlService.updateMainPageCache();
 
         AuthorEntity authorEntity1 = AuthorEntity.builder().name("lq").affiliation("NJU").build();
         AuthorEntity authorEntity2 = AuthorEntity.builder().name("mxp").affiliation("NJU gulou").build();

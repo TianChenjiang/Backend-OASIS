@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.integration_test;
 
+import com.rubiks.backendoasis.blservice.AdminBlService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -28,9 +29,13 @@ public class PaperControllerIntegrationTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+    @Autowired
+    private AdminBlService adminBlService;
+
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        adminBlService.updateMainPageCache(); //测试前清除缓存
     }
 
     @After

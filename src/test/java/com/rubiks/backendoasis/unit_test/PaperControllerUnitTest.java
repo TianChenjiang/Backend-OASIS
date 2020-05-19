@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.unit_test;
 
+import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
@@ -15,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -51,11 +53,13 @@ public class PaperControllerUnitTest {
     protected WebApplicationContext wac;
 
     @MockBean
-    PaperBlService paperBlService;
+    private PaperBlService paperBlService;
     @MockBean
-    SearchBlService searchBlService;
+    private SearchBlService searchBlService;
     @MockBean
-    RankBlService rankBlService;
+    private RankBlService rankBlService;
+    @Autowired
+    private AdminBlService adminBlService;
 
     private MockMvc mockMvc;
 
@@ -67,6 +71,7 @@ public class PaperControllerUnitTest {
     @Before
     public void setupMockMvc() {
         mockMvc = MockMvcBuilders.standaloneSetup(new PaperController(paperBlService, rankBlService, searchBlService)).build();
+        adminBlService.updateMainPageCache();
 
         AuthorEntity authorEntity1 = AuthorEntity.builder().name("lq").affiliation("NJU").build();
         AuthorEntity authorEntity2 = AuthorEntity.builder().name("mxp").affiliation("NJU gulou").build();
