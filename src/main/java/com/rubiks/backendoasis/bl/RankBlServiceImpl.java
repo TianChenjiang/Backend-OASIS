@@ -319,7 +319,7 @@ public class RankBlServiceImpl implements RankBlService {
 
         Aggregation aggregation = newAggregation(
                 match(Criteria.where("keywords").is(keyword)),
-                match(Criteria.where("authors.affiliation").ne("")),  //非空属性
+                match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
                 match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
                 unwind("authors"),
                 group("authors.affiliation").count().as("count")
