@@ -114,7 +114,7 @@ public class PaperBlServiceImpl implements PaperBlService {
     public BasicResponse getReferenceById(String paperId) {
         PaperEntity res = mongoTemplate.findById(paperId, PaperEntity.class);
         List<ReferenceEntity> refs = new ArrayList<>();
-        if (res.getReferences() != null) {
+        if (res != null && res.getReferences() != null) {
             for (ReferenceEntity ref : res.getReferences()) {
                 if (ref.getTitle().isEmpty() || ref.getTitle() == null) {
                     continue;
