@@ -43,7 +43,7 @@ public class TaskBlServiceImpl implements TaskBlService {
                 criteria.where("is_finished").is(false);
                 break;
         }
-//        query.addCriteria(criteria);
+        query.addCriteria(criteria);
         query.with(Sort.by(Sort.Direction.DESC, "start_time"));
         List<TaskState> res = mongoTemplate.find(query, TaskState.class, Constant.TASK_COLLECTION);
         return new BasicResponse(200, "Success", res);
