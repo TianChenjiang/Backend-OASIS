@@ -58,10 +58,10 @@ public class CommandParser {
 
     private QueryBuilder getMatchQuery(String keyword) {
         QueryBuilder queryBuilder = QueryBuilders.multiMatchQuery(keyword)
-                .field("authors.name")
+                .field("authors.name", 2f)
                 .field("authors.affiliation")
                 .field("abstract")
-                .field("title")
+                .field("title", 2f)
                 .field("keywords")
                 .field("publicationName");
         return queryBuilder;
