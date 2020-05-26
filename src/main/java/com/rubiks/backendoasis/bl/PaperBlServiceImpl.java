@@ -4,11 +4,13 @@ import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.entity.paper.PaperEntity;
 
 import com.rubiks.backendoasis.entity.paper.ReferenceEntity;
+import com.rubiks.backendoasis.entity.trend.TrendEntity;
 import com.rubiks.backendoasis.model.paper.BriefPaper;
 import com.rubiks.backendoasis.model.paper.PaperWithoutRef;
 import com.rubiks.backendoasis.model.paper.PapersWithSize;
 import com.rubiks.backendoasis.model.paper.ResearchInterest;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.util.Constant;
 import org.elasticsearch.client.RestHighLevelClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,6 +110,13 @@ public class PaperBlServiceImpl implements PaperBlService {
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> Top5Papers = aggregationRes.getMappedResults();
         return new BasicResponse(200, "Success", BriefPaper.PapersToBriefPapers(Top5Papers));
+    }
+
+    @Override
+    public BasicResponse getKeyword3DTrend() {
+        Query query = new Query(); //直接返回
+        TrendEntity res = mongoTemplate.findOne(query, TrendEntity.class, Constant.TREND_COLLECTION);
+        return new BasicResponse(200, "Success", res);
     }
 
     @Override

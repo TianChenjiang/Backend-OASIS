@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.entity.paper.AuthorEntity;
 import com.rubiks.backendoasis.entity.paper.PaperEntity;
+import com.rubiks.backendoasis.entity.recommend.SimilarAffiliation;
+import com.rubiks.backendoasis.entity.recommend.SimilarAuthor;
 import com.rubiks.backendoasis.exception.FileFormatNotSupportException;
 import com.rubiks.backendoasis.model.paper.ImportPaperRes;
 import com.rubiks.backendoasis.model.admin.*;
@@ -374,6 +376,18 @@ public class AdminBlServiceImpl implements AdminBlService {
             mongoTemplate.updateMulti(query, update, PaperEntity.class);
         }
         return new BasicResponse(200, "Success", "修改成功");
+    }
+
+    @Override
+    public BasicResponse getRecommendedSimilarAffiliation() {
+        List<SimilarAffiliation> res = mongoTemplate.findAll(SimilarAffiliation.class, Constant.SIMILAR_AFFILIATION_RECOMMEND);
+        return new BasicResponse(200, "Success", res);
+    }
+
+    @Override
+    public BasicResponse getRecommendedSimilarAuthor() {
+        List<SimilarAuthor> res = mongoTemplate.findAll(SimilarAuthor.class, Constant.SIMILAR_AUTHOR_RECOMMEND);
+        return new BasicResponse(200, "Success", res);
     }
 
     @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "keyword_advance_rank"}, allEntries = true)

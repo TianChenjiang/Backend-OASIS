@@ -22,6 +22,9 @@ public interface AdminBlService {
     BasicResponse mergeAuthorInfo(List<String> src, String desc);
     BasicResponse mergeKeywordsInfo(List<String> src, String dest);
 
+    BasicResponse getRecommendedSimilarAffiliation();
+    BasicResponse getRecommendedSimilarAuthor();
+
     BasicResponse updateMainPageCache();
 
 }

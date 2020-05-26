@@ -114,4 +114,9 @@ public class PaperController {
         return paperBlService.getPaperById(id);
     }
 
+    @GetMapping("/keyword/trend")
+    public BasicResponse getKeyword3DTrend() {
+        return paperBlService.getKeyword3DTrend();
+    }
+
 }
