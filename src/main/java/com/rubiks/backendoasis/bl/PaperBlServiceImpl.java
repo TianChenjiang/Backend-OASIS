@@ -1,6 +1,7 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.entity.paper.AuthorEntity;
 import com.rubiks.backendoasis.entity.paper.PaperEntity;
 
 import com.rubiks.backendoasis.entity.paper.ReferenceEntity;
@@ -181,6 +182,16 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         PaperEntity paperEntity = mongoTemplate.findOne(query, PaperEntity.class);
         return new BasicResponse(200, "Success", paperEntity);
+    }
+
+    @Override
+    public BasicResponse getSimilarAuthors(String authorId) {
+        // 相同机构
+        AuthorEntity targetAuthor = mongoTemplate.findById(authorId, AuthorEntity.class, LARGE_COLLECTION);
+        Aggregation aggregation = newAggregation(
+
+        );
+        return null;
     }
 
     class AuthorKeywordsList {

@@ -18,11 +18,13 @@ public class SimilarAuthor implements Serializable {
     @Id
     private String id;
 
-    private BriefSimilarAuthor author1;
+    private List<BriefSimilarAuthor> authors;
 
-    private BriefSimilarAuthor author2;
-
-    private List<String> co_author;
-
-    private int co_author_num;
+//    private BriefSimilarAuthor author1;
+//
+//    private BriefSimilarAuthor author2;
+//
+//    private List<String> co_author;
+//
+//    private int co_author_num;
 }

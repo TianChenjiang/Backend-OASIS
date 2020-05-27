@@ -119,4 +119,9 @@ public class PaperController {
         return paperBlService.getKeyword3DTrend();
     }
 
+    @GetMapping("/author/similar")
+    public BasicResponse getSimilarAuthorByAuthorId(@RequestParam(value = "authorId") String authorId) {
+        return paperBlService.getSimilarAuthors(authorId);
+    }
+
 }

@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,9 +18,5 @@ public class SimilarAffiliation implements Serializable {
     @Id
     private String id;
 
-    private int dist;
-
-    private String s1;
-
-    private String s2;
+    private List<String> affiliations;
 }
