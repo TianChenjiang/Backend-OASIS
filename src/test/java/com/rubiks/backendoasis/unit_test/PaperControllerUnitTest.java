@@ -114,7 +114,7 @@ public class PaperControllerUnitTest {
                 .thenReturn(new BasicResponse(200, "Success", paperEntities));
         mockMvc.perform(get("/paper/abstract")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()).andDo((print()))
                 .andExpect(jsonPath("$.data[0].title", is("Software Architecture"))
         );
     }

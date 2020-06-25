@@ -30,6 +30,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,8 +92,9 @@ public class SearchBlServiceUnitTest {
                 .param("keyword", "Software").param("page", "1").param("sortKey", "related")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andDo((print()))
                 .andExpect(jsonPath("$.data.papers[0].title", is("Software Architecture")))
-                .andExpect(jsonPath("$.data.papers[1].title", is("Software Design")));
+                .andExpect(jsonPath("$.data.papers[1].title", is("Software Design");
     }
 
     @Test

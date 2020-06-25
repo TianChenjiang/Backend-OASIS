@@ -108,9 +108,9 @@ public class PaperControllerIntegrationTest {
         mockMvc.perform(get("/researcher/interest")
                 .param("authorId", "37302908800")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print()
-        );
+                .andExpect(status().isOk());
+//                .andDo(print()
+//        );
 
     }
 
