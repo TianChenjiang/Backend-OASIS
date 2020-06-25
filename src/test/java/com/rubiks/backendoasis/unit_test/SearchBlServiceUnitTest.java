@@ -90,11 +90,12 @@ public class SearchBlServiceUnitTest {
         when(searchBlService.basicSearchByES(any(String.class), any(Integer.class), any(String.class))).thenReturn(new BasicResponse(200, "Suceess", res));
         mockMvc.perform(get("/search/basic/es")
                 .param("keyword", "Software").param("page", "1").param("sortKey", "related")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo((print()))
                 .andExpect(jsonPath("$.data.papers[0].title", is("Software Architecture")))
-                .andExpect(jsonPath("$.data.papers[1].title", is("Software Design");
+                .andExpect(jsonPath("$.data.papers[1].title", is("Software Design")));
     }
 
     @Test

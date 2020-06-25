@@ -7,6 +7,7 @@ import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.paper.AuthorEntity;
 import com.rubiks.backendoasis.entity.paper.MetricsEntity;
 import com.rubiks.backendoasis.entity.paper.PaperEntity;
+import com.rubiks.backendoasis.model.paper.BriefPaper;
 import com.rubiks.backendoasis.model.rank.BasicRank;
 import com.rubiks.backendoasis.model.paper.PaperWithoutRef;
 import com.rubiks.backendoasis.model.paper.PapersWithSize;
@@ -111,9 +112,10 @@ public class PaperControllerUnitTest {
     @Test
     public void testGetActivePaperAbstract() throws Exception {
         when(paperBlService.getActivePaperAbstract())
-                .thenReturn(new BasicResponse(200, "Success", paperEntities));
+                .thenReturn(new BasicResponse(200, "Success", BriefPaper.PapersToBriefPapers(paperEntities)));
         mockMvc.perform(get("/paper/abstract")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andDo((print()))
                 .andExpect(jsonPath("$.data[0].title", is("Software Architecture"))
         );
