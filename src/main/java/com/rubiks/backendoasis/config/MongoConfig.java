@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 @Configuration
 public class MongoConfig {
 
-   @Value("${MONGO:mongodb://greenwood:2020liujia@localhost:27017}")
+   @Value("${MONGO:mongodb://greenwood:2020liujia@101.132.102.201:27017}")
    private String mongo;
 
     @Bean
