@@ -118,7 +118,7 @@ public class PictureBlServiceImpl implements PictureBlService {
                 }
             }
         }
-        if (affiliation2.equals(affiliation1)) {   //二者同在一个机构
+        if (affiliation2 != null && affiliation2.equals(affiliation1)) {   //二者同在一个机构
             res += 1;
         }
         return res;
