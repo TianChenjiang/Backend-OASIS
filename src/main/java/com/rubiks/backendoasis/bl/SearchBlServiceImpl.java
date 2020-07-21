@@ -192,6 +192,9 @@ public class SearchBlServiceImpl implements SearchBlService {
         highlightBuilder.requireFieldMatch(false);
         highlightBuilder.preTags(preTag);
         highlightBuilder.postTags(postTag);
+        highlightBuilder.fragmentSize(800000); //最大高亮分片数
+        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+
         searchSourceBuilder.highlighter(highlightBuilder);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -250,6 +253,10 @@ public class SearchBlServiceImpl implements SearchBlService {
         highlightBuilder.requireFieldMatch(false);
         highlightBuilder.preTags(preTag);
         highlightBuilder.postTags(postTag);
+        highlightBuilder.fragmentSize(800000); //最大高亮分片数
+        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+
+
         searchSourceBuilder.highlighter(highlightBuilder);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -411,6 +418,9 @@ public class SearchBlServiceImpl implements SearchBlService {
         highlightBuilder.preTags(preTag);
         highlightBuilder.postTags(postTag);
         searchSourceBuilder.highlighter(highlightBuilder);
+
+        highlightBuilder.fragmentSize(800000); //最大高亮分片数
+        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
 
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
