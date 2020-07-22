@@ -71,10 +71,10 @@ public class RankBlServiceImpl implements RankBlService {
                 match(Criteria.where("authors.id").ne(null)),
                 unwind("authors"),
                 group("authors.id").count().as("acceptanceCount").
-                        sum("metrics.citationCountPaper").as("citationCount"),
+                        sum("metrics.citationCountPaper").as("citationCount")
+                        .first("authors.name").as("name"),
                 sort(Sort.Direction.DESC, sortKey),
-                limit(10),
-                project().and("authors.name").as("name")
+                limit(10)
         );
 
         if (sortKey.equals("acceptanceCount")) {
@@ -180,9 +180,9 @@ public class RankBlServiceImpl implements RankBlService {
 
                 unwind("authors"),
                 group("authors.id").count().as("count").
-                        sum("metrics.citationCountPaper").as("citation").addToSet("authors.name").as("authorName")
-                        .addToSet("authors.id").as("authorId"),
-                project("authorId", "citation", "authorName", "count"),
+                        sum("metrics.citationCountPaper").as("citation")
+                        .addToSet("authors.id").as("authorId")
+                        .first("authors.name").as("authorName"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
