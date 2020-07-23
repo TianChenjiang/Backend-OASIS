@@ -51,13 +51,27 @@ public class RankBlServiceImpl implements RankBlService {
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
                 match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
-                group( "authors.affiliation").count().as("acceptanceCount").
-                        sum("metrics.citationCountPaper").as("citationCount"),
-//                        .addToSet("authors.affiliation").as("id"),
+                group("authors.affiliation", "_id").count().as("acceptanceCount").
+                        sum("metrics.citationCountPaper").as("citationCount").
+                        addToSet("authors.affiliation").as("name"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(10)
         );
 
+        if (sortKey.equals("acceptanceCount")) {
+            AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AcceptanceCountRank.class);
+            if (res.getMappedResults().size() == 0) {
+                throw new NoSuchYearException();
+            }
+            return new BasicResponse<>(200, "Success", BasicRank.affTransformToBasic(res.getMappedResults()));
+
+        } else if (sortKey.equals("citationCount")) {
+            AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, CitationCountRank.class);
+            if (res.getMappedResults().size() == 0) {
+                throw  new NoSuchYearException();
+            }
+            return new BasicResponse<>(200, "Success", BasicRank.affTransformToBasic(res.getMappedResults()));
+        }
         return getSortRes(sortKey, aggregation);
 
     }
@@ -358,7 +372,7 @@ public class RankBlServiceImpl implements RankBlService {
                 match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
                 unwind("authors"),
                 match(Criteria.where("authors.affiliation").ne("").ne(null)),
-                group("authors.affiliation").count().as("count")
+                group("authors.affiliation", "_id").count().as("count")
                         .sum("metrics.citationCountPaper").as("citation")
                         .addToSet("authors.affiliation").as("affiliationName")
                         .addToSet("authors.id").as("authorId"),
