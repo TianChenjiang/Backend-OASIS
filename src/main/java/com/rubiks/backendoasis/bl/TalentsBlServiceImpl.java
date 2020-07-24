@@ -34,7 +34,7 @@ public class TalentsBlServiceImpl implements TalentsBlService {
         query.fields().include("field").include("count").slice("experts",0, 5)
                 .include("experts.author.id").include("experts.author.name");
         query.with(Sort.by(Sort.Direction.DESC, "count"));
-        query.limit(10);
+        query.limit(20);
 
         List<ActiveTalents> res = mongoTemplate.find(query, ActiveTalents.class, Constant.TALENTS_COLLECTION);
         return new BasicResponse(200, "Success", res);
@@ -48,6 +48,9 @@ public class TalentsBlServiceImpl implements TalentsBlService {
         query.with(PageRequest.of(page-1, pageSize));
 
         TalentsList res = mongoTemplate.findOne(query, TalentsList.class, Constant.TALENTS_COLLECTION);
+        if (res == null) {
+            return new BasicResponse(200, "No such field", null);
+        }
         return new BasicResponse(200, "Success", res.getTalentsList());
     }
 }

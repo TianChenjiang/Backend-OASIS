@@ -26,6 +26,7 @@ import java.util.*;
 import static com.rubiks.backendoasis.util.Constant.LARGE_COLLECTION;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.limit;
+import static org.springframework.data.mongodb.core.aggregation.ConditionalOperators.Cond.*;
 
 @Service
 @CacheConfig(cacheNames = "rank")
@@ -51,14 +52,26 @@ public class RankBlServiceImpl implements RankBlService {
                 match(Criteria.where("publicationYear").is(year)),
                 unwind("authors"),
                 match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
-                group("authors.affiliation", "_id").count().as("acceptanceCount").
-                        sum("metrics.citationCountPaper").as("citationCount").
-                        addToSet("authors.affiliation").as("name"),
+                //同一机构并且不同论文的引用数相加
+                group("authors.affiliation", "_id").addToSet("authors.affiliation").as("name").first("metrics").as("metrics"),
+                group("name").sum("metrics.citationCountPaper").as("citationCount").first("name").as("name").count().as("acceptanceCount"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(10)
         );
-
         if (sortKey.equals("acceptanceCount")) {
+//            aggregation = newAggregation(
+//                    project("authors", "publicationYear", "_id"),
+//                    match(Criteria.where("publicationYear").is(year)),
+//                    unwind("authors"),
+//                    match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
+//                    group("authors.affiliation")
+//                            .addToSet("authors.affiliation").as("name")
+//                            .addToSet("_id").as("paperIds"),
+//                    project("name").and("paperIds").size().as("acceptanceCount"),
+//                    sort(Sort.Direction.DESC, sortKey),
+//                    limit(10)
+//            );
+
             AggregationResults<AcceptanceCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AcceptanceCountRank.class);
             if (res.getMappedResults().size() == 0) {
                 throw new NoSuchYearException();
@@ -66,14 +79,14 @@ public class RankBlServiceImpl implements RankBlService {
             return new BasicResponse<>(200, "Success", BasicRank.affTransformToBasic(res.getMappedResults()));
 
         } else if (sortKey.equals("citationCount")) {
+
             AggregationResults<CitationCountRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, CitationCountRank.class);
             if (res.getMappedResults().size() == 0) {
-                throw  new NoSuchYearException();
+                throw new NoSuchYearException();
             }
             return new BasicResponse<>(200, "Success", BasicRank.affTransformToBasic(res.getMappedResults()));
         }
-        return getSortRes(sortKey, aggregation);
-
+        return new BasicResponse<>(200, "No such sortKey", null);
     }
 
     @Override
@@ -368,17 +381,17 @@ public class RankBlServiceImpl implements RankBlService {
         }
 
         Aggregation aggregation = newAggregation(
-                match(Criteria.where("authors.affiliation").ne("")),  //非空属性
+                project("authors", "publicationYear", "metrics", "_id"),
                 match(Criteria.where("publicationYear").gte(startYear).lte(endYear)),
                 unwind("authors"),
-                match(Criteria.where("authors.affiliation").ne("").ne(null)),
-                group("authors.affiliation", "_id").count().as("count")
-                        .sum("metrics.citationCountPaper").as("citation")
-                        .addToSet("authors.affiliation").as("affiliationName")
-                        .addToSet("authors.id").as("authorId"),
+                match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
+                //同一机构并且不同论文的引用数相加
+                group("authors.affiliation", "_id").addToSet("authors.affiliation").as("affiliationName").first("metrics").as("metrics").addToSet("authors.id").as("authorId"),
+                group("affiliationName").sum("metrics.citationCountPaper").as("citation").first("affiliationName").as("affiliationName").count().as("count").first("authorId").as("authorId"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         );
+
         AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, BasicDBObject.class);
         List<AffiliationAdvanceRank> affiliationAdvanceRanks = new ArrayList<>();
         for (Iterator<BasicDBObject> iterator = res.iterator(); iterator.hasNext();) {
