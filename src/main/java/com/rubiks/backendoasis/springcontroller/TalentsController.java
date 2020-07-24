@@ -27,6 +27,11 @@ public class TalentsController {
         return talentsBlService.getTalentsListByTalentBase(field, page);
     }
 
+    @GetMapping("/talents/recommend")
+    public BasicResponse getTalentsActivePapersByTalentBase(@RequestParam(value = "field") String field) {
+        return talentsBlService.getTalentsActivePapersByTalentBase(field);
+    }
+
 }
 
 
