@@ -390,7 +390,7 @@ public class RankBlServiceImpl implements RankBlService {
                 group("affiliationName").sum("metrics.citationCountPaper").as("citation").first("affiliationName").as("affiliationName").count().as("count").first("authorId").as("authorId"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
-        );
+        ).withOptions(newAggregationOptions().allowDiskUse(true).build());
 
         AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, BasicDBObject.class);
         List<AffiliationAdvanceRank> affiliationAdvanceRanks = new ArrayList<>();
@@ -401,7 +401,7 @@ public class RankBlServiceImpl implements RankBlService {
             int  count = obj.getInt("count");
             int citation = obj.getInt("citation");
             List<String> authorIds = (List<String>)(obj.get("authorId"));
-            affiliationAdvanceRanks.add(new AffiliationAdvanceRank(affiliationName, count, citation, Counter.getCount(authorIds)));
+            affiliationAdvanceRanks.add(new AffiliationAdvanceRank(affiliationName, count, citation, authorIds.size()));
         }
         return new BasicResponse(200, "Success", affiliationAdvanceRanks);
     }
