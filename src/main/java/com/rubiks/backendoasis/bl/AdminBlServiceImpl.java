@@ -408,7 +408,7 @@ public class AdminBlServiceImpl implements AdminBlService {
 
             for (PaperEntity p : matchRes) {
                 for (AuthorEntity authorEntity : p.getAuthors()) {
-                    if (authorEntity.getAffiliation().equals(str)) {
+                    if (authorEntity.getAffiliation() != null && authorEntity.getAffiliation().equals(str)) {
                         authorEntity.setAffiliation(desc);
                     }
                 }
