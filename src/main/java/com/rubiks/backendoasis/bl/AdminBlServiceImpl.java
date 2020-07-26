@@ -16,6 +16,7 @@ import com.rubiks.backendoasis.util.MultiPartFileToFile;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
@@ -144,15 +145,18 @@ public class AdminBlServiceImpl implements AdminBlService {
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
-                project("authors"),
+                project("authors", "_id", "metrics"),
                 nameMatch,      // 先进行一次match，为了命中索引，也为了减少进入管道的文档数量
                 unwind("authors"),
                 nameMatch,
-                group(fieldName).addToSet(fieldName).as("name"),
+//                group(fieldName).addToSet(fieldName).as("name"),
+                group(fieldName, "_id").addToSet(fieldName).as("name").first("metrics").as("metrics"),
+                group("name").sum("metrics.citationCountPaper").as("citationCount").first("name").as("name").count().as("acceptanceCount"),
+                sort(Sort.Direction.DESC, "acceptanceCount"),
                 project("name"),
                 skip(previousNum),
                 limit(Constant.pageSize)
-        );
+        ).withOptions(newAggregationOptions().allowDiskUse(true).build());
 
         Aggregation countAgg = newAggregation(
                 project("authors"),
