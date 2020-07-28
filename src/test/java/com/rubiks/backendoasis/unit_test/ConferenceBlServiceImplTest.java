@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.bl.AdminBlServiceImpl;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,13 +37,13 @@ public class ConferenceBlServiceImplTest {
     private MockMvc mockMvc;
 
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    void getConferencesAndJournalsList() throws Exception{
+    public void getConferencesAndJournalsList() throws Exception{
         mockMvc.perform(get("/conference/publication")
                 .param("keyword", "IEEE")
                 .param("page", "1")
@@ -61,7 +62,7 @@ public class ConferenceBlServiceImplTest {
     }
 
     @Test
-    void getConferencesAndJournalsProceedings() throws Exception{
+    public void getConferencesAndJournalsProceedings() throws Exception{
         mockMvc.perform(get("/conference/proceeding")
                 .param("titleId", "1803059")
                 .contentType(MediaType.APPLICATION_JSON)

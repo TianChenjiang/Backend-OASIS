@@ -3,8 +3,9 @@ package com.rubiks.backendoasis.unit_test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.bl.AdminBlServiceImpl;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,14 +35,13 @@ public class TalentsBlServiceImplTest {
 
     private MockMvc mockMvc;
 
-
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    void getActiveTalentsBase() throws Exception{
+    public void getActiveTalentsBase() throws Exception{
         mockMvc.perform(get("/info/affiliation")
                 .param("name", "Tsinghua")
                 .param("page", "1")
@@ -52,7 +52,7 @@ public class TalentsBlServiceImplTest {
     }
 
     @Test
-    void getTalentsListByTalentBase() throws Exception{
+    public void getTalentsListByTalentBase() throws Exception{
         mockMvc.perform(get("/talents/list")
                 .param("field", "learning (artificial intelligence)")
                 .param("page", "1")

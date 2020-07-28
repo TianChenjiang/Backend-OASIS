@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.bl.AdminBlServiceImpl;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,14 +37,14 @@ public class SearchBlServiceImplTest {
     private MockMvc mockMvc;
 
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
 
     @Test
-    void basicSearchByESWithHighLight() throws Exception{
+    public void basicSearchByESWithHighLight() throws Exception{
         mockMvc.perform(get("/search/basic/es")
                 .param("keyword", "Software、")
                 .param("page", "1")
@@ -63,7 +64,7 @@ public class SearchBlServiceImplTest {
 
 
     @Test
-    void advancedSearchByESWithHighLight() throws Exception{
+    public void advancedSearchByESWithHighLight() throws Exception{
         mockMvc.perform(get("/search/advanced/es")
                 .param("publicationName", "ASE")
                 .param("field", "software")
@@ -81,7 +82,7 @@ public class SearchBlServiceImplTest {
     }
 
     @Test
-    void basicFilterSearch() throws Exception{
+    public void basicFilterSearch() throws Exception{
         mockMvc.perform(get("/search/filter/es")
                 .param("keyword", "software")
                 .param("page", "1")
@@ -96,7 +97,7 @@ public class SearchBlServiceImplTest {
 
 
     @Test
-    void commandSearch() throws Exception{
+    public void commandSearch() throws Exception{
         mockMvc.perform(get("/search/command")
                 .param("query", "software AND test NOT nanjing")
                 .param("page", "1")

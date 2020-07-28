@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.bl.AdminBlServiceImpl;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -37,13 +38,13 @@ public class RankBlServiceImplTest {
     private MockMvc mockMvc;
 
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    void getAffiliationBasicRanking() throws Exception{
+    public void getAffiliationBasicRanking() throws Exception{
         mockMvc.perform(get("/rank/basic/affiliation")
                 .param("sortKey", "acceptanceCount")
                 .param("year", "2019")
@@ -53,7 +54,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getAuthorBasicRanking() throws Exception{
+    public void getAuthorBasicRanking() throws Exception{
         mockMvc.perform(get("/rank/basic/author")
                 .param("sortKey", "citationCount")
                 .param("year", "2019")
@@ -62,7 +63,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getJournalBasicRanking() throws Exception{
+    public void getJournalBasicRanking() throws Exception{
         mockMvc.perform(get("/rank/basic/journal")
                 .param("sortKey", "citationCount")
                 .param("year", "2019")
@@ -71,7 +72,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getConferenceBasicRanking() throws Exception{
+    public void getConferenceBasicRanking() throws Exception{
         mockMvc.perform(get("/rank/basic/conference")
                 .param("sortKey", "citationCount")
                 .param("year", "2019")
@@ -80,7 +81,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getKeywordBasicRanking() throws Exception{
+    public void getKeywordBasicRanking() throws Exception{
         mockMvc.perform(get("/rank/basic/keyword")
                 .param("sortKey", "citationCount")
                 .param("year", "2019")
@@ -88,7 +89,7 @@ public class RankBlServiceImplTest {
                 .andExpect(status().isOk());
     }
     @Test
-    void getAuthorAdvancedRanking() throws Exception{
+    public void getAuthorAdvancedRanking() throws Exception{
         mockMvc.perform(get("/rank/advanced/author")
                 .param("sortKey", "citationCount")
                 .param("startYear","2010")
@@ -98,7 +99,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getAuthorDetailRankingById() throws Exception{
+    public void getAuthorDetailRankingById() throws Exception{
         mockMvc.perform(get("/rank/detail/author")
                 .param("authorId", "37268675200")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -113,7 +114,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getKeywordDetailRankingById() throws Exception{
+    public void getKeywordDetailRankingById() throws Exception{
         mockMvc.perform(get("/rank/detail/keyword")
                 .param("keyword", "optimisation")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -128,7 +129,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getAuthorDetailRankingByKeyword() throws Exception{
+    public void getAuthorDetailRankingByKeyword() throws Exception{
         mockMvc.perform(get("/rank/detail/author/keyword")
                 .param("keyword", "optimisation")
                 .param("sortKey", "citationCount")
@@ -149,7 +150,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getAffiliationDetailRankingByKeyword() throws Exception{
+    public void getAffiliationDetailRankingByKeyword() throws Exception{
         mockMvc.perform(get("/rank/detail/affiliation/keyword")
                 .param("keyword", "optimisation")
                 .param("sortKey", "citationCount")
@@ -170,7 +171,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getAffiliationAdvancedRanking() throws Exception{
+    public void getAffiliationAdvancedRanking() throws Exception{
         mockMvc.perform(get("/rank/advanced/affiliation")
                 .param("sortKey", "citationCount")
                 .param("startYear","2010")
@@ -180,7 +181,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getKeywordAdvancedRanking() throws Exception{
+    public void getKeywordAdvancedRanking() throws Exception{
         mockMvc.perform(get("/rank/advanced/keyword")
                 .param("sortKey", "citationCount")
                 .param("startYear","2010")
@@ -190,7 +191,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getAffiliationDetailRankingById() throws Exception{
+    public void getAffiliationDetailRankingById() throws Exception{
         mockMvc.perform(get("/rank/detail/affiliation")
                 .param("affiliationId", "Google")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -205,7 +206,7 @@ public class RankBlServiceImplTest {
     }
 
     @Test
-    void getAuthorDetailRanking() throws Exception{
+    public void getAuthorDetailRanking() throws Exception{
         mockMvc.perform(get("/rank//affiliation/author")
                 .param("affiliation", "Google")
                 .contentType(MediaType.APPLICATION_JSON))

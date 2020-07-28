@@ -3,8 +3,9 @@ package com.rubiks.backendoasis.unit_test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.bl.AdminBlServiceImpl;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -33,14 +34,14 @@ public class PictureBlServiceImplTest {
     private MockMvc mockMvc;
 
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
 
     @Test
-    void getAcademicRelationByAuthorId() throws Exception{
+    public void getAcademicRelationByAuthorId() throws Exception{
         mockMvc.perform(get("/picture/academic")
                 .param("id", "37278889300")
                 .contentType(MediaType.APPLICATION_JSON)

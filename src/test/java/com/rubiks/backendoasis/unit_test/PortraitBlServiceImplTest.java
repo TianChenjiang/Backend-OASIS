@@ -3,8 +3,9 @@ package com.rubiks.backendoasis.unit_test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.bl.AdminBlServiceImpl;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,14 +35,14 @@ public class PortraitBlServiceImplTest {
     private MockMvc mockMvc;
 
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
 
     @Test
-    void getAuthorPortraitById() throws Exception{
+    public void getAuthorPortraitById() throws Exception{
         mockMvc.perform(get("/portrait/author")
                 .param("authorId", "37278889300")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -58,7 +59,7 @@ public class PortraitBlServiceImplTest {
     }
 
     @Test
-    void getAffiliationPortrait() throws Exception{
+    public void getAffiliationPortrait() throws Exception{
         mockMvc.perform(get("/portrait/affiliation")
                 .param("affiliation", "Google")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +76,7 @@ public class PortraitBlServiceImplTest {
     }
 
     @Test
-    void getKeywordPortrait() throws Exception{
+    public void getKeywordPortrait() throws Exception{
         mockMvc.perform(get("/portrait/keyword")
                 .param("keyword", "learning (artificial intelligence)")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +93,7 @@ public class PortraitBlServiceImplTest {
     }
 
     @Test
-    void getConferencePortrait() throws Exception{
+    public void getConferencePortrait() throws Exception{
         mockMvc.perform(get("/portrait/conference")
                 .param("conference", "IGARSS")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +110,7 @@ public class PortraitBlServiceImplTest {
     }
 
     @Test
-    void getJournalPortrait() throws Exception{
+    public void getJournalPortrait() throws Exception{
         mockMvc.perform(get("/portrait/journal")
                 .param("journal", "ACCESS")
                 .contentType(MediaType.APPLICATION_JSON)

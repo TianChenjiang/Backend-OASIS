@@ -6,8 +6,9 @@ import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.response.BasicResponse;
 import com.rubiks.backendoasis.springcontroller.AdminController;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,14 +38,14 @@ public class AdminBlServiceImplTest {
     private MockMvc mockMvc;
 
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
 
     @Test
-    void getAffiliationInfo() throws Exception {
+    public void getAffiliationInfo() throws Exception {
         mockMvc.perform(get("/info/affiliation")
                 .param("name", "Tsinghua")
                 .param("page", "1")
@@ -55,7 +56,7 @@ public class AdminBlServiceImplTest {
     }
 
     @Test
-    void getAffiliationInfoWithEmptyName() throws Exception {
+    public void getAffiliationInfoWithEmptyName() throws Exception {
         mockMvc.perform(get("/info/affiliation")
                 .param("name", "")
                 .param("page", "1")
@@ -66,7 +67,7 @@ public class AdminBlServiceImplTest {
     }
 
     @Test
-    void getAuthorInfo() throws Exception{
+    public void getAuthorInfo() throws Exception{
         mockMvc.perform(get("/info/author")
                 .param("name", "Liu Jia")
                 .param("page", "1")
@@ -77,7 +78,7 @@ public class AdminBlServiceImplTest {
     }
 
     @Test
-    void getAuthorInfoWithEmptyName() throws Exception {
+    public void getAuthorInfoWithEmptyName() throws Exception {
         mockMvc.perform(get("/info/author")
                 .param("name", "")
                 .param("page", "1")
@@ -88,7 +89,7 @@ public class AdminBlServiceImplTest {
     }
 
     @Test
-    void getKeywordInfo() throws Exception{
+    public void getKeywordInfo() throws Exception{
         String keyword = "machine";
         mockMvc.perform(get("/info/keyword")
                 .param("name", keyword)
@@ -100,7 +101,7 @@ public class AdminBlServiceImplTest {
     }
 
     @Test
-    void getRecommendedSimilarAffiliation() throws Exception{
+    public void getRecommendedSimilarAffiliation() throws Exception{
         mockMvc.perform(get("/recommend/author")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -109,7 +110,7 @@ public class AdminBlServiceImplTest {
     }
 
     @Test
-    void getRecommendedSimilarAuthor() throws Exception{
+    public void getRecommendedSimilarAuthor() throws Exception{
         mockMvc.perform(get("/recommend/affiliation")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

@@ -1,7 +1,8 @@
 package com.rubiks.backendoasis.unit_test;
 
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,13 +29,13 @@ public class PaperBlServiceImplTest {
     private MockMvc mockMvc;
 
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    void getResearcherInterest() throws Exception{
+    public void getResearcherInterest() throws Exception{
         mockMvc.perform(get("/researcher/interest")
                 .param("authorId", "37302908800")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -50,7 +51,7 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getAffiliationInterest() throws Exception{
+    public void getAffiliationInterest() throws Exception{
         mockMvc.perform(get("/affiliation/interest")
                 .param("affiliation", "Nanjing University")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -66,7 +67,7 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getConferenceInterest() throws Exception{
+    public void getConferenceInterest() throws Exception{
         mockMvc.perform(get("/conference/interest")
                 .param("conference", "EMBC")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -82,7 +83,7 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getJournalInterest() throws Exception{
+    public void getJournalInterest() throws Exception{
         mockMvc.perform(get("/journal/interest")
                 .param("journal", "ACCESS")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -98,7 +99,7 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getActivePaperAbstract()throws Exception {
+    public void getActivePaperAbstract()throws Exception {
         mockMvc.perform(get("/paper/abstract")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -106,14 +107,14 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getKeyword3DTrend() throws Exception{
+    public void getKeyword3DTrend() throws Exception{
         mockMvc.perform(get("/keyword/trend")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void getReferenceById() throws Exception{
+    public void getReferenceById() throws Exception{
         mockMvc.perform(get("/journal/interest")
                 .param("journal", "jfiojiaji")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -122,7 +123,7 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getAuthorPapersById() throws Exception{
+    public void getAuthorPapersById() throws Exception{
         mockMvc.perform(get("/paper/author")
                 .param("authorId", "37296968900")
                 .param("page", "1")
@@ -140,7 +141,7 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getAffiliationPapers()throws Exception {
+    public void getAffiliationPapers()throws Exception {
         mockMvc.perform(get("/paper/affiliation")
                 .param("affiliation", "Nanjing University")
                 .param("page", "1")
@@ -158,7 +159,7 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getKeywordPapers() throws Exception{
+    public void getKeywordPapers() throws Exception{
         mockMvc.perform(get("/paper/keyword")
                 .param("keyword", "software")
                 .param("page", "1")
@@ -176,7 +177,7 @@ public class PaperBlServiceImplTest {
     }
 
     @Test
-    void getPaperByErrorId() throws Exception{
+    public void getPaperByErrorId() throws Exception{
         mockMvc.perform(get("/paper/id")
                 .param("id", "fdsajojfwe")
                 .contentType(MediaType.APPLICATION_JSON)
