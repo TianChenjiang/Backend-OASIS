@@ -3,6 +3,7 @@ package com.rubiks.backendoasis.unit_test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.bl.AdminBlServiceImpl;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -80,14 +82,30 @@ class SearchBlServiceImplTest {
 
     @Test
     void basicFilterSearch() throws Exception{
+        mockMvc.perform(get("/search/filter/es")
+                .param("keyword", "software")
+                .param("page", "1")
+                .param("sortKey", "related")
+                .param("affiliation", "nanjing university")
+                .param("startYear","2010")
+                .param("endYear", "2015")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Software")));
     }
 
-    @Test
-    void getBasicSearchFilterCondition() throws Exception{
-    }
 
     @Test
     void commandSearch() throws Exception{
+        mockMvc.perform(get("/search/command")
+                .param("query", "software AND test NOT nanjing")
+                .param("page", "1")
+                .param("sortKey", "related")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("software")))
+                .andExpect(content().string(containsString("test")));
     }
 
 }

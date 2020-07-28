@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.entity.paper.PaperEntity;
+import com.rubiks.backendoasis.exception.NoSuchAuthorException;
 import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.paper.IdYearMap;
 import com.rubiks.backendoasis.model.paper.PublicationTrend;
@@ -248,6 +249,9 @@ public class RankBlServiceImpl implements RankBlService {
                 limit(5)
         );
         AggregationResults<MostInfluentialPapers> mostInfluentialPapers = mongoTemplate.aggregate(mostInfluentialAgg, LARGE_COLLECTION, MostInfluentialPapers.class);
+        if (mostInfluentialPapers.getMappedResults().size() == 0) {
+            throw new NoSuchAuthorException();
+        }
 
         Aggregation mostRecentAgg = newAggregation(
                 idMatch,
@@ -273,6 +277,9 @@ public class RankBlServiceImpl implements RankBlService {
                 project().and("keywords").as("authorId").and("publicationYear").as("year")  //这里为了复用IdYearMap，把keyword起名为authorId，它们都是group的对象
         );
         List<IdYearMap> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, IdYearMap.class).getMappedResults();
+        if (curRes.size() == 0) {
+            return new BasicResponse(200, "no such keyword", null);
+        }
 
         KeywordDetailRank res = KeywordDetailRank.CalAndSetPublicationTrends(keyword, curRes);
         Aggregation mostInfluentialAgg = newAggregation(
@@ -312,6 +319,9 @@ public class RankBlServiceImpl implements RankBlService {
                 limit(20)
         );
         List<AuthorAdvanceRank> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AuthorAdvanceRank.class).getMappedResults();
+        if (res.size() == 0) {
+            return new BasicResponse(200, "no such keyword", null);
+        }
 
         List<String> ids = new ArrayList<>();
         for (AuthorAdvanceRank authorAdvanceRank : res) {
@@ -358,6 +368,9 @@ public class RankBlServiceImpl implements RankBlService {
                 limit(20)
         );
         AggregationResults<BasicDBObject> res = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, BasicDBObject.class);
+        if (res.getMappedResults().size() == 0) {
+            return new BasicResponse(200, "no such keyword", null);
+        }
         List<AffiliationAdvanceRank> affiliationAdvanceRanks = new ArrayList<>();
         for (Iterator<BasicDBObject> iterator = res.iterator(); iterator.hasNext();) {
             BasicDBObject obj = iterator.next();
@@ -449,6 +462,9 @@ public class RankBlServiceImpl implements RankBlService {
                 group("publicationYear").count().as("num").addToSet("publicationYear").as("publicationYear")
         );
         AggregationResults<PublicationTrend> curRes = mongoTemplate.aggregate(aggregation1, LARGE_COLLECTION, PublicationTrend.class);
+        if (curRes.getMappedResults().size() == 0) {
+            return new BasicResponse(200, "no such affiliation", null);
+        }
         List<Integer> publicationTrends = new ArrayList<>();
 
         List<PublicationTrend> yearNumMap = curRes.getMappedResults();
@@ -481,6 +497,9 @@ public class RankBlServiceImpl implements RankBlService {
         );
         AggregationResults<AuthorAdvanceRank> firstRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, AuthorAdvanceRank.class);
         List<AuthorAdvanceRank> res = firstRes.getMappedResults();
+        if (res.size() == 0) {
+            return new BasicResponse(200, "no such affiliation", null);
+        }
 
         List<String> ids = new ArrayList<>();
         for (AuthorAdvanceRank authorAdvanceRank : res) {

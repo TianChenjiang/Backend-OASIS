@@ -1,14 +1,8 @@
 package com.rubiks.backendoasis.unit_test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rubiks.backendoasis.bl.AdminBlServiceImpl;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -113,27 +107,81 @@ class PaperBlServiceImplTest {
 
     @Test
     void getKeyword3DTrend() throws Exception{
-
+        mockMvc.perform(get("/keyword/trend")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
     void getReferenceById() throws Exception{
+        mockMvc.perform(get("/journal/interest")
+                .param("journal", "jfiojiaji")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg", is("No such journal")));
     }
 
     @Test
     void getAuthorPapersById() throws Exception{
+        mockMvc.perform(get("/paper/author")
+                .param("authorId", "37296968900")
+                .param("page", "1")
+                .param("sortKey", "recent")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/paper/author")
+                .param("authorId", "1")
+                .param("page", "1")
+                .param("sortKey", "recent")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg", is("No such author")));
     }
 
     @Test
     void getAffiliationPapers()throws Exception {
+        mockMvc.perform(get("/paper/affiliation")
+                .param("affiliation", "Nanjing University")
+                .param("page", "1")
+                .param("sortKey", "recent")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/paper/affiliation")
+                .param("affiliation", "fdsafdaji")
+                .param("page", "1")
+                .param("sortKey", "recent")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg", is("No such affiliation")));
     }
 
     @Test
     void getKeywordPapers() throws Exception{
+        mockMvc.perform(get("/paper/keyword")
+                .param("keyword", "software")
+                .param("page", "1")
+                .param("sortKey", "recent")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/paper/keyword")
+                .param("keyword", "fdsafdaji")
+                .param("page", "1")
+                .param("sortKey", "recent")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg", is("No such keyword")));
     }
 
     @Test
-    void getPaperById() throws Exception{
+    void getPaperByErrorId() throws Exception{
+        mockMvc.perform(get("/paper/id")
+                .param("id", "fdsajojfwe")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg", is("No such paper")));
     }
-
 }

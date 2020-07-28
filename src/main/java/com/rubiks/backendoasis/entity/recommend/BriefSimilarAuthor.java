@@ -5,6 +5,7 @@ import com.rubiks.backendoasis.entity.paper.PaperEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,7 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BriefSimilarAuthor implements Serializable {
-    private AuthorEntity author;
+    @Field("author")
+    private RecommendAuthor author;
 
-    private List<PaperEntity> papers;
+    private List<RecommendPaper> papers;
 }

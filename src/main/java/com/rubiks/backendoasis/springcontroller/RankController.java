@@ -2,6 +2,7 @@ package com.rubiks.backendoasis.springcontroller;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
+import com.rubiks.backendoasis.exception.NoSuchAuthorException;
 import com.rubiks.backendoasis.exception.NoSuchYearException;
 import com.rubiks.backendoasis.model.paper.ResearchInterest;
 import com.rubiks.backendoasis.model.rank.AuthorRankDetail;
@@ -102,13 +103,17 @@ public class RankController {
     }
 
 
-
     @GetMapping("/rank/detail/author")
     public BasicResponse getAuthorDetailRankingById(@RequestParam(value = "authorId") String authorId) {
-        List<ResearchInterest> keywords = (List<ResearchInterest>) paperBlService.getResearcherInterest(authorId).getData(); //调用paperbl中的接口
-        AuthorRankDetail authorRankDetail =  rankBlService.getAuthorDetailRankingById(authorId);
-        authorRankDetail.setKeywords(keywords);
-        return new BasicResponse(200, "Success", authorRankDetail);
+        try {
+            AuthorRankDetail authorRankDetail =  rankBlService.getAuthorDetailRankingById(authorId);
+            List<ResearchInterest> keywords = (List<ResearchInterest>) paperBlService.getResearcherInterest(authorId).getData(); //调用paperbl中的接口
+            authorRankDetail.setKeywords(keywords);
+            return new BasicResponse(200, "Success", authorRankDetail);
+        } catch (NoSuchAuthorException e) {
+            e.printStackTrace();
+            return new BasicResponse(200, e.getMessage(), null);
+        }
     }
 
     @GetMapping("/rank/detail/affiliation")

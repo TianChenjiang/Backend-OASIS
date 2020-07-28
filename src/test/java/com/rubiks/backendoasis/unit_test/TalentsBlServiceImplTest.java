@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,5 +53,19 @@ class TalentsBlServiceImplTest {
 
     @Test
     void getTalentsListByTalentBase() throws Exception{
+        mockMvc.perform(get("/talents/list")
+                .param("field", "learning (artificial intelligence)")
+                .param("page", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/talents/list")
+                .param("field", "software")
+                .param("page", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.msg", is("No such field")));
     }
 }

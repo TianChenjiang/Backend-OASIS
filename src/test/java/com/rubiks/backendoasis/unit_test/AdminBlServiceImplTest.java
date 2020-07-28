@@ -101,10 +101,19 @@ class AdminBlServiceImplTest {
 
     @Test
     void getRecommendedSimilarAffiliation() throws Exception{
-
+        mockMvc.perform(get("/recommend/author")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", Matchers.notNullValue()));
     }
 
     @Test
     void getRecommendedSimilarAuthor() throws Exception{
+        mockMvc.perform(get("/recommend/affiliation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", Matchers.notNullValue()));
     }
 }

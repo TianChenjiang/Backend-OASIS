@@ -36,6 +36,9 @@ public class PictureBlServiceImpl implements PictureBlService {
         query.fields().include("authors");
 
         List<PaperEntity> paperEntity = mongoTemplate.find(query, PaperEntity.class);
+        if (paperEntity.size() == 0) {
+            return new BasicResponse(200, "No such Author", null);
+        }
         List<Node> nodes = new ArrayList<>();
         List<Link> links = new ArrayList<>();
 
