@@ -400,7 +400,7 @@ public class RankBlServiceImpl implements RankBlService {
                 match(Criteria.where("authors.affiliation").ne("").ne(null)),  //非空属性
                 //同一机构并且不同论文的引用数相加
                 group("authors.affiliation", "_id").addToSet("authors.affiliation").as("affiliationName").first("metrics").as("metrics").addToSet("authors.id").as("authorId"),
-                group("affiliationName").sum("metrics.citationCountPaper").as("citation").first("affiliationName").as("affiliationName").count().as("count").first("authorId").as("authorId"),
+                group("affiliationName").sum("metrics.citationCountPaper").as("citation").first("affiliationName").as("affiliationName").count().as("count").addToSet("authorId").as("authorId"),
                 sort(Sort.Direction.DESC, sortKey),
                 limit(20)
         ).withOptions(newAggregationOptions().allowDiskUse(true).build());
