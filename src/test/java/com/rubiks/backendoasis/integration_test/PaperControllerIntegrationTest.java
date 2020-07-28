@@ -1,120 +1,118 @@
 package com.rubiks.backendoasis.integration_test;
 
-import org.junit.After;
+import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.blservice.RankBlService;
+import com.rubiks.backendoasis.blservice.SearchBlService;
+import com.rubiks.backendoasis.entity.paper.AuthorEntity;
+import com.rubiks.backendoasis.entity.paper.MetricsEntity;
+import com.rubiks.backendoasis.entity.paper.PaperEntity;
+import com.rubiks.backendoasis.model.rank.BasicRank;
+import com.rubiks.backendoasis.model.paper.PaperWithoutRef;
+import com.rubiks.backendoasis.model.paper.PapersWithSize;
+import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.springcontroller.PaperController;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+import java.util.ArrayList;
+import java.util.List;
+
 @SpringBootTest
+@RunWith(SpringRunner.class)
+@Transactional
 public class PaperControllerIntegrationTest {
-    private MockMvc mockMvc;
-    // 集成测试 会直接用到service组件，不需要mock
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    private PaperController paperController;
+
+    @Autowired
+    protected WebApplicationContext wac;
+
+    @MockBean
+    PaperBlService paperBlService;
+    @MockBean
+    SearchBlService searchBlService;
+    @MockBean
+    RankBlService rankBlService;
+
+    private MockMvc mockMvc;
+
+    private List<PaperEntity> paperEntities;
+    private List<BasicRank> basicRanks;
+
+    private PapersWithSize res;
 
     @Before
-    public void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
+    public void setupMockMvc() {
+        mockMvc = MockMvcBuilders.standaloneSetup(new PaperController(paperBlService, rankBlService, searchBlService)).build();
 
-    @After
-    public void clean() {
+        AuthorEntity authorEntity1 = AuthorEntity.builder().name("lq").affiliation("NJU").build();
+        AuthorEntity authorEntity2 = AuthorEntity.builder().name("mxp").affiliation("NJU gulou").build();
+        List<AuthorEntity> l1 = new ArrayList<>(); l1.add(authorEntity1);
+        List<AuthorEntity> l2 = new ArrayList<>(); l2.add(authorEntity2);
+
+        MetricsEntity metricsEntity1 = MetricsEntity.builder().citationCountPatent(100).citationCountPaper(200).build();
+        MetricsEntity metricsEntity2 = MetricsEntity.builder().citationCountPatent(200).citationCountPaper(50).build();
+
+        PaperEntity paperEntity1 = PaperEntity.builder().title("Software Architecture").publicationYear(2011).publicationName("ASE").authors(l1).metrics(metricsEntity1).build();
+        PaperEntity paperEntity2 = PaperEntity.builder().title("Software Design").publicationYear(2011).publicationName("IEEE").authors(l2).metrics(metricsEntity2).build();
+        paperEntities = new ArrayList<>();
+        paperEntities.add(paperEntity1);
+        paperEntities.add(paperEntity2);
+
+        BasicRank basicRank1 = BasicRank.builder().name("NJU").count(100).build();
+        BasicRank basicRank2 = BasicRank.builder().name("NJU gulou").count(10).build();
+        basicRanks = new ArrayList<>();
+        basicRanks.add(basicRank1);
+        basicRanks.add(basicRank2);
+
+        res = new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(paperEntities), 1);
 
     }
 
     @Test
-    public void testBasicSearch() throws Exception {
-        mockMvc.perform(get("/search/basic/es")
-                .param("keyword", "Software、")
-                .param("page", "1")
-                .param("sortKey", "related")
-                .contentType(MediaType.APPLICATION_JSON))
+    public void testWeb() throws Exception{
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/test");
+        MvcResult result =  mockMvc.perform(builder)
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Software")))
-
-        ;
-        mockMvc.perform(get("/search/basic/es")
-                .param("keyword", "\"Architecture、.\"")
-                .param("page", "1")
-                .param("sortKey", "related")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Architecture".toLowerCase())));
-
+                .andExpect(MockMvcResultMatchers.content().string("Success"))
+                .andReturn();
     }
 
 
-    @Test
-    public void testAdvancedSearch() throws Exception {
-        mockMvc.perform(get("/search/advanced/es")
-                .param("publicationName", "ASE")
-                .param("field", "software")
-                .param("startYear","2010")
-                .param("endYear", "2015")
-                .param("page", "1")
-                .param("sortKey", "related")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.papers[0].publicationName", containsString("ASE")))
-                .andExpect(jsonPath("$.data.papers[0].keywords", (hasItem(containsString("software")))))
-                .andExpect(jsonPath("$.data.papers[0].publicationYear", greaterThanOrEqualTo(2010)))
-                .andExpect(jsonPath("$.data.papers[0].publicationYear", lessThanOrEqualTo(2015)))
-        ;
-    }
-
-    @Test
-    public void testAffiliationBasicRanking() throws Exception {
-        mockMvc.perform(get("/rank/basic/affiliation")
-                .param("sortKey", "acceptanceCount")
-                .param("year", "2019")
-                .contentType(MediaType.APPLICATION_JSON)).andDo(print())
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    public void testAuthorBasicRanking() throws Exception {
-        mockMvc.perform(get("/rank/basic/author")
-                .param("sortKey", "citationCount")
-                .param("year", "2019")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-        ;
-    }
-
-    @Test
-    public void testGetResearcherInterest() throws Exception {
-        mockMvc.perform(get("/researcher/interest")
-                .param("authorId", "37302908800")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print()
-        );
-
-    }
 
     @Test
     public void testGetActivePaperAbstract() throws Exception {
+        when(paperBlService.getActivePaperAbstract())
+                .thenReturn(new BasicResponse(200, "Success", paperEntities));
         mockMvc.perform(get("/paper/abstract")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-//                .andExpect(jsonPath("$.data[0].title", is("Software Architecture"));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data[0].title", is("Software Architecture"))
+        );
     }
+
 
 }

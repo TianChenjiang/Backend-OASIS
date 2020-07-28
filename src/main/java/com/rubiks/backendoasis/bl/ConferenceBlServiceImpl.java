@@ -30,6 +30,9 @@ public class ConferenceBlServiceImpl implements ConferenceBlService {
 
 //        long size = mongoTemplate.count(query, PaperEntity.class);
         long size = mongoTemplate.find(query, ConferenceEntity.class).size();
+        if (size == 0) {
+            return new BasicResponse(200, "No such keyword", null);
+        }
 
         query.with(PageRequest.of(page-1, pageSize));
         List<ConferenceEntity> res = mongoTemplate.find(query, ConferenceEntity.class);
@@ -48,6 +51,9 @@ public class ConferenceBlServiceImpl implements ConferenceBlService {
         query.fields().include("proceedings");
 
         ConferenceEntity res = mongoTemplate.findOne(query, ConferenceEntity.class);
+        if (res == null) {
+            return new BasicResponse(200, "No such titleId", null);
+        }
         return new BasicResponse(200, "Success", res.getProceedings());
     }
 }

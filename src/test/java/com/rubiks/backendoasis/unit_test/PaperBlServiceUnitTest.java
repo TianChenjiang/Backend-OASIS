@@ -95,15 +95,5 @@ public class PaperBlServiceUnitTest {
         assertThat(res, notNullValue());
     }
 
-    @Test
-    public void testGetActivePaperAbstract() {
-        List<BriefPaper> res = (List<BriefPaper>) paperBlService.getActivePaperAbstract().getData();
-        BriefPaper former, latter;
-        for (int i = 0; i < res.size() - 1; i++) {
-            former = res.get(i);
-            latter = res.get(i+1);
-//            assertThat(former.getMetrics().getCitationCountPaper(), greaterThanOrEqualTo(latter.getMetrics().getCitationCountPaper()));
-        }
-    }
 
 }

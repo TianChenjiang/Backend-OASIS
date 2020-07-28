@@ -1,4 +1,4 @@
-package com.rubiks.backendoasis.unit_test;
+package com.rubiks.backendoasis.integration_test;
 
 import com.rubiks.backendoasis.blservice.SearchBlService;
 import com.rubiks.backendoasis.entity.paper.AuthorEntity;
@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Transactional
-public class SearchBlServiceUnitTest {
+public class SearchBlServiceIntegrationTest {
     @Autowired
     private SearchController searchController;
 
