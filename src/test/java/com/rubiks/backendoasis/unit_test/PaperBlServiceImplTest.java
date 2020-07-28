@@ -18,9 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -50,7 +49,7 @@ class PaperBlServiceImplTest {
                 );
 
         mockMvc.perform(get("/researcher/interest")
-                .param("authorId", "111")
+                .param("authorId", "-13")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.msg", is("No such author")));
@@ -109,7 +108,7 @@ class PaperBlServiceImplTest {
         mockMvc.perform(get("/paper/abstract")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data", arrayWithSize(5))); //返回五篇论文
+                .andExpect(jsonPath("$.data", hasSize(is(5)))); //返回五篇论文
     }
 
     @Test

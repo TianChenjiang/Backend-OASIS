@@ -230,7 +230,7 @@ public class AdminBlServiceImpl implements AdminBlService {
                 .sum("metrics.citationCountPaper").as("citation"),
                 skip(previousNum),
                 limit(Constant.pageSize)
-        );
+        ).withOptions(newAggregationOptions().allowDiskUse(true).build());;
 
         Aggregation countAgg = newAggregation(
                 nameMatch,

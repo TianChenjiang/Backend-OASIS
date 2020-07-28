@@ -57,6 +57,9 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
+        if (aggregationList.size() == 0) {
+            return new BasicResponse<>(200, "No such author", null);
+        }
         return new BasicResponse<>(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
@@ -69,6 +72,9 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
+        if (aggregationList.size() == 0) {
+            return new BasicResponse<>(200, "No such affiliation", null);
+        }
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
@@ -83,6 +89,9 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
+        if (aggregationList.size() == 0) {
+            return new BasicResponse<>(200, "No such conference", null);
+        }
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
@@ -96,6 +105,9 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
+        if (aggregationList.size() == 0) {
+            return new BasicResponse<>(200, "No such journal", null);
+        }
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
@@ -134,7 +146,7 @@ public class PaperBlServiceImpl implements PaperBlService {
             return new BasicResponse(200, "Success", refs) ;
         }
         else {
-            return new BasicResponse(200, "Success", "no such paper!") ;
+            return new BasicResponse(200, "No such paperr", null) ;
         }
     }
 
@@ -147,6 +159,10 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        if (res.size() == 0) {
+            return new BasicResponse<>(200, "No such author", null);
+        }
+
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
@@ -159,6 +175,9 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        if (res.size() == 0) {
+            return new BasicResponse<>(200, "No such affiliation", null);
+        }
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
@@ -171,6 +190,9 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
+        if (res.size() == 0) {
+            return new BasicResponse<>(200, "No such keyword", null);
+        }
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
@@ -181,6 +203,10 @@ public class PaperBlServiceImpl implements PaperBlService {
         Query query = new Query(criteria);
 
         PaperEntity paperEntity = mongoTemplate.findOne(query, PaperEntity.class);
+        if (paperEntity == null) {
+            return new BasicResponse<>(200, "No such paper", null);
+        }
+
         return new BasicResponse(200, "Success", paperEntity);
     }
 
