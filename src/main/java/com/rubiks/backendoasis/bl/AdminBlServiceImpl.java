@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.entity.paper.AuthorEntity;
 import com.rubiks.backendoasis.entity.paper.PaperEntity;
+import com.rubiks.backendoasis.entity.recommend.SimilarAffiliation;
+import com.rubiks.backendoasis.entity.recommend.SimilarAuthor;
 import com.rubiks.backendoasis.exception.FileFormatNotSupportException;
 import com.rubiks.backendoasis.model.paper.ImportPaperRes;
 import com.rubiks.backendoasis.model.admin.*;
@@ -14,6 +16,7 @@ import com.rubiks.backendoasis.util.MultiPartFileToFile;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
@@ -142,15 +145,18 @@ public class AdminBlServiceImpl implements AdminBlService {
 
         long previousNum = (page-1) * Constant.pageSize;
         Aggregation aggregation = newAggregation(
-                project("authors"),
+                project("authors", "_id", "metrics"),
                 nameMatch,      // 先进行一次match，为了命中索引，也为了减少进入管道的文档数量
                 unwind("authors"),
                 nameMatch,
-                group(fieldName).addToSet(fieldName).as("name"),
+//                group(fieldName).addToSet(fieldName).as("name"),
+                group(fieldName, "_id").addToSet(fieldName).as("name").first("metrics").as("metrics"),
+                group("name").sum("metrics.citationCountPaper").as("citationCount").first("name").as("name").count().as("acceptanceCount"),
+                sort(Sort.Direction.DESC, "acceptanceCount"),
                 project("name"),
                 skip(previousNum),
                 limit(Constant.pageSize)
-        );
+        ).withOptions(newAggregationOptions().allowDiskUse(true).build());
 
         Aggregation countAgg = newAggregation(
                 project("authors"),
@@ -376,6 +382,18 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", "修改成功");
     }
 
+    @Override
+    public BasicResponse getRecommendedSimilarAffiliation() {
+        List<SimilarAffiliation> res = mongoTemplate.findAll(SimilarAffiliation.class, Constant.SIMILAR_AFFILIATION_RECOMMEND);
+        return new BasicResponse(200, "Success", res);
+    }
+
+    @Override
+    public BasicResponse getRecommendedSimilarAuthor() {
+        List<SimilarAuthor> res = mongoTemplate.findAll(SimilarAuthor.class, Constant.SIMILAR_AUTHOR_RECOMMEND);
+        return new BasicResponse(200, "Success", res);
+    }
+
     @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "keyword_advance_rank"}, allEntries = true)
     @Override
     public BasicResponse updateMainPageCache() {
@@ -394,7 +412,7 @@ public class AdminBlServiceImpl implements AdminBlService {
 
             for (PaperEntity p : matchRes) {
                 for (AuthorEntity authorEntity : p.getAuthors()) {
-                    if (authorEntity.getAffiliation().equals(str)) {
+                    if (authorEntity.getAffiliation() != null && authorEntity.getAffiliation().equals(str)) {
                         authorEntity.setAffiliation(desc);
                     }
                 }

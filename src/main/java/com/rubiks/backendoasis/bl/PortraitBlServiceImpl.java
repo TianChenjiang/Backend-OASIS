@@ -95,7 +95,7 @@ public class PortraitBlServiceImpl implements PortraitBlService {
             for (PaperEntity p : res) {
                 citation += p.getMetrics().getCitationCountPaper();
                 for (AuthorEntity author : p.getAuthors()) {
-                    if (author.getAffiliation().equals(affiliation)) {
+                    if (author.getAffiliation() != null && author.getAffiliation().equals(affiliation)) {
                         nonRepeatedAuthors.add(author.getName());
                     }
                 }

@@ -102,6 +102,16 @@ public class AdminController {
         return adminBlService.updatePaperInfo(updatePaperParameter);
     }
 
+    @GetMapping("/recommend/author")
+    public BasicResponse getRecommendedSimilarAuthor() {
+        return adminBlService.getRecommendedSimilarAuthor();
+    }
+
+    @GetMapping("/recommend/affiliation")
+    public BasicResponse getRecommendedSimilarAffiliation() {
+        return adminBlService.getRecommendedSimilarAffiliation();
+    }
+
     @GetMapping("/cache")
     public BasicResponse updateMainPageCache() {
         return adminBlService.updateMainPageCache();

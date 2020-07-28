@@ -35,5 +35,22 @@ public class BasicRank implements Serializable {
         return res;
     }
 
+    public static <T> List<BasicRank> affTransformToBasic(List<T> rank){
+        List<BasicRank> res = new ArrayList<>();
+        if (rank.get(0).getClass() == AcceptanceCountRank.class) {
+            List<AcceptanceCountRank> ac = (List<AcceptanceCountRank>)rank;
+            for (AcceptanceCountRank a : ac) {
+                res.add(new BasicRank(a.getName(), a.getAcceptanceCount()));
+            }
+        } else {
+            List<CitationCountRank> ci = (List<CitationCountRank>)rank;
+            for (CitationCountRank a : ci) {
+                res.add(new BasicRank(a.getName(), a.getCitationCount()));
+            }
+        }
+
+        return res;
+    }
+
 }
 

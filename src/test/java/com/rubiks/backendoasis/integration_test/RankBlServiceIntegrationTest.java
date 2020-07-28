@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.integration_test;
 
+import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.entity.paper.AuthorEntity;
@@ -45,6 +46,8 @@ public class RankBlServiceIntegrationTest {
 
     @MockBean RankBlService rankBlService;
     @MockBean PaperBlService paperBlService;
+    @Autowired
+    private AdminBlService adminBlService;
 
     private MockMvc mockMvc;
 
@@ -56,6 +59,7 @@ public class RankBlServiceIntegrationTest {
     @Before
     public void setupMockMvc() {
         mockMvc = MockMvcBuilders.standaloneSetup(new RankController(rankBlService, paperBlService)).build();
+        adminBlService.updateMainPageCache();
 
         AuthorEntity authorEntity1 = AuthorEntity.builder().name("lq").affiliation("NJU").build();
         AuthorEntity authorEntity2 = AuthorEntity.builder().name("mxp").affiliation("NJU gulou").build();
@@ -89,7 +93,8 @@ public class RankBlServiceIntegrationTest {
         mockMvc.perform(get("/rank/basic/affiliation")
                 .param("sortKey", "acceptanceCount")
                 .param("year", "2011")
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data[0].name", is("NJU")))
                 .andExpect(jsonPath("$.data[0].count", is(100))

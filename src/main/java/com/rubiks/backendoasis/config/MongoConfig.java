@@ -9,18 +9,18 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 
 @Configuration
 public class MongoConfig {
-//
-//    @Value("${MONGOHOST:localhost}")
-//    private String host;
+
+   @Value("${MONGO:mongodb://greenwood:2020liujia@101.132.102.201:27017}")
+   private String mongo;
 
     @Bean
     public MongoClient mongoClient() {
 //        MongoMappingContext ctx = new MongoMappingContext();
 //        ctx.setAutoIndexCreation(true);
-        String connection = System.getenv("MONGO");
-        if (connection == null) {
-            connection = "mongodb://localhost:27017";
-        }
-        return MongoClients.create(connection);
+        // String connection = System.getenv("MONGO");
+        // if (connection == null) {
+        //     connection = "mongodb://localhost:27017";
+        // }
+        return MongoClients.create(mongo);
     }
 }

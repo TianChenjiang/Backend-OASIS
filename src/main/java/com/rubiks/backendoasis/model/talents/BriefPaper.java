@@ -13,4 +13,6 @@ public class BriefPaper {
     private String title;
     @Field("metrics.citationCountPaper")
     private int citation;
+    @Field("link")
+    private String link;
 }

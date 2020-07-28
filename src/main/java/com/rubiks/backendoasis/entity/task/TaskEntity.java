@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.Date;
 import java.util.List;
@@ -16,10 +17,15 @@ import java.util.List;
 @NoArgsConstructor
 public class TaskEntity {
     private List<ProceedingEntity> proceedings;
-    private Date start_time;
-    private Date end_time;
-    private boolean is_finished;
+    @Field("start_time")
+    private Date startTime;
+    @Field("end_time")
+    private Date endTime;
+    @Field("is_finished")
+    private boolean isFinished;
     private String description;
-    private int paper_count;
-    private int total_paper_num;
+    @Field("paper_count")
+    private int paperCount;
+    @Field("total_paper_num")
+    private int totalPaperNum;
 }

@@ -92,6 +92,12 @@
 
 		<dependency>
 			<groupId>io.springfox</groupId>
+			<artifactId>springfox-boot-starter</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>3.0.0-SNAPSHOT</version>
 		</dependency>
@@ -178,6 +184,18 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.evosuite</groupId>
+			<artifactId>evosuite-standalone-runtime</artifactId>
+			<version>1.0.6</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>4.3.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -225,7 +243,38 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.evosuite.plugins</groupId>
+				<artifactId>evosuite-maven-plugin</artifactId>
+<!--				注意修改evosuite对应版本-->
+				<version>1.0.6</version>
+				<executions><execution>
+					<goals> <goal> prepare </goal> </goals>
+					<phase> process-test-classes </phase>
+				</execution></executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<properties>
+						<property>
+							<name>listener</name>
+							<value>org.evosuite.runtime.InitializingListener</value>
+						</property>
+					</properties>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>EvoSuite</id>
+			<name>EvoSuite Repository</name>
+			<url>http://www.evosuite.org/m2</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>

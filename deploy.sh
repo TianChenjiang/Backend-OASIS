@@ -18,5 +18,6 @@ docker run -d --network="host" \
 --name=backend-oasis \
 --restart=always \
 -p 8081:8081 \
--e MONGO="mongodb://47.101.33.219:27017,116.62.23.105:27017/?replicaSet=rs0" \
+--env MONGO=mongodb://greenwood:2020liujia@localhost:27017 \
+--env ESHOST=localhost \
 registry.cn-hangzhou.aliyuncs.com/rubiks-oasis/backend

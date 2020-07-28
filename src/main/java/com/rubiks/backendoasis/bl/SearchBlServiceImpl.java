@@ -192,6 +192,9 @@ public class SearchBlServiceImpl implements SearchBlService {
         highlightBuilder.requireFieldMatch(false);
         highlightBuilder.preTags(preTag);
         highlightBuilder.postTags(postTag);
+        highlightBuilder.fragmentSize(800000); //最大高亮分片数
+        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+
         searchSourceBuilder.highlighter(highlightBuilder);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -250,6 +253,10 @@ public class SearchBlServiceImpl implements SearchBlService {
         highlightBuilder.requireFieldMatch(false);
         highlightBuilder.preTags(preTag);
         highlightBuilder.postTags(postTag);
+        highlightBuilder.fragmentSize(800000); //最大高亮分片数
+        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+
+
         searchSourceBuilder.highlighter(highlightBuilder);
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
@@ -400,10 +407,25 @@ public class SearchBlServiceImpl implements SearchBlService {
         searchSourceBuilder.from(page-1);
         searchSourceBuilder.size(pageSize);
 
+        //加入高亮搜索
+        String preTag = "<em>";
+        String postTag = "</em>";
+
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("authors.name").field("abstract").field("title");
+
+        highlightBuilder.requireFieldMatch(false);
+        highlightBuilder.preTags(preTag);
+        highlightBuilder.postTags(postTag);
+        searchSourceBuilder.highlighter(highlightBuilder);
+
+        highlightBuilder.fragmentSize(800000); //最大高亮分片数
+        highlightBuilder.numOfFragments(0); //从第一个分片获取高亮片段
+
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
-        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResult(searchResponse)), searchResponse.getHits().getTotalHits().value));
+        return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperDocToPaperWithoutRef(getSearchResultWithHighLight(searchResponse)), searchResponse.getHits().getTotalHits().value));
     }
 
     // 建立基本请求的接口

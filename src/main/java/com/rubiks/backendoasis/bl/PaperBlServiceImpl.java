@@ -1,14 +1,17 @@
 package com.rubiks.backendoasis.bl;
 
 import com.rubiks.backendoasis.blservice.PaperBlService;
+import com.rubiks.backendoasis.entity.paper.AuthorEntity;
 import com.rubiks.backendoasis.entity.paper.PaperEntity;
 
 import com.rubiks.backendoasis.entity.paper.ReferenceEntity;
+import com.rubiks.backendoasis.entity.trend.TrendEntity;
 import com.rubiks.backendoasis.model.paper.BriefPaper;
 import com.rubiks.backendoasis.model.paper.PaperWithoutRef;
 import com.rubiks.backendoasis.model.paper.PapersWithSize;
 import com.rubiks.backendoasis.model.paper.ResearchInterest;
 import com.rubiks.backendoasis.response.BasicResponse;
+import com.rubiks.backendoasis.util.Constant;
 import org.elasticsearch.client.RestHighLevelClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +57,6 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
-        if (aggregationList.size() == 0) {
-            return new BasicResponse<>(200, "No such author", null);
-        }
         return new BasicResponse<>(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
@@ -69,9 +69,6 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
-        if (aggregationList.size() == 0) {
-            return new BasicResponse<>(200, "No such affiliation", null);
-        }
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
@@ -86,9 +83,6 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
-        if (aggregationList.size() == 0) {
-            return new BasicResponse<>(200, "No such conference", null);
-        }
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
@@ -102,9 +96,6 @@ public class PaperBlServiceImpl implements PaperBlService {
         );
         AggregationResults<PaperEntity> aggregationRes = mongoTemplate.aggregate(aggregation, LARGE_COLLECTION, PaperEntity.class);
         List<PaperEntity> aggregationList = aggregationRes.getMappedResults();
-        if (aggregationList.size() == 0) {
-            return new BasicResponse<>(200, "No such journal", null);
-        }
         return new BasicResponse(200, "Success", ResearchInterest.constructNameValueMap(aggregationList));
     }
 
@@ -123,10 +114,17 @@ public class PaperBlServiceImpl implements PaperBlService {
     }
 
     @Override
+    public BasicResponse getKeyword3DTrend() {
+        Query query = new Query(); //直接返回
+        TrendEntity res = mongoTemplate.findOne(query, TrendEntity.class, Constant.TREND_COLLECTION);
+        return new BasicResponse(200, "Success", res);
+    }
+
+    @Override
     public BasicResponse getReferenceById(String paperId) {
         PaperEntity res = mongoTemplate.findById(paperId, PaperEntity.class);
         List<ReferenceEntity> refs = new ArrayList<>();
-        if (res.getReferences() != null) {
+        if (res != null && res.getReferences() != null) {
             for (ReferenceEntity ref : res.getReferences()) {
                 if (ref.getTitle().isEmpty() || ref.getTitle() == null) {
                     continue;
@@ -136,7 +134,7 @@ public class PaperBlServiceImpl implements PaperBlService {
             return new BasicResponse(200, "Success", refs) ;
         }
         else {
-            return new BasicResponse(200, "No such paperr", null) ;
+            return new BasicResponse(200, "Success", "no such paper!") ;
         }
     }
 
@@ -149,9 +147,6 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        if (res.size() == 0) {
-            return new BasicResponse<>(200, "No such author", null);
-        }
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
@@ -164,9 +159,6 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        if (res.size() == 0) {
-            return new BasicResponse<>(200, "No such affiliation", null);
-        }
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
@@ -179,9 +171,6 @@ public class PaperBlServiceImpl implements PaperBlService {
 
         query = getQueryAfterPaginationAndSort(query, sortKey, page);
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
-        if (res.size() == 0) {
-            return new BasicResponse<>(200, "No such keyword", null);
-        }
         return new BasicResponse(200, "Success", new PapersWithSize(PaperWithoutRef.PaperToPaperWithoutRef(res), size));
     }
 
@@ -192,12 +181,23 @@ public class PaperBlServiceImpl implements PaperBlService {
         Query query = new Query(criteria);
 
         PaperEntity paperEntity = mongoTemplate.findOne(query, PaperEntity.class);
-        if (paperEntity == null) {
-            return new BasicResponse<>(200, "No such paper", null);
-        }
         return new BasicResponse(200, "Success", paperEntity);
     }
 
+    @Override
+    public BasicResponse getSimilarAuthors(String authorId) {
+        // 相同机构
+        AuthorEntity targetAuthor = mongoTemplate.findById(authorId, AuthorEntity.class, LARGE_COLLECTION);
+        Aggregation aggregation = newAggregation(
+
+        );
+        return null;
+    }
+
+    class AuthorKeywordsList {
+        private String name;
+        private List<String> keywords;
+    }
 
     private Query getQueryAfterPaginationAndSort(Query query, String sortKey, int page) {
         switch (sortKey) {

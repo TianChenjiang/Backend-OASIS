@@ -1,5 +1,6 @@
 package com.rubiks.backendoasis.unit_test;
 
+import com.rubiks.backendoasis.blservice.AdminBlService;
 import com.rubiks.backendoasis.blservice.PaperBlService;
 import com.rubiks.backendoasis.blservice.RankBlService;
 import com.rubiks.backendoasis.blservice.SearchBlService;
@@ -32,11 +33,14 @@ public class PaperBlServiceUnitTest {
     private RankBlService rankBlService;
     @Autowired
     private SearchBlService searchBlService;
+    @Autowired
+    private AdminBlService adminBlService;
 
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        adminBlService.updateMainPageCache();
     }
 
 
