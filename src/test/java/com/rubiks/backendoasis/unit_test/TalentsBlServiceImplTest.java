@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-class TalentsBlServiceImplTest {
+public class TalentsBlServiceImplTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 

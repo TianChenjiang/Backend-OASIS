@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-class SearchBlServiceImplTest {
+public class SearchBlServiceImplTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
