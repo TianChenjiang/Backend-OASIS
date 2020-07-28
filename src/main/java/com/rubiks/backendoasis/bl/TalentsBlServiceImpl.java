@@ -68,11 +68,12 @@ public class TalentsBlServiceImpl implements TalentsBlService {
                 match(Criteria.where("field").is(field)),
                 unwind("experts"),
                 unwind("experts.papers"),
-                sort(Sort.Direction.DESC, "experts.papers.metrics.citationCountPaper"),
-                project()
-                        .and("experts.papers.authors").as("authors")
-                        .and("experts.papers.link").as("link").and("experts.papers.title").as("title")
-                        .and("experts.papers.abstract").as("_abstract").and("experts.papers.publicationYear").as("publicationYear"),
+                group("experts.papers.doi") //去重复论文
+                        .first("experts.papers.authors").as("authors")
+                        .first("experts.papers.link").as("link").first("experts.papers.title").as("title")
+                        .first("experts.papers.abstract").as("_abstract").first("experts.papers.publicationYear").as("publicationYear")
+                        .first("experts.papers.metrics.citationCountPaper").as("citation"),
+                sort(Sort.Direction.DESC, "citation"),
                 limit(5)
         );
         List<BriefPaperWithAuthors> res = mongoTemplate.aggregate(aggregation, Constant.TALENTS_COLLECTION, BriefPaperWithAuthors.class).getMappedResults();
