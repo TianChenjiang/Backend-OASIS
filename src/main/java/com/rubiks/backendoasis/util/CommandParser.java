@@ -44,10 +44,11 @@ public class CommandParser {
                 queryBuilder.must(getMatchQuery(keyword));
                 break;
             case OR:
-                BoolQueryBuilder newQueryBuilder = QueryBuilders.boolQuery();
-                newQueryBuilder.should(queryBuilder);
-                newQueryBuilder.should(getMatchQuery(keyword));
-                queryBuilder = newQueryBuilder;
+//                BoolQueryBuilder newQueryBuilder = QueryBuilders.boolQuery();
+//                newQueryBuilder.should(queryBuilder);
+//                newQueryBuilder.should(getMatchQuery(keyword));
+//                queryBuilder = newQueryBuilder;
+                queryBuilder.should(getMatchQuery(keyword));
                 break;
             case NOT:
                 queryBuilder.mustNot(getMatchQuery(keyword));
