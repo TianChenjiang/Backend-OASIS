@@ -228,6 +228,7 @@ public class AdminBlServiceImpl implements AdminBlService {
                 .first("authors.affiliation").as("affiliation")
                 .count().as("count")
                 .sum("metrics.citationCountPaper").as("citation"),
+                sort(Sort.Direction.DESC, "count", "authorName"),
                 skip(previousNum),
                 limit(Constant.pageSize)
         ).withOptions(newAggregationOptions().allowDiskUse(true).build());;
