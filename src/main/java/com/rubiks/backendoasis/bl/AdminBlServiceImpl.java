@@ -150,9 +150,9 @@ public class AdminBlServiceImpl implements AdminBlService {
                 unwind("authors"),
                 nameMatch,
 //                group(fieldName).addToSet(fieldName).as("name"),
-                group(fieldName, "_id").addToSet(fieldName).as("name").first("metrics").as("metrics"),
+                group(fieldName, "_id").first(fieldName).as("name").first("metrics").as("metrics"),
                 group("name").sum("metrics.citationCountPaper").as("citationCount").first("name").as("name").count().as("acceptanceCount"),
-                sort(Sort.Direction.DESC, "acceptanceCount"),
+                sort(Sort.Direction.DESC, "acceptanceCount", "name"),
                 project("name"),
                 skip(previousNum),
                 limit(Constant.pageSize)
