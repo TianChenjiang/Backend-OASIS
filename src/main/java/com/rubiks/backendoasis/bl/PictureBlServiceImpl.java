@@ -70,9 +70,9 @@ public class PictureBlServiceImpl implements PictureBlService {
 
         List<PaperEntity> res = mongoTemplate.find(query, PaperEntity.class);
         String name = "";
-        double value = 0.0;
         double impactOfNodeToOthers = 0.0, impactOfOthersToNode = 0.0;
         int count = res.size(), citation = 0;
+
         if (res.size() > 0) {
              PaperEntity p1 = res.get(0);
             for (AuthorEntity authorEntity : p1.getAuthors()) {
@@ -86,7 +86,8 @@ public class PictureBlServiceImpl implements PictureBlService {
                     impactOfNodeToOthers += p.getAuthors().size() * p.getMetrics().getCitationCountPaper();
                 }
                 if (p.getReferences() != null && p.getAuthors() != null) {
-                    impactOfOthersToNode += p.getReferences().size() / p.getAuthors().size();
+                    int a = p.getReferences().size();
+                    impactOfOthersToNode += (double)p.getReferences().size() / (double)p.getAuthors().size();
                 }
                 citation += p.getMetrics().getCitationCountPaper();
             }

@@ -223,9 +223,9 @@ public class AdminBlServiceImpl implements AdminBlService {
                 unwind("authors"),
                 nameMatch,
                 group("authors.id").addToSet(fieldName).as("name")    // 应该是同名不同人
-                .addToSet("authors.id").as("authorId")
-                .addToSet("authors.name").as("authorName")
-                .addToSet("authors.affiliation").as("affiliation")
+                .first("authors.id").as("authorId")
+                .first("authors.name").as("authorName")
+                .first("authors.affiliation").as("affiliation")
                 .count().as("count")
                 .sum("metrics.citationCountPaper").as("citation"),
                 skip(previousNum),
@@ -236,7 +236,7 @@ public class AdminBlServiceImpl implements AdminBlService {
                 nameMatch,
                 unwind("authors"),
                 nameMatch,
-                group(fieldName),
+                group("authors.id"),
                 count().as("size")
         );
 
@@ -394,7 +394,7 @@ public class AdminBlServiceImpl implements AdminBlService {
         return new BasicResponse(200, "Success", res);
     }
 
-    @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "keyword_advance_rank"}, allEntries = true)
+    @CacheEvict(value = {"affiliation_rank", "affiliation_advance_rank", "author_rank", "author_advance_rank", "journal_rank", "conference_rank", "keyword_rank", "active_abstract", "keyword_advance_rank", "academic_relation_pic_new"}, allEntries = true)
     @Override
     public BasicResponse updateMainPageCache() {
         return new BasicResponse(200, "Success", null);
